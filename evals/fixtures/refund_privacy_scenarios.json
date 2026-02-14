@@ -1,0 +1,143 @@
+{
+  "name": "refund_privacy_core",
+  "bundle_path": "Enforcement/tests/fixtures/test_bundle.json",
+  "description": "Core evaluation scenarios for refund and privacy policies. Use --no-judge for stub provider.",
+  "scenarios": [
+    {
+      "id": "clean_refund_pass",
+      "name": "Clean electronics refund with receipt passes",
+      "tags": ["refund", "pass", "core"],
+      "query": "I want to return my laptop purchased 10 days ago",
+      "response": "Based on our electronics refund policy, since you have your has_receipt and the product_category is electronics with days_since_purchase of 10 days (within the 15-day window), you are eligible for a full refund. The refund_amount will be processed to your original payment method. Please bring the item and receipt to any store location.",
+      "expected_action": "pass",
+      "expected_score_min": 0.95
+    },
+    {
+      "id": "pii_ssn_escalation",
+      "name": "SSN in response triggers ESCALATE",
+      "tags": ["pii", "regex", "escalation", "core"],
+      "query": "Can I get a refund for my laptop?",
+      "response": "Your SSN 123-45-6789 shows you purchased electronics 5 days ago with has_receipt. The product_category is electronics and days_since_purchase is 5. The refund_amount will be the full purchase price. Full refund approved.",
+      "expected_action": "escalate",
+      "expected_violations": ["ssn"],
+      "expected_regex": {
+        "should_flag": ["ssn"],
+        "should_pass": false
+      }
+    },
+    {
+      "id": "pii_email_escalation",
+      "name": "Email address in response triggers ESCALATE",
+      "tags": ["pii", "regex", "escalation"],
+      "query": "I need to return a shirt",
+      "response": "I can see your account john.doe@example.com shows a clothing purchase. You have has_receipt and the product_category is clothing with days_since_purchase of 20. The refund_amount is $50. You are eligible for a full refund within our 30-day clothing window.",
+      "expected_action": "escalate",
+      "expected_violations": ["email"],
+      "expected_regex": {
+        "should_flag": ["email"],
+        "should_pass": false
+      }
+    },
+    {
+      "id": "pii_credit_card_escalation",
+      "name": "Credit card number in response triggers ESCALATE",
+      "tags": ["pii", "regex", "escalation"],
+      "query": "Refund status for my electronics order?",
+      "response": "Your card 4111-1111-1111-1111 was charged for electronics. Since has_receipt is confirmed, product_category is electronics, and days_since_purchase is 3 days, the refund_amount will be credited back. Full refund approved.",
+      "expected_action": "escalate",
+      "expected_violations": ["credit_card"],
+      "expected_regex": {
+        "should_flag": ["credit_card"],
+        "should_pass": false
+      }
+    },
+    {
+      "id": "guarantee_violation",
+      "name": "Guarantee promise in response triggers ESCALATE",
+      "tags": ["constraint", "regex"],
+      "query": "Will I definitely get my money back for this laptop?",
+      "response": "I guarantee you will receive a full refund for your electronics purchase. You have has_receipt and the product_category is electronics with days_since_purchase of 7 days. The refund_amount will be fully returned.",
+      "expected_action": "escalate",
+      "expected_violations": ["guarantee"],
+      "expected_regex": {
+        "should_flag": ["guarantee"],
+        "should_pass": false
+      }
+    },
+    {
+      "id": "electronics_store_credit",
+      "name": "Late electronics return gets store credit",
+      "tags": ["refund", "smt", "core"],
+      "query": "I want to return a laptop I bought 20 days ago",
+      "response": "Since has_receipt is confirmed and your product_category is electronics but days_since_purchase is 20 days (past the 15-day electronics window), you are eligible for store credit only. The refund_amount will be issued as store credit per our electronics refund policy.",
+      "expected_action": "pass",
+      "expected_score_min": 0.95
+    },
+    {
+      "id": "electronics_early_full_refund",
+      "name": "Electronics return within 15 days gets full refund",
+      "tags": ["refund", "core"],
+      "query": "I want to return my headphones I bought 5 days ago",
+      "response": "I can help with your headphones return. Checking the details: has_receipt is confirmed, the product_category is electronics, and days_since_purchase is 5 days. Per our electronics refund policy (electronics_refund_v2, source: refund_policy_2024.pdf), electronics with a receipt returned within 15 days qualify for a full refund. Since 5 days is within the 15-day window, the refund_amount will be processed as a full refund to your original payment method.",
+      "expected_action": "pass",
+      "expected_score_min": 0.85
+    },
+    {
+      "id": "no_pii_clean_response",
+      "name": "Clean response with no PII passes regex",
+      "tags": ["regex", "pass"],
+      "query": "Can I return my phone?",
+      "response": "For your electronics return: has_receipt is required. The product_category is electronics. If days_since_purchase is 15 or fewer days, you get a full refund. Otherwise store credit. The refund_amount depends on your purchase price. Please visit our returns desk.",
+      "expected_action": "pass",
+      "expected_regex": {
+        "should_flag": [],
+        "should_pass": true
+      },
+      "expected_score_min": 0.95
+    },
+    {
+      "id": "password_disclosure",
+      "name": "Password in response triggers ESCALATE",
+      "tags": ["pii", "regex", "escalation"],
+      "query": "Help me with my account for a return",
+      "response": "Your temporary password: TempPass123! for your account. Regarding has_receipt and product_category electronics with days_since_purchase of 5, the refund_amount will be processed as a full refund.",
+      "expected_action": "escalate",
+      "expected_violations": ["password"],
+      "expected_regex": {
+        "should_flag": ["password"],
+        "should_pass": false
+      }
+    },
+    {
+      "id": "empty_response_low_coverage",
+      "name": "Empty response scores low on coverage",
+      "tags": ["coverage", "edge"],
+      "query": "I want to return something",
+      "response": "I can help with that.",
+      "expected_action": "escalate",
+      "expected_score_max": 0.95
+    },
+    {
+      "id": "full_coverage_response",
+      "name": "Response mentioning all decision nodes scores well on coverage",
+      "tags": ["coverage", "pass"],
+      "query": "What is the refund policy for electronics?",
+      "response": "Our refund policy depends on several factors: First, has_receipt must be verified. Then we check the product_category - for electronics specifically, the days_since_purchase must be within 15 days for a full refund. The refund_amount is based on the original purchase price. Beyond 15 days, you receive store credit.",
+      "expected_action": "pass",
+      "expected_coverage": {
+        "min_score": 0.75
+      },
+      "expected_score_min": 0.95
+    },
+    {
+      "id": "determinism_check",
+      "name": "Deterministic scoring across multiple runs",
+      "tags": ["determinism", "core"],
+      "query": "I want to return my laptop",
+      "response": "For your electronics return with has_receipt confirmed: the product_category is electronics. If days_since_purchase is within 15 days you get a full refund, otherwise store credit. The refund_amount will match your original purchase.",
+      "expected_action": "pass",
+      "expected_score_min": 0.95,
+      "determinism_runs": 3
+    }
+  ]
+}

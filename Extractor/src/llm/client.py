@@ -2,9 +2,14 @@
 import json
 import re
 import time
-import urllib.error
-import urllib.request
 from typing import Any, Dict, Optional, Type
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
 
 try:
     import boto3
@@ -46,14 +51,19 @@ class LLMClient:
         )
         self._openai = None
         self._anthropic = None
-        self._ollama = None
         self._stub = provider == "stub"
 
-        if provider == "chatgpt":
+        if provider in ("chatgpt", "ollama"):
             try:
                 from openai import OpenAI
 
-                self._openai = OpenAI()
+                if provider == "ollama":
+                    self._openai = OpenAI(
+                        base_url="http://localhost:11434/v1",
+                        api_key="ollama",
+                    )
+                else:
+                    self._openai = OpenAI()
             except Exception as exc:  # noqa: BLE001
                 raise RuntimeError("OpenAI client not available; install openai>=1.10.0") from exc
         elif provider == "anthropic":
@@ -63,14 +73,6 @@ class LLMClient:
                 self._anthropic = anthropic.Anthropic()
             except Exception as exc:  # noqa: BLE001
                 raise RuntimeError("Anthropic client not available; install anthropic>=0.18.1") from exc
-        elif provider == "ollama":
-            try:
-                import ollama  # type: ignore
-
-                self._ollama = ollama
-            except Exception:
-                # If the Python package is missing, we'll fall back to the HTTP API at runtime
-                self._ollama = None
 
     def invoke_json(self, prompt: str, schema: Optional[Type[BaseModel] | Dict[str, Any]] = None) -> Dict[str, Any]:
         """Call the selected provider and return parsed JSON matching schema."""
@@ -79,14 +81,10 @@ class LLMClient:
             try:
                 if self.provider == "bedrock_claude":
                     raw_text = self._invoke_bedrock(prompt)
-                elif self.provider == "chatgpt":
+                elif self.provider in ("chatgpt", "ollama"):
                     raw_text = self._invoke_openai(prompt)
                 elif self.provider == "anthropic":
                     raw_text = self._invoke_anthropic(prompt)
-                elif self.provider == "ollama":
-                    raw_text = self._invoke_ollama(prompt)
-                elif self.provider == "ollama":
-                    raw_text = self._invoke_ollama(prompt)
                 elif self._stub:
                     raw_text = self._invoke_stub(prompt)
                 else:
@@ -95,14 +93,6 @@ class LLMClient:
                 return self._validate(parsed, schema)
             except Exception as exc:  # noqa: BLE001
                 last_err = exc
-                # fallback to stub if ollama unreachable
-                if self.provider == "ollama" and attempt >= self.retries:
-                    try:
-                        raw_text = self._invoke_stub(prompt)
-                        parsed = self._coerce_json(raw_text)
-                        return self._validate(parsed, schema)
-                    except Exception as stub_exc:
-                        last_err = stub_exc
                 if attempt >= self.retries:
                     break
                 time.sleep(self.backoff ** attempt)
@@ -138,16 +128,18 @@ class LLMClient:
             raise RuntimeError(f"Bedrock invocation error: {exc}") from exc
 
     def _invoke_openai(self, prompt: str) -> str:
-        """Invoke ChatGPT via OpenAI API and return text."""
+        """Invoke LLM via OpenAI-compatible API (ChatGPT or Ollama)."""
         if not self._openai:
             raise RuntimeError("OpenAI client not initialized")
-        resp = self._openai.chat.completions.create(
-            model=self.model_id,
-            messages=[{"role": "user", "content": prompt}],
-            response_format={"type": "json_object"},
-            temperature=self.temperature,
-            max_tokens=self.max_tokens,
-        )
+        kwargs: Dict[str, Any] = {
+            "model": self.model_id,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+        }
+        if self.provider == "chatgpt":
+            kwargs["response_format"] = {"type": "json_object"}
+        resp = self._openai.chat.completions.create(**kwargs)
         content = resp.choices[0].message.content
         if not content:
             raise ValueError("Empty response content from OpenAI")
@@ -167,45 +159,6 @@ class LLMClient:
         if not content:
             raise ValueError("Empty response content from Anthropic")
         return content
-
-    def _invoke_ollama(self, prompt: str) -> str:
-        """Invoke local model via Ollama."""
-        # Try Python client if available
-        if self._ollama:
-            try:
-                resp = self._ollama.generate(
-                    model=self.model_id,
-                    prompt=prompt,
-                    format="json",
-                    options={"temperature": self.temperature, "num_predict": self.max_tokens},
-                )
-                text = resp.get("response") if isinstance(resp, dict) else resp
-                if not text:
-                    raise ValueError("Empty response content from Ollama")
-                return text
-            except Exception:
-                # Fall back to HTTP if Python client fails (service not reachable)
-                pass
-        # Fallback to HTTP API
-        payload = json.dumps(
-            {
-                "model": self.model_id,
-                "prompt": prompt,
-                "format": "json",  # ask Ollama to enforce JSON output
-                "options": {"temperature": self.temperature, "num_predict": self.max_tokens},
-                "stream": False,
-            }
-        ).encode("utf-8")
-        req = urllib.request.Request("http://127.0.0.1:11434/api/generate", data=payload, headers={"Content-Type": "application/json"})
-        try:
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-                text = data.get("response", "")
-                if not text:
-                    raise ValueError("Empty response content from Ollama HTTP")
-                return text
-        except urllib.error.URLError as exc:  # pragma: no cover
-            raise RuntimeError(f"Ollama HTTP invocation failed: {exc}") from exc
 
     def _invoke_stub(self, prompt: str) -> str:
         """Stub responses for offline/testing."""
