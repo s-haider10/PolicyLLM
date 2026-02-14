@@ -12,11 +12,11 @@ try:
 except Exception:
     ray = None
 
-from src.config import Config
-from src.llm.client import LLMClient
-from src.regularize import router
-from src.passes import pass1_classify, pass2_components, pass3_entities, pass4_merge, pass5_metadata, pass6_validate
-from src.storage.writer import write_index, write_policies_jsonl
+from Extractor.src.config import Config
+from Extractor.src.llm.client import LLMClient
+from Extractor.src.regularize import router
+from Extractor.src.passes import pass1_classify, pass2_components, pass3_entities, pass4_merge, pass5_metadata, pass6_validate
+from Extractor.src.storage.writer import write_index, write_policies_jsonl
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -196,12 +196,13 @@ def _consensus_metadata(primary: Dict[str, Any], secondary: Dict[str, Any]) -> D
 def _dynamic_max_tokens(section: Dict[str, Any], default_max: int) -> int:
     """
     Estimate a tighter max_tokens per section based on length.
-    Approx tokens ~= len(text)/4; clamp to [64, 512] and never exceed configured max.
+    Approx tokens ~= len(text)/4; clamp to [64, default_max] respecting configured max.
     """
     paras = [p.get("text", "") if isinstance(p, dict) else str(p) for p in section.get("paragraphs", [])]
     text = "\n\n".join(paras)
     approx_tokens = max(1, len(text) // 4)
-    return min(default_max, 512, max(64, approx_tokens))
+    # Use configured default_max as ceiling, with minimum of 64
+    return min(default_max, max(64, approx_tokens * 4))  # Give 4x headroom for JSON structure
 
 
 def _ingest_stage5(stage5_input: str, output_dir: str, doc_id: str, batch_id: str) -> None:

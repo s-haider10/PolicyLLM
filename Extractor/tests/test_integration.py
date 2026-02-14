@@ -19,8 +19,10 @@ except Exception:
     pytest.skip("pydantic not installed", allow_module_level=True)
 
 # Avoid importing real LLM clients by stubbing pipeline.LLMClient
-import src.pipeline as pipeline
-from src.config import (
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
+from Extractor.src import pipeline
+from Extractor.src.config import (
     Config,
     LLMConfig,
     MergeConfig,

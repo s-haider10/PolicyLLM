@@ -5,7 +5,7 @@ from google.api_core.client_options import ClientOptions
 from google.cloud import documentai
 from google.auth.exceptions import DefaultCredentialsError
 
-from src.config import DocAIConfig
+from Extractor.src.config import DocAIConfig
 
 
 def _layout_text(layout: documentai.Document.Page.Layout, full_text: str) -> str:

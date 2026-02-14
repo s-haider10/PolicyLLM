@@ -5,8 +5,8 @@ import pathlib
 import re
 from typing import List
 
-from src.config import Config
-from src.schemas.canonical import CanonicalDocument, Page, Paragraph, Section, Span, Table, TextBlock
+from Extractor.src.config import Config
+from Extractor.src.schemas.canonical import CanonicalDocument, Page, Paragraph, Section, Span, Table, TextBlock
 from . import docx as docx_extract
 from . import html_md as html_md_extract
 from . import pdf_native as pdf_native_extract

@@ -1,7 +1,7 @@
 """CLI entrypoint for the policy extraction pipeline."""
 import argparse
-from src import pipeline
-from src.config import load_config
+from Extractor.src import pipeline
+from Extractor.src.config import load_config
 
 
 def main() -> None:
