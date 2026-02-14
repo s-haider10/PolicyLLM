@@ -3,13 +3,25 @@ from typing import Any, Dict
 
 from pydantic import BaseModel, Field
 
-CLASSIFY_PROMPT = """You are a policy extraction assistant. Given a section with heading and text, decide if it is policy-relevant (policy/procedure/guideline) or non-policy (intro/background/definitions/marketing/legal boilerplate). Respond in JSON:
+CLASSIFY_PROMPT = """You are a policy extraction assistant. Given a section with heading and text, decide if it is policy-relevant (policy/procedure/guideline) or non-policy (intro/background/definitions/marketing/legal boilerplate).
+
+IMPORTANT: Respond with ONLY valid JSON, no other text.
+
+Required JSON format:
 {
-  "is_policy": true/false,
-  "confidence": 0.0-1.0,
-  "reason": "one sentence"
+  "is_policy": true,
+  "confidence": 0.95,
+  "reason": "Contains actionable refund rules"
 }
-Use only the provided text. Be conservative: classify as policy only if it contains actionable rules, requirements, procedures, or constraints."""
+
+Fields:
+- is_policy: boolean (true if policy-relevant, false otherwise)
+- confidence: number between 0.0 and 1.0
+- reason: string (one sentence explanation)
+
+Use only the provided text. Be conservative: classify as policy only if it contains actionable rules, requirements, procedures, or constraints.
+
+Respond with ONLY the JSON object."""
 
 
 class ClassifyResponse(BaseModel):

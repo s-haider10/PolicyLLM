@@ -3,15 +3,56 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field
 
-COMPONENT_PROMPT = """You are a policy extraction assistant. Given a section with heading and text, extract structured fields per the schema. Respond in JSON only with keys: scope, conditions, actions, exceptions.
-Schema:
-- scope: { customer_segments:[], product_categories:[], channels:[], regions:[] } (use lowercase; if unspecified, use ["unknown"] rather than hallucinating)
-- conditions: list of { type, value, unit, operator, target, parameter, source_text }
-- actions: list of { type, action, requires:[], source_text }
-- exceptions: list of { description, source_text }
-Condition types: time_window | amount_threshold | customer_tier | product_category | geographic | boolean_flag | role_requirement | other
-Action types: required | prohibited | fallback | conditional | discovered_pattern | other
-If insufficient policy content, return empty lists/objects. Do not hallucinate beyond the provided text. Be conservative: prefer \"unknown\" or empty arrays to invented details."""
+COMPONENT_PROMPT = """You are a policy extraction assistant. Extract structured policy components as valid JSON.
+
+CRITICAL: Respond with ONLY valid JSON. Escape all quotes in text values using backslash.
+
+Example response format:
+{
+  "scope": {
+    "customer_segments": ["all"],
+    "product_categories": ["electronics"],
+    "channels": [],
+    "regions": []
+  },
+  "conditions": [
+    {
+      "type": "time_window",
+      "value": 14,
+      "unit": "days",
+      "operator": "<=",
+      "target": "purchase_date",
+      "parameter": "days_since_purchase",
+      "source_text": "purchased within 14 days"
+    }
+  ],
+  "actions": [
+    {
+      "type": "required",
+      "action": "full_refund",
+      "requires": ["receipt"],
+      "source_text": "eligible for a full refund"
+    }
+  ],
+  "exceptions": []
+}
+
+Field specifications:
+- scope: Object with arrays of strings (customer_segments, product_categories, channels, regions)
+- conditions: Array of objects with type, value, unit, operator, target, parameter, source_text
+  * Condition types: time_window, amount_threshold, customer_tier, product_category, geographic, boolean_flag, role_requirement, other
+- actions: Array of objects with type, action, requires (array), source_text
+  * Action types: required, prohibited, fallback, conditional, discovered_pattern, other
+- exceptions: Array of objects with description, source_text
+
+Rules:
+1. Use lowercase for all string values
+2. Escape quotes in text using backslash: \\"text\\"
+3. If a field is empty or unknown, use empty array [] or null
+4. Do not hallucinate - only extract what is explicitly stated
+5. Keep source_text concise (max 100 chars)
+
+Respond with ONLY the JSON object."""
 
 
 class ScopeModel(BaseModel):
