@@ -218,7 +218,6 @@ uv run python tests/test_validation_dag.py
 ## Documentation
 
 - [system_design.md](system_design.md) — Detailed architecture
-- [Extractor/overview/paper.tex](Extractor/overview/paper.tex) — ACL Industry Track paper
 
 ## Key Dependencies
 
