@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+*.cover
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Output artifacts
+out/
+audit/
+
+# Model files
+*.pth
+*.onnx
+*.gguf
+*.ckpt
+*.bin
+*.tar.gz
+
+# Extractor outputs
+*.jsonl
+*.idx
+sample_docs/expected_policies.jsonl
+sample_docs/expected_index.json
+
+# Google Cloud
+google-cloud-sdk/
+
+# Compiled bundles (regenerate from source)
+compiled_policy_bundle.json

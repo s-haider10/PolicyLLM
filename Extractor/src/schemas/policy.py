@@ -60,6 +60,7 @@ class PolicyMetadata(BaseModel):
     owner: Optional[str] = None
     effective_date: Optional[str] = None  # YYYY-MM-DD or raw string if uncertain
     domain: Optional[str] = None  # refund | privacy | escalation | security | hr | other
+    priority: Optional[str] = None  # regulatory | core_values | company | department | situational
     regulatory_linkage: List[str] = Field(default_factory=list)
     confidence: Optional[float] = Field(None, ge=0.0, le=1.0)
 
@@ -70,6 +71,13 @@ class PolicyProvenance(BaseModel):
     confidence_score: Optional[float] = Field(None, ge=0.0, le=1.0)
     source_spans: List[Span] = Field(default_factory=list)
     evidence_count: int = Field(1, ge=1)
+
+
+class DiscoveryInfo(BaseModel):
+    confidence: Optional[float] = None
+    support: Optional[int] = None
+    source_log: Optional[str] = None
+    human_validated: bool = False
 
 
 class Policy(BaseModel):
@@ -85,6 +93,7 @@ class Policy(BaseModel):
     entities: List[Entity] = Field(default_factory=list)
     metadata: PolicyMetadata
     provenance: PolicyProvenance
+    discovery: Optional[DiscoveryInfo] = None
     # Future enrichment stages
     formal: Optional[Dict[str, Union[str, list, dict]]] = None
     conflicts: Optional[List[Dict[str, Union[str, int, float, dict]]]] = None

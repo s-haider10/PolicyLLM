@@ -117,6 +117,20 @@ def run(policy: Dict[str, Any], doc_context: Dict[str, Any], llm_client: Any, re
     if not md.get("regulatory_linkage"):
         md["regulatory_linkage"] = dom_defaults.get("regulatory_linkage") or tenant_reg_link_default or []
 
+    # Priority inference
+    DOMAIN_PRIORITY_DEFAULTS = {
+        "privacy": "regulatory",
+        "security": "core_values",
+        "refund": "company",
+        "hr": "company",
+        "escalation": "department",
+        "other": "company",
+    }
+    if md.get("regulatory_linkage"):
+        md["priority"] = "regulatory"
+    else:
+        md["priority"] = DOMAIN_PRIORITY_DEFAULTS.get(domain_val, "company")
+
     policy["metadata"] = md
 
     # track metadata inference in provenance
