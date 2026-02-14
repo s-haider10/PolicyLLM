@@ -1,0 +1,70 @@
+{
+  "valid_paths": [
+    {
+      "id": "valid_1",
+      "query": "I want to return my laptop that I bought 10 days ago. I have my receipt.",
+      "expected": "PASS",
+      "reason": "Electronics with receipt within 14 days - valid DAG path to full refund"
+    },
+    {
+      "id": "valid_2",
+      "query": "Can I return my tablet? I purchased it 20 days ago and I have the receipt.",
+      "expected": "PASS",
+      "reason": "Electronics with receipt 15-30 days - valid DAG path to store credit"
+    },
+    {
+      "id": "valid_3",
+      "query": "I bought this phone exactly 14 days ago with receipt. Can I get a refund?",
+      "expected": "PASS",
+      "reason": "Edge case at 14-day boundary with receipt"
+    }
+  ],
+  "policy_violations": [
+    {
+      "id": "violation_1",
+      "query": "I want to return my laptop but I don't have the receipt anymore.",
+      "expected": "ESCALATE",
+      "reason": "No receipt violates policy rules"
+    },
+    {
+      "id": "violation_2",
+      "query": "Can I return my phone? I bought it 45 days ago with receipt.",
+      "expected": "ESCALATE",
+      "reason": "Beyond 30-day window, outside defined paths"
+    },
+    {
+      "id": "violation_3",
+      "query": "I want a refund for my laptop. My email is customer@example.com",
+      "expected": "ESCALATE",
+      "reason": "PII disclosure attempt - regex safety violation"
+    }
+  ],
+  "uncovered_paths": [
+    {
+      "id": "uncovered_1",
+      "query": "I need to return my desk that I bought 5 days ago with receipt.",
+      "expected": "ESCALATE",
+      "reason": "Furniture category not defined in DAG paths"
+    },
+    {
+      "id": "uncovered_2",
+      "query": "Can I return my shirt? I bought it last week with receipt.",
+      "expected": "ESCALATE",
+      "reason": "Clothing category not in electronics policy"
+    }
+  ],
+  "edge_cases": [
+    {
+      "id": "edge_1",
+      "query": "I have a product to return",
+      "expected": "ESCALATE",
+      "reason": "Ambiguous query missing critical facts"
+    },
+    {
+      "id": "edge_2",
+      "query": "I want to return my laptop and my phone, both with receipts, bought 10 days ago",
+      "expected": "PASS",
+      "reason": "Multiple products both satisfy valid paths"
+    }
+  ]
+}
