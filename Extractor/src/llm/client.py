@@ -245,10 +245,20 @@ class LLMClient:
             return json.loads(raw_text)
         except Exception:
             pass
+
         # Attempt to extract first JSON object or array
         match = re.search(r"(\{.*\}|\[.*\])", raw_text, flags=re.DOTALL)
         if match:
-            return json.loads(match.group(1))
+            json_str = match.group(1)
+            try:
+                return json.loads(json_str)
+            except json.JSONDecodeError as e:
+                # Enhanced error logging for debugging
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f"JSON decode error at position {e.pos}: {e.msg}")
+                logger.error(f"Full JSON (first 1000 chars):\n{json_str[:1000]}")
+                raise ValueError(f"Malformed JSON at char {e.pos}: {e.msg}. Check logs for full JSON.") from e
         raise ValueError(f"Unable to parse JSON from response: {raw_text[:200]}")
 
     @staticmethod
