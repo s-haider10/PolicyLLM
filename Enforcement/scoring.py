@@ -12,10 +12,10 @@ from .schemas import (
 )
 
 # Weights
-W_SMT = 0.55
-W_JUDGE = 0.25
-W_REGEX = 0.10
+W_SMT = 0.60
+W_JUDGE = 0.30
 W_COVERAGE = 0.10
+# Regex is now a Hard-Gate (Weight 0, but can trigger ESCALATE)
 
 # Thresholds
 THRESHOLD_PASS = 0.95
@@ -26,23 +26,28 @@ THRESHOLD_REGENERATE = 0.70
 def compute_compliance_score(report: PostGenReport) -> float:
     """Compute the weighted compliance score.
 
-    S = W_SMT * Z + W_JUDGE * L + W_REGEX * R + W_COVERAGE * C
+    S = W_SMT * Z + W_JUDGE * L + W_COVERAGE * C
+
+    Note: Regex is no longer weighted in the score but acts as a hard-gate.
     """
     return (
         W_SMT * report.smt_result.score
         + W_JUDGE * report.judge_result.score
-        + W_REGEX * report.regex_result.score
         + W_COVERAGE * report.coverage_result.score
     )
 
 
-def determine_action(score: float, regex_passed: bool) -> ComplianceAction:
-    """Determine enforcement action from score.
+def determine_action(score: float, report: PostGenReport) -> ComplianceAction:
+    """Determine enforcement action from score with Safety-First hard-gate.
 
-    Override: regex failure always escalates.
+    Regex failure triggers immediate escalation regardless of other metrics,
+    ensuring safety constraints cannot be overridden by high compliance scores.
     """
-    if not regex_passed:
+    # Safety hard-gate: regex failure always escalates
+    if not report.regex_result.passed:
         return ComplianceAction.ESCALATE
+
+    # Score-based thresholds for all other cases
     if score >= THRESHOLD_PASS:
         return ComplianceAction.PASS
     if score >= THRESHOLD_AUTO_CORRECT:
@@ -73,8 +78,20 @@ def compute_coverage(
         if readable in lower or node in lower:
             nodes_covered.append(node)
 
-    score = len(nodes_covered) / len(nodes_required)
-    return CoverageResult(score=score, nodes_required=nodes_required, nodes_covered=nodes_covered)
+    # Base coverage: fraction of nodes mentioned
+    base_score = len(nodes_covered) / len(nodes_required) if nodes_required else 1.0
+
+    # Penalty if not all required nodes covered (incomplete path)
+    if len(nodes_covered) < len(nodes_required):
+        score = base_score * 0.8  # 20% penalty for incomplete coverage
+    else:
+        score = base_score
+
+    return CoverageResult(
+        score=score,
+        nodes_required=nodes_required,
+        nodes_covered=nodes_covered
+    )
 
 
 def build_compliance_decision(
@@ -84,7 +101,7 @@ def build_compliance_decision(
 ) -> ComplianceDecision:
     """Full scoring pipeline: compute score, determine action, build decision."""
     score = compute_compliance_score(report)
-    action = determine_action(score, report.regex_result.passed)
+    action = determine_action(score, report)
 
     # Collect violations
     violations: List[str] = []
@@ -112,7 +129,7 @@ def build_compliance_decision(
             "coverage": report.coverage_result.score,
             "final": score,
         },
-        "weights": {"smt": W_SMT, "judge": W_JUDGE, "regex": W_REGEX, "coverage": W_COVERAGE},
+        "weights": {"smt": W_SMT, "judge": W_JUDGE, "coverage": W_COVERAGE, "regex_hard_gate": True},
     }
 
     return ComplianceDecision(

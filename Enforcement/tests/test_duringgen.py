@@ -1,5 +1,6 @@
 """Tests for duringgen.py — scaffold serialization and prompt injection."""
 import os
+import sys
 
 import pytest
 
@@ -32,8 +33,25 @@ def index(bundle_and_index):
 
 
 @pytest.fixture
-def refund_context(bundle, index):
-    return build_context("I want to return my laptop", bundle, index, session_id="test-dg")
+def llm_client():
+    """Real LLM client for classification tests using credentials from .env"""
+    sys.path.insert(0, ".")
+    from Extractor.src.llm.client import LLMClient
+
+    provider = os.getenv("LLM_PROVIDER", "chatgpt")
+    model = os.getenv("LLM_MODEL", "gpt-4o-mini")
+
+    return LLMClient(
+        provider=provider,
+        model_id=model,
+        temperature=0.0,
+        max_tokens=512,
+    )
+
+
+@pytest.fixture
+def refund_context(bundle, index, llm_client):
+    return build_context("I want to return my laptop", bundle, index, session_id="test-dg", llm_client=llm_client)
 
 
 # --- serialize_constraints ---

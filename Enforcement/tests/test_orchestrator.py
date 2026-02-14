@@ -26,7 +26,7 @@ def index(bundle_and_index):
 
 
 class StubLLM:
-    """Stub LLM client that returns canned responses."""
+    """Stub LLM client that returns canned responses and handles classification."""
 
     def __init__(self, response_text=None, json_response=None):
         self._response = response_text or ""
@@ -36,6 +36,28 @@ class StubLLM:
         return self._response
 
     def invoke_json(self, prompt, schema=None):
+        # Handle classification requests
+        if "Classify this user query" in str(prompt):
+            # Extract query part
+            prompt_str = str(prompt)
+            if "Query:" in prompt_str:
+                query_part = prompt_str.split("Query:")[-1].split("\n")[0].strip()
+                query_lower = query_part.lower()
+                # Check for refund-related keywords
+                if any(kw in query_lower for kw in ["refund", "return", "laptop", "receipt"]):
+                    return {
+                        "domain": "refund",
+                        "intent": "refund_request",
+                        "confidence": 0.9
+                    }
+            # Otherwise unknown domain
+            return {
+                "domain": "unknown",
+                "intent": "unknown",
+                "confidence": 0.0
+            }
+
+        # For other requests, use configured responses
         if self._json_response is not None:
             return self._json_response
         return self._response

@@ -13,10 +13,31 @@ FIXTURE_PATH = os.path.join(os.path.dirname(__file__), "fixtures", "test_bundle.
 
 
 class StubLLM:
+    """Stub LLM that returns valid classification based on query content."""
     def invoke(self, prompt, **kwargs):
         return ""
 
     def invoke_json(self, prompt, schema=None):
+        # Check if this is a classification request
+        if "Classify this user query" in str(prompt):
+            # Extract just the query part after "Query:"
+            prompt_str = str(prompt)
+            if "Query:" in prompt_str:
+                query_part = prompt_str.split("Query:")[-1].split("\n")[0].strip()
+                query_lower = query_part.lower()
+                # Check for refund-related keywords in the query only
+                if any(kw in query_lower for kw in ["refund", "return", "laptop", "receipt"]):
+                    return {
+                        "domain": "refund",
+                        "intent": "refund_request",
+                        "confidence": 0.9
+                    }
+            # Otherwise unknown domain
+            return {
+                "domain": "unknown",
+                "intent": "unknown",
+                "confidence": 0.0
+            }
         return ""
 
 
@@ -68,7 +89,8 @@ def no_judge_config():
 
 def test_e2e_clean_refund_pass(bundle, index, all_checks_config):
     response = (
-        "The customer has receipt for this electronics product. "
+        "Customer has receipt confirmed. "
+        "The product category is electronics. "
         "Days since purchase: 10. Per electronics_refund_v2 (source: refund_policy_2024.pdf, "
         "eff_date: 2024-01-01), you are eligible for a full refund."
     )

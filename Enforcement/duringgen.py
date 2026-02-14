@@ -35,10 +35,9 @@ def serialize_scaffold(
     decision_nodes: List[str],
     dominance_applied: List[DominanceRule],
 ) -> List[str]:
-    """Convert compiled paths into deterministic step-by-step scaffold instructions.
+    """Convert compiled paths into strict reasoning requirements.
 
-    Variables are processed in decision_nodes order. Within each variable,
-    paths are processed in policy_id alphabetical order.
+    mandatory reasoning steps that the model must follow before answering, enforcing instruction hierarchy.
     """
     if not paths:
         return []
@@ -55,7 +54,7 @@ def serialize_scaffold(
         if v not in ordered_vars:
             ordered_vars.append(v)
 
-    steps: List[str] = []
+    steps: List[str] = ["STRICT: FOLLOW THESE REASONING STEPS BEFORE ANSWERING:"]
     step_num = 1
     sorted_paths = sorted(paths, key=lambda p: p.policy_id)
 

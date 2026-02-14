@@ -1,5 +1,6 @@
 """Tests for scoring.py — compliance score computation and action routing."""
 import os
+import sys
 
 import pytest
 
@@ -19,7 +20,6 @@ from Enforcement.scoring import (
     THRESHOLD_REGENERATE,
     W_COVERAGE,
     W_JUDGE,
-    W_REGEX,
     W_SMT,
     build_compliance_decision,
     compute_compliance_score,
@@ -28,6 +28,24 @@ from Enforcement.scoring import (
 )
 
 FIXTURE_PATH = os.path.join(os.path.dirname(__file__), "fixtures", "test_bundle.json")
+
+
+@pytest.fixture
+def llm_client():
+    """Real LLM client for classification tests using credentials from .env"""
+    sys.path.insert(0, ".")
+    from Extractor.src.llm.client import LLMClient
+
+    # Use environment variables for provider and model
+    provider = os.getenv("LLM_PROVIDER", "chatgpt")
+    model = os.getenv("LLM_MODEL", "gpt-4o-mini")
+
+    return LLMClient(
+        provider=provider,
+        model_id=model,
+        temperature=0.0,
+        max_tokens=512,
+    )
 
 
 def _make_report(smt=1.0, judge=1.0, regex=1.0, coverage=1.0, regex_passed=True):
@@ -54,23 +72,26 @@ class TestComputeComplianceScore:
         assert abs(score) < 1e-6
 
     def test_weights_add_to_one(self):
-        assert abs(W_SMT + W_JUDGE + W_REGEX + W_COVERAGE - 1.0) < 1e-6
+        # Regex is now a hard-gate, not weighted
+        assert abs(W_SMT + W_JUDGE + W_COVERAGE - 1.0) < 1e-6
 
     def test_smt_dominant_weight(self):
-        """SMT has highest weight (0.55) — failing SMT alone should drop score significantly."""
+        """SMT has highest weight (0.60) — failing SMT alone should drop score significantly."""
         report = _make_report(smt=0.0, judge=1.0, regex=1.0, coverage=1.0)
         score = compute_compliance_score(report)
-        assert score < 0.5  # 0.45
+        assert score < 0.5  # 0.40 (0.30 judge + 0.10 coverage)
 
     def test_judge_weight(self):
         report = _make_report(smt=1.0, judge=0.0, regex=1.0, coverage=1.0)
         score = compute_compliance_score(report)
-        assert abs(score - 0.75) < 1e-6
+        # 0.60 (SMT) + 0.00 (judge) + 0.10 (coverage) = 0.70
+        assert abs(score - 0.70) < 1e-6
 
     def test_partial_scores(self):
         report = _make_report(smt=1.0, judge=0.8, regex=1.0, coverage=0.5)
         score = compute_compliance_score(report)
-        expected = W_SMT * 1.0 + W_JUDGE * 0.8 + W_REGEX * 1.0 + W_COVERAGE * 0.5
+        # Regex no longer contributes to weighted score
+        expected = W_SMT * 1.0 + W_JUDGE * 0.8 + W_COVERAGE * 0.5
         assert abs(score - expected) < 1e-6
 
 
@@ -79,34 +100,40 @@ class TestComputeComplianceScore:
 
 class TestDetermineAction:
     def test_pass_threshold(self):
-        assert determine_action(0.95, regex_passed=True) == ComplianceAction.PASS
-        assert determine_action(1.0, regex_passed=True) == ComplianceAction.PASS
+        report = _make_report(regex_passed=True)
+        assert determine_action(0.95, report) == ComplianceAction.PASS
+        assert determine_action(1.0, report) == ComplianceAction.PASS
 
     def test_auto_correct_threshold(self):
-        assert determine_action(0.90, regex_passed=True) == ComplianceAction.AUTO_CORRECT
-        assert determine_action(0.85, regex_passed=True) == ComplianceAction.AUTO_CORRECT
+        report = _make_report(regex_passed=True)
+        assert determine_action(0.90, report) == ComplianceAction.AUTO_CORRECT
+        assert determine_action(0.85, report) == ComplianceAction.AUTO_CORRECT
 
     def test_regenerate_threshold(self):
-        assert determine_action(0.75, regex_passed=True) == ComplianceAction.REGENERATE
-        assert determine_action(0.70, regex_passed=True) == ComplianceAction.REGENERATE
+        report = _make_report(regex_passed=True)
+        assert determine_action(0.75, report) == ComplianceAction.REGENERATE
+        assert determine_action(0.70, report) == ComplianceAction.REGENERATE
 
     def test_escalate_threshold(self):
-        assert determine_action(0.69, regex_passed=True) == ComplianceAction.ESCALATE
-        assert determine_action(0.0, regex_passed=True) == ComplianceAction.ESCALATE
+        report = _make_report(regex_passed=True)
+        assert determine_action(0.69, report) == ComplianceAction.ESCALATE
+        assert determine_action(0.0, report) == ComplianceAction.ESCALATE
 
     def test_regex_failure_overrides(self):
-        """Regex failure always escalates, regardless of score."""
-        assert determine_action(1.0, regex_passed=False) == ComplianceAction.ESCALATE
-        assert determine_action(0.99, regex_passed=False) == ComplianceAction.ESCALATE
+        """Regex failure always escalates, regardless of score (Safety Hard-Gate)."""
+        report_fail = _make_report(regex_passed=False)
+        assert determine_action(1.0, report_fail) == ComplianceAction.ESCALATE
+        assert determine_action(0.99, report_fail) == ComplianceAction.ESCALATE
 
     def test_boundary_values(self):
+        report = _make_report(regex_passed=True)
         # Exactly at threshold
-        assert determine_action(THRESHOLD_PASS, regex_passed=True) == ComplianceAction.PASS
-        assert determine_action(THRESHOLD_PASS - 0.001, regex_passed=True) == ComplianceAction.AUTO_CORRECT
-        assert determine_action(THRESHOLD_AUTO_CORRECT, regex_passed=True) == ComplianceAction.AUTO_CORRECT
-        assert determine_action(THRESHOLD_AUTO_CORRECT - 0.001, regex_passed=True) == ComplianceAction.REGENERATE
-        assert determine_action(THRESHOLD_REGENERATE, regex_passed=True) == ComplianceAction.REGENERATE
-        assert determine_action(THRESHOLD_REGENERATE - 0.001, regex_passed=True) == ComplianceAction.ESCALATE
+        assert determine_action(THRESHOLD_PASS, report) == ComplianceAction.PASS
+        assert determine_action(THRESHOLD_PASS - 0.001, report) == ComplianceAction.AUTO_CORRECT
+        assert determine_action(THRESHOLD_AUTO_CORRECT, report) == ComplianceAction.AUTO_CORRECT
+        assert determine_action(THRESHOLD_AUTO_CORRECT - 0.001, report) == ComplianceAction.REGENERATE
+        assert determine_action(THRESHOLD_REGENERATE, report) == ComplianceAction.REGENERATE
+        assert determine_action(THRESHOLD_REGENERATE - 0.001, report) == ComplianceAction.ESCALATE
 
 
 # --- compute_coverage ---
@@ -114,9 +141,9 @@ class TestDetermineAction:
 
 class TestComputeCoverage:
     @pytest.fixture
-    def refund_context(self):
+    def refund_context(self, llm_client):
         bundle, index = load_bundle(FIXTURE_PATH)
-        return build_context("I want to return my laptop", bundle, index, session_id="cov-test")
+        return build_context("I want to return my laptop", bundle, index, session_id="cov-test", llm_client=llm_client)
 
     def test_full_coverage(self, refund_context):
         response = (
@@ -147,9 +174,9 @@ class TestComputeCoverage:
 
 class TestBuildComplianceDecision:
     @pytest.fixture
-    def refund_context(self):
+    def refund_context(self, llm_client):
         bundle, index = load_bundle(FIXTURE_PATH)
-        return build_context("refund laptop", bundle, index, session_id="bcd-test")
+        return build_context("refund laptop", bundle, index, session_id="bcd-test", llm_client=llm_client)
 
     def test_pass_decision(self, refund_context):
         report = _make_report(1.0, 1.0, 1.0, 1.0)

@@ -1,5 +1,6 @@
 """Tests for pregen.py — query classification, rule retrieval, dominance resolution."""
 import os
+import sys
 
 import pytest
 
@@ -29,37 +30,54 @@ def index(bundle_and_index):
     return bundle_and_index[1]
 
 
+@pytest.fixture
+def llm_client():
+    """Real LLM client for classification tests using credentials from .env"""
+    sys.path.insert(0, ".")
+    from Extractor.src.llm.client import LLMClient
+
+    # Use environment variables for provider and model
+    provider = os.getenv("LLM_PROVIDER", "chatgpt")
+    model = os.getenv("LLM_MODEL", "gpt-4o-mini")
+
+    return LLMClient(
+        provider=provider,
+        model_id=model,
+        temperature=0.0,
+        max_tokens=512,
+    )
+
+
 # --- Query classification ---
 
 
 class TestClassifyQuery:
-    def test_refund_query(self, bundle):
-        domain, intent, conf = classify_query("I want to return my laptop", bundle)
+    def test_refund_query(self, bundle, llm_client):
+        domain, intent, conf = classify_query("I want to return my laptop", bundle, llm_client)
         assert domain == "refund"
 
-    def test_refund_keywords(self, bundle):
-        domain, intent, conf = classify_query("I want a refund for my receipt item", bundle)
+    def test_refund_keywords(self, bundle, llm_client):
+        domain, intent, conf = classify_query("I want a refund for my receipt item", bundle, llm_client)
         assert domain == "refund"
         assert conf > 0
 
-    def test_privacy_query(self, bundle):
-        domain, intent, conf = classify_query("What personal data do you store under GDPR?", bundle)
+    def test_privacy_query(self, bundle, llm_client):
+        domain, intent, conf = classify_query("What personal data do you store under GDPR?", bundle, llm_client)
         assert domain == "privacy"
 
-    def test_unknown_query(self, bundle):
-        domain, intent, conf = classify_query("How is the weather today?", bundle)
+    def test_unknown_query(self, bundle, llm_client):
+        domain, intent, conf = classify_query("How is the weather today?", bundle, llm_client)
         # Should either be "unknown" or a low-confidence match
         assert conf < 0.6 or domain == "unknown"
 
-    def test_intent_classification(self, bundle):
-        domain, intent, conf = classify_query("What is the policy on refund returns?", bundle)
+    def test_intent_classification(self, bundle, llm_client):
+        domain, intent, conf = classify_query("What is the policy on refund returns?", bundle, llm_client)
         assert intent in ("refund_request", "policy_inquiry", "unknown")
 
-    def test_no_llm_needed_for_clear_query(self, bundle):
-        """When keywords match well, no LLM should be needed."""
-        domain, intent, conf = classify_query("I want a refund for my exchange receipt", bundle)
+    def test_llm_only_classification(self, bundle, llm_client):
+        """LLM-only classification handles semantic understanding."""
+        domain, intent, conf = classify_query("I want a refund for my exchange receipt", bundle, llm_client)
         assert domain == "refund"
-        # Should get decent confidence from keywords alone
         assert conf > 0
 
 
@@ -142,20 +160,20 @@ class TestApplyDominance:
 
 
 class TestBuildContext:
-    def test_build_context_refund(self, bundle, index):
-        ctx = build_context("I want to return my laptop", bundle, index, session_id="test-001")
+    def test_build_context_refund(self, bundle, index, llm_client):
+        ctx = build_context("I want to return my laptop", bundle, index, session_id="test-001", llm_client=llm_client)
         assert ctx.session_id == "test-001"
         assert ctx.domain == "refund"
         assert len(ctx.applicable_rules) > 0
         assert ctx.timestamp
 
-    def test_build_context_unknown(self, bundle, index):
-        ctx = build_context("weather forecast", bundle, index, session_id="test-002")
+    def test_build_context_unknown(self, bundle, index, llm_client):
+        ctx = build_context("weather forecast", bundle, index, session_id="test-002", llm_client=llm_client)
         # Should still produce a valid context
         assert ctx.session_id == "test-002"
 
-    def test_build_context_escalation_contacts(self, bundle, index):
-        ctx = build_context("I want a refund for electronics", bundle, index)
+    def test_build_context_escalation_contacts(self, bundle, index, llm_client):
+        ctx = build_context("I want a refund for electronics", bundle, index, llm_client=llm_client)
         # Escalation entry references electronics_refund_v2 / electronics_refund_late_v2
         # At least one should be in applicable_rules
         rule_pids = {r.policy_id for r in ctx.applicable_rules}

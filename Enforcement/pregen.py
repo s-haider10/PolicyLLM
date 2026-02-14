@@ -14,22 +14,8 @@ from .schemas import (
 )
 
 # ---------------------------------------------------------------------------
-# Keyword dictionaries for classification
+# Removed keyword dictionaries - using LLM-only classification for semantic robustness
 # ---------------------------------------------------------------------------
-
-DOMAIN_KEYWORDS: Dict[str, List[str]] = {
-    "refund": ["refund", "return", "money back", "exchange", "receipt", "store credit", "reimburse"],
-    "privacy": ["pii", "personal data", "gdpr", "privacy", "disclose", "data protection", "confidential"],
-    "escalation": ["manager", "supervisor", "escalate", "complaint", "appeal", "higher authority"],
-    "security": ["password", "authentication", "breach", "encrypt", "access control", "firewall"],
-    "hr": ["employee", "leave", "payroll", "hiring", "termination", "benefits", "vacation"],
-}
-
-INTENT_KEYWORDS: Dict[str, List[str]] = {
-    "refund_request": ["want refund", "return item", "get my money", "return this", "send back"],
-    "policy_inquiry": ["what is the policy", "rules for", "am i allowed", "can i", "is it possible"],
-    "complaint": ["not happy", "unacceptable", "file complaint", "terrible", "disappointed"],
-}
 
 
 def classify_query(
@@ -39,70 +25,38 @@ def classify_query(
 ) -> Tuple[str, str, float]:
     """Classify a user query into (domain, intent, confidence).
 
-    Uses keyword matching first. Falls back to LLM if confidence is low
-    and an LLM client is available.
+    Uses LLM-only classification for semantic robustness against synonyms and paraphrasing.
     """
-    lower = query.lower()
-    tokens = set(lower.split())
-
-    # Score each domain
-    best_domain = "unknown"
-    best_domain_score = 0.0
-    for domain, keywords in DOMAIN_KEYWORDS.items():
-        matches = sum(1 for kw in keywords if kw in lower)
-        score = matches / len(keywords) if keywords else 0.0
-        if score > best_domain_score:
-            best_domain_score = score
-            best_domain = domain
-
-    # Also check against domains present in the bundle
     bundle_domains = {r.metadata.domain for r in bundle.conditional_rules}
-    if best_domain not in bundle_domains and best_domain != "unknown":
-        # Try to find a domain from the bundle that matches
-        for bd in bundle_domains:
-            if bd in lower:
-                best_domain = bd
-                best_domain_score = 0.6
-                break
 
-    # Score intents
-    best_intent = "unknown"
-    best_intent_score = 0.0
-    for intent, keywords in INTENT_KEYWORDS.items():
-        matches = sum(1 for kw in keywords if kw in lower)
-        score = matches / len(keywords) if keywords else 0.0
-        if score > best_intent_score:
-            best_intent_score = score
-            best_intent = intent
+    if llm_client is None:
+        return "unknown", "unknown", 0.0
 
-    confidence = max(best_domain_score, best_intent_score)
+    try:
+        from pydantic import BaseModel
 
-    # LLM fallback
-    if confidence < 0.6 and llm_client is not None:
-        try:
-            available_domains = list(bundle_domains)
-            prompt = (
-                f"Classify this user query into one of these domains: {available_domains}.\n"
-                f"Also classify the intent as one of: refund_request, policy_inquiry, complaint, other.\n"
-                f"Query: {query}\n"
-                f'Respond as JSON: {{"domain": "...", "intent": "...", "confidence": 0.0-1.0}}'
-            )
-            from pydantic import BaseModel
+        class ClassifyOut(BaseModel):
+            domain: str
+            intent: str
+            confidence: float
 
-            class ClassifyOut(BaseModel):
-                domain: str
-                intent: str
-                confidence: float
+        available_domains = list(bundle_domains)
+        prompt = (
+            f"Classify this user query into one of these domains: {available_domains}.\n"
+            f"Intents: refund_request, policy_inquiry, complaint, other.\n"
+            f"Query: {query}\n"
+            f'Return JSON: {{"domain": "...", "intent": "...", "confidence": 0.0-1.0}}\n'
+            f"Use semantic understanding to handle synonyms and paraphrasing."
+        )
 
-            result = llm_client.invoke_json(prompt, schema=ClassifyOut)
-            if result.get("confidence", 0) > confidence:
-                best_domain = result.get("domain", best_domain)
-                best_intent = result.get("intent", best_intent)
-                confidence = result.get("confidence", confidence)
-        except Exception:
-            pass
-
-    return best_domain, best_intent, confidence
+        result = llm_client.invoke_json(prompt, schema=ClassifyOut)
+        return (
+            result.get("domain", "unknown"),
+            result.get("intent", "unknown"),
+            result.get("confidence", 0.0)
+        )
+    except Exception:
+        return "unknown", "unknown", 0.0
 
 
 def retrieve_rules(

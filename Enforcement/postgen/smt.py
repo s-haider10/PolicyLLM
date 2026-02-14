@@ -21,20 +21,27 @@ def extract_facts_from_response(
     variables: Dict[str, VariableSchema],
     llm_client: Optional[Any] = None,
 ) -> Dict[str, Any]:
-    """Extract asserted facts from the LLM response via regex, with optional LLM fallback."""
+    """Hybrid fact extraction: symbolic regex first, neural LLM fallback.
+
+    Maintains neuro-symbolic separation per paper §3.6:
+    - Primary (Symbolic): Fast deterministic regex extraction
+    - Fallback (Neural): LLM only when regex coverage < 50%
+    """
     facts: Dict[str, Any] = {}
     lower = response_text.lower()
 
+    # SYMBOLIC: Regex-based extraction
     for var_name, vschema in variables.items():
         vtype = vschema.type
         var_readable = var_name.replace("_", " ")
 
         if vtype == "bool":
-            # Look for positive/negative assertions
+            # Positive assertions
             pos_patterns = [
                 rf"(?i)\b{var_readable}\b.*\b(?:true|yes|provided|has|confirmed|verified)\b",
                 rf"(?i)\b(?:has|have|with)\s+{var_readable}\b",
             ]
+            # Negative assertions
             neg_patterns = [
                 rf"(?i)\b{var_readable}\b.*\b(?:false|no|missing|without|not)\b",
                 rf"(?i)\bno\s+{var_readable}\b",
@@ -51,13 +58,13 @@ def extract_facts_from_response(
                         break
 
         elif vtype == "int":
-            # Look for numeric values near the variable name
+            # Numeric values near variable name
             pattern = rf"(?i)(?:{var_readable}|{var_name})\D*?(\d+)"
             m = re.search(pattern, response_text)
             if m:
                 facts[var_name] = int(m.group(1))
             else:
-                # Look for "N days" pattern
+                # "N days" pattern
                 m = re.search(r"(\d+)\s*(?:days?|day)", lower)
                 if m and "day" in var_name:
                     facts[var_name] = int(m.group(1))
@@ -71,7 +78,7 @@ def extract_facts_from_response(
                 except ValueError:
                     pass
             else:
-                # Look for dollar amounts
+                # Dollar amounts
                 m = re.search(r"\$\s*([\d,.]+)", response_text)
                 if m and "amount" in var_name:
                     try:
@@ -86,7 +93,7 @@ def extract_facts_from_response(
                         facts[var_name] = str(val)
                         break
 
-    # LLM fallback if regex found < 50% of variables
+    # NEURAL FALLBACK: LLM only if regex coverage < 50%
     if llm_client and len(facts) < len(variables) * 0.5:
         try:
             from pydantic import BaseModel
@@ -104,6 +111,7 @@ def extract_facts_from_response(
 
             result = llm_client.invoke_json(prompt, schema=FactsOut)
             llm_facts = result.get("facts", {})
+            # Merge LLM facts (only for variables not already found by regex)
             for k, v in llm_facts.items():
                 if k in variables and k not in facts:
                     facts[k] = v
@@ -163,8 +171,40 @@ def verify_facts_against_rules(
                     "violation_type": "constraint_breach",
                 })
 
+    # Path traversal verification
+    if paths:
+        path_satisfied = False
+        for path in paths:
+            solver = Solver()
+
+            # Add facts as constraints
+            for var_name, value in facts.items():
+                if var_name in z3vars:
+                    solver.add(z3vars[var_name] == value)
+
+            # Check if facts satisfy ALL steps in this path
+            path_matches = True
+            for step in path.path:
+                if step.var not in facts:
+                    path_matches = False
+                    break
+                for test in step.tests:
+                    solver.add(encode_test(z3vars[step.var], test))
+
+            if path_matches and solver.check() == sat:
+                path_satisfied = True
+                break
+
+        if not path_satisfied:
+            violations.append({
+                "policy_id": "path_coverage",
+                "violation_type": "uncovered_case",
+                "message": "Response facts do not match any defined decision graph path",
+            })
+
     passed = len(violations) == 0
-    return SMTResult(passed=passed, violations=violations, score=1.0 if passed else 0.0)
+    score = 1.0 if passed else (0.5 if any(v.get("violation_type") == "uncovered_case" for v in violations) else 0.0)
+    return SMTResult(passed=passed, violations=violations, score=score)
 
 
 def run_smt_check(
@@ -173,12 +213,12 @@ def run_smt_check(
     bundle: CompiledPolicyBundle,
     llm_client: Optional[Any] = None,
 ) -> SMTResult:
-    """Full SMT verification pipeline."""
+    """Full SMT verification pipeline with hybrid fact extraction."""
     facts = extract_facts_from_response(response_text, bundle.variables, llm_client)
 
     if not facts:
-        # Cannot verify anything — pass by default
-        return SMTResult(passed=True, violations=[], score=1.0)
+        # Penalize uncertainty when no facts can be extracted
+        return SMTResult(passed=True, violations=[], score=0.8)
 
     return verify_facts_against_rules(
         facts=facts,

@@ -1,5 +1,6 @@
 """Tests for postgen modules — regex, SMT, judge."""
 import os
+import sys
 
 import pytest
 
@@ -36,8 +37,32 @@ def index(bundle_and_index):
 
 
 @pytest.fixture
+def llm_client():
+    """Real LLM client for classification tests using credentials from .env"""
+    sys.path.insert(0, ".")
+    from Extractor.src.llm.client import LLMClient
+
+    provider = os.getenv("LLM_PROVIDER", "chatgpt")
+    model = os.getenv("LLM_MODEL", "gpt-4o-mini")
+
+    return LLMClient(
+        provider=provider,
+        model_id=model,
+        temperature=0.0,
+        max_tokens=512,
+    )
+
+
+@pytest.fixture
 def refund_context(bundle, index):
+    """Context without LLM - for tests that don't need classification."""
     return build_context("I want to return my laptop", bundle, index, session_id="test-pg")
+
+
+@pytest.fixture
+def refund_context_with_llm(bundle, index, llm_client):
+    """Context with LLM classification - for tests that need populated rules/paths."""
+    return build_context("I want to return my laptop", bundle, index, session_id="test-pg", llm_client=llm_client)
 
 
 # ==========================================================================
@@ -204,57 +229,96 @@ class TestSMT:
 
 
 class TestJudge:
-    def test_build_judge_prompt_has_sections(self, refund_context):
-        prompt = build_judge_prompt("Your refund is approved.", refund_context)
+    def test_build_judge_prompt_has_sections(self, refund_context_with_llm):
+        prompt = build_judge_prompt("Your refund is approved.", refund_context_with_llm)
         assert "POLICY RULES IN SCOPE" in prompt
         assert "CONSTRAINTS" in prompt
         assert "USER QUERY" in prompt
         assert "AI RESPONSE TO EVALUATE" in prompt
 
-    def test_build_judge_prompt_includes_rules(self, refund_context):
-        prompt = build_judge_prompt("test", refund_context)
+    def test_build_judge_prompt_includes_rules(self, refund_context_with_llm):
+        prompt = build_judge_prompt("test", refund_context_with_llm)
         # Should contain at least one policy ID
         assert any(
             r.policy_id in prompt
-            for r in refund_context.applicable_rules
+            for r in refund_context_with_llm.applicable_rules
         )
 
-    def test_judge_with_stub_llm_returns_fallback(self, refund_context):
+    def test_judge_with_stub_llm_returns_fallback(self, refund_context_with_llm):
         """When LLM fails, judge should return score=0.5."""
 
         class BrokenLLM:
             def invoke_json(self, prompt, schema=None):
                 raise RuntimeError("LLM unavailable")
 
-        result = run_judge_check("test response", refund_context, BrokenLLM())
+        result = run_judge_check("test response", refund_context_with_llm, BrokenLLM())
         assert result.score == 0.5
         assert "judge_llm_unavailable" in result.issues
 
-    def test_judge_with_mock_llm(self, refund_context):
+    def test_judge_with_mock_llm(self, refund_context_with_llm):
         """Judge with a mock LLM that returns a valid score."""
 
         class MockLLM:
             def invoke_json(self, prompt, schema=None):
                 return {"score": 0.9, "issues": [], "explanation": "Compliant response"}
 
-        result = run_judge_check("Your full refund has been approved.", refund_context, MockLLM())
+        result = run_judge_check("Your full refund has been approved.", refund_context_with_llm, MockLLM())
         assert result.score == 0.9
         assert result.issues == []
         assert result.explanation == "Compliant response"
 
-    def test_judge_clamps_score(self, refund_context):
+    def test_judge_clamps_score(self, refund_context_with_llm):
         """Scores outside 0-1 should be clamped."""
 
         class OverScoreLLM:
             def invoke_json(self, prompt, schema=None):
                 return {"score": 1.5, "issues": [], "explanation": ""}
 
-        result = run_judge_check("test", refund_context, OverScoreLLM())
+        result = run_judge_check("test", refund_context_with_llm, OverScoreLLM())
         assert result.score == 1.0
 
         class UnderScoreLLM:
             def invoke_json(self, prompt, schema=None):
                 return {"score": -0.5, "issues": [], "explanation": ""}
 
-        result = run_judge_check("test", refund_context, UnderScoreLLM())
+        result = run_judge_check("test", refund_context_with_llm, UnderScoreLLM())
         assert result.score == 0.0
+
+
+# ==========================================================================
+# Path Verification tests
+# ==========================================================================
+
+
+class TestSMTPathVerification:
+    """Test that SMT verification checks path traversal."""
+
+    def test_response_on_valid_path(self, refund_context_with_llm):
+        """Response that follows a valid DAG path should pass."""
+        response = (
+            "Customer has receipt and it is verified. "
+            "The product category is electronics. "
+            "Days since purchase is 10. "
+            "Full refund approved."
+        )
+        bundle, _ = load_bundle(FIXTURE_PATH)
+
+        result = run_smt_check(response, refund_context_with_llm, bundle)
+
+        # Should have high score because facts match a valid path
+        assert result.passed or result.score >= 0.8
+
+    def test_response_outside_paths(self, refund_context_with_llm):
+        """Response with facts not on any DAG path should score low."""
+        response = (
+            "Customer has receipt confirmed. "
+            "The product category is furniture. "  # Not in any path!
+            "Days since purchase is 10."
+        )
+        bundle, _ = load_bundle(FIXTURE_PATH)
+
+        result = run_smt_check(response, refund_context_with_llm, bundle)
+
+        # Should flag as uncovered case
+        assert not result.passed or result.score < 0.7
+        assert any("uncovered_case" in str(v) for v in result.violations)
