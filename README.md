@@ -40,6 +40,7 @@ uv pip install -r requirements.txt
 ```
 
 For local LLM (default):
+
 ```bash
 # Install Ollama: https://ollama.com/download
 ollama pull mistral
@@ -54,6 +55,14 @@ python main.py run policy_doc.pdf \
     --query "I want to return my laptop" \
     --provider ollama \
     --model mistral:latest
+```
+
+### For Evaluations
+
+```bash
+source .venv/bin/activate && python -m evals.run --suite evals/fixtures/refund_privacy_scenarios.json --provider stub --no-judge 2>&1 | tail -5
+
+source .venv/bin/activate && python -m evals.run --suite evals/fixtures/refund_privacy_scenarios.json --provider chatgpt --model gpt-4o-mini --output /tmp/chatgpt_eval_report_v3.json 2>&1
 ```
 
 ### Individual Stages
@@ -96,12 +105,12 @@ Enforcement uses a weighted compliance score:
 S = 0.55 * SMT + 0.25 * Judge + 0.10 * Regex + 0.10 * Coverage
 ```
 
-| Threshold | Action | Behavior |
-|-----------|--------|----------|
-| S >= 0.95 | PASS | Deliver response |
+| Threshold   | Action       | Behavior                         |
+| ----------- | ------------ | -------------------------------- |
+| S >= 0.95   | PASS         | Deliver response                 |
 | 0.85 - 0.95 | AUTO_CORRECT | Re-generate with violation hints |
-| 0.70 - 0.85 | REGENERATE | Tighten scaffold, re-generate |
-| S < 0.70 | ESCALATE | Block and notify policy owners |
+| 0.70 - 0.85 | REGENERATE   | Tighten scaffold, re-generate    |
+| S < 0.70    | ESCALATE     | Block and notify policy owners   |
 
 Regex failure (PII detected) always triggers ESCALATE regardless of score.
 
@@ -155,6 +164,7 @@ PolicyLLM/
 ## LLM Providers
 
 Configured via `--provider` flag:
+
 - `ollama` — Local Ollama (default, uses `mistral:latest`)
 - `bedrock_claude` — AWS Bedrock Claude
 - `chatgpt` — OpenAI GPT
