@@ -1,0 +1,10 @@
+{
+  "doc_id": "5a4a28a8e1f9441867893006f5b7f59a1c52ce88f234f7b2a8026c29ec71fc91",
+  "batch_id": "run",
+  "num_policies": 10,
+  "flagged_pct": 90.0,
+  "domains": {
+    "other": 9,
+    "hr": 1
+  }
+}
