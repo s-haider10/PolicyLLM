@@ -3,10 +3,13 @@
   "seed": 44,
   "num_documents": 20,
   "policies_per_doc": 4,
+  "model": "claude-opus-4-5-20251101",
+  "provider": "aws-bedrock",
+  "temperature": 0.3,
   "documents": [
     {
       "doc_id": "doc_001",
-      "path": "synthetic_data/stage3_implicit/documents/doc_001.md",
+      "path": "../stage3_implicit/documents/doc_001.md",
       "stage": 3,
       "policy_ids": [
         "POL-RETURNS-014",
@@ -18,7 +21,7 @@
     },
     {
       "doc_id": "doc_002",
-      "path": "synthetic_data/stage3_implicit/documents/doc_002.md",
+      "path": "../stage3_implicit/documents/doc_002.md",
       "stage": 3,
       "policy_ids": [
         "POL-PRIVACY-001",
@@ -30,7 +33,7 @@
     },
     {
       "doc_id": "doc_003",
-      "path": "synthetic_data/stage3_implicit/documents/doc_003.md",
+      "path": "../stage3_implicit/documents/doc_003.md",
       "stage": 3,
       "policy_ids": [
         "POL-REFUND-010",
@@ -42,7 +45,7 @@
     },
     {
       "doc_id": "doc_004",
-      "path": "synthetic_data/stage3_implicit/documents/doc_004.md",
+      "path": "../stage3_implicit/documents/doc_004.md",
       "stage": 3,
       "policy_ids": [
         "POL-REFUND-020",
@@ -54,7 +57,7 @@
     },
     {
       "doc_id": "doc_005",
-      "path": "synthetic_data/stage3_implicit/documents/doc_005.md",
+      "path": "../stage3_implicit/documents/doc_005.md",
       "stage": 3,
       "policy_ids": [
         "POL-PRIVACY-011",
@@ -66,7 +69,7 @@
     },
     {
       "doc_id": "doc_006",
-      "path": "synthetic_data/stage3_implicit/documents/doc_006.md",
+      "path": "../stage3_implicit/documents/doc_006.md",
       "stage": 3,
       "policy_ids": [
         "POL-PRIVACY-016",
@@ -78,7 +81,7 @@
     },
     {
       "doc_id": "doc_007",
-      "path": "synthetic_data/stage3_implicit/documents/doc_007.md",
+      "path": "../stage3_implicit/documents/doc_007.md",
       "stage": 3,
       "policy_ids": [
         "POL-SEC-002",
@@ -90,7 +93,7 @@
     },
     {
       "doc_id": "doc_008",
-      "path": "synthetic_data/stage3_implicit/documents/doc_008.md",
+      "path": "../stage3_implicit/documents/doc_008.md",
       "stage": 3,
       "policy_ids": [
         "POL-RETURNS-019",
@@ -102,7 +105,7 @@
     },
     {
       "doc_id": "doc_009",
-      "path": "synthetic_data/stage3_implicit/documents/doc_009.md",
+      "path": "../stage3_implicit/documents/doc_009.md",
       "stage": 3,
       "policy_ids": [
         "POL-SEC-012",
@@ -114,7 +117,7 @@
     },
     {
       "doc_id": "doc_010",
-      "path": "synthetic_data/stage3_implicit/documents/doc_010.md",
+      "path": "../stage3_implicit/documents/doc_010.md",
       "stage": 3,
       "policy_ids": [
         "POL-REFUND-020",
@@ -126,7 +129,7 @@
     },
     {
       "doc_id": "doc_011",
-      "path": "synthetic_data/stage3_implicit/documents/doc_011.md",
+      "path": "../stage3_implicit/documents/doc_011.md",
       "stage": 3,
       "policy_ids": [
         "POL-RETURNS-004",
@@ -138,7 +141,7 @@
     },
     {
       "doc_id": "doc_012",
-      "path": "synthetic_data/stage3_implicit/documents/doc_012.md",
+      "path": "../stage3_implicit/documents/doc_012.md",
       "stage": 3,
       "policy_ids": [
         "POL-RETURNS-014",
@@ -150,7 +153,7 @@
     },
     {
       "doc_id": "doc_013",
-      "path": "synthetic_data/stage3_implicit/documents/doc_013.md",
+      "path": "../stage3_implicit/documents/doc_013.md",
       "stage": 3,
       "policy_ids": [
         "POL-PRIVACY-001",
@@ -162,7 +165,7 @@
     },
     {
       "doc_id": "doc_014",
-      "path": "synthetic_data/stage3_implicit/documents/doc_014.md",
+      "path": "../stage3_implicit/documents/doc_014.md",
       "stage": 3,
       "policy_ids": [
         "POL-PRIVACY-006",
@@ -174,7 +177,7 @@
     },
     {
       "doc_id": "doc_015",
-      "path": "synthetic_data/stage3_implicit/documents/doc_015.md",
+      "path": "../stage3_implicit/documents/doc_015.md",
       "stage": 3,
       "policy_ids": [
         "POL-SEC-017",
@@ -186,7 +189,7 @@
     },
     {
       "doc_id": "doc_016",
-      "path": "synthetic_data/stage3_implicit/documents/doc_016.md",
+      "path": "../stage3_implicit/documents/doc_016.md",
       "stage": 3,
       "policy_ids": [
         "POL-SHIP-013",
@@ -198,7 +201,7 @@
     },
     {
       "doc_id": "doc_017",
-      "path": "synthetic_data/stage3_implicit/documents/doc_017.md",
+      "path": "../stage3_implicit/documents/doc_017.md",
       "stage": 3,
       "policy_ids": [
         "POL-REFUND-005",
@@ -210,7 +213,7 @@
     },
     {
       "doc_id": "doc_018",
-      "path": "synthetic_data/stage3_implicit/documents/doc_018.md",
+      "path": "../stage3_implicit/documents/doc_018.md",
       "stage": 3,
       "policy_ids": [
         "POL-SHIP-003",
@@ -222,7 +225,7 @@
     },
     {
       "doc_id": "doc_019",
-      "path": "synthetic_data/stage3_implicit/documents/doc_019.md",
+      "path": "../stage3_implicit/documents/doc_019.md",
       "stage": 3,
       "policy_ids": [
         "POL-SHIP-008",
@@ -234,7 +237,7 @@
     },
     {
       "doc_id": "doc_020",
-      "path": "synthetic_data/stage3_implicit/documents/doc_020.md",
+      "path": "../stage3_implicit/documents/doc_020.md",
       "stage": 3,
       "policy_ids": [
         "POL-REFUND-005",

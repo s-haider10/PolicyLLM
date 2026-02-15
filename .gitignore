@@ -54,3 +54,4 @@ google-cloud-sdk/
 
 # Compiled bundles (regenerate from source)
 compiled_policy_bundle.json
+bedrock_env/

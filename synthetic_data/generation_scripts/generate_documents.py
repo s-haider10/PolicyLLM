@@ -5,7 +5,7 @@ import random
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from ollama_client import OllamaClient
+from bedrock_client import BedrockClient
 
 
 def load_constitution(path: Path) -> List[dict]:
@@ -30,7 +30,7 @@ def explicit_render(policy: dict) -> str:
 def llm_render_policy(
     policy: dict,
     style: str,
-    client: Optional[OllamaClient],
+    client: Optional[BedrockClient],
     rng: random.Random,
     include_conflict: bool = False,
 ) -> str:
@@ -41,12 +41,44 @@ def llm_render_policy(
     if client is None:
         return base_text
 
-    prompt = (
-        "Rewrite the following policy content as one natural paragraph for an internal policy document. "
-        f"Style: {style}. Keep all factual constraints unchanged. Avoid markdown lists.\n\n"
-        f"CONTENT:\n{base_text}\n"
-    )
-    return client.generate(prompt)
+    # Clear, stage-specific instructions for the LLM
+    if style == "explicit":
+        instruction = (
+            "Rewrite the following policy as a clear, direct statement in one paragraph. "
+            "State all conditions and actions explicitly using formal policy language. "
+            "Keep all specific values and constraints exactly as given. "
+            "Output ONLY the rewritten policy text, nothing else.\n\n"
+            f"POLICY: {base_text}\n\n"
+            "REWRITTEN POLICY:"
+        )
+    elif style == "implicit":
+        instruction = (
+            "Rewrite the following policy as an implicit guideline using natural, conversational language. "
+            "Express it indirectly through historical practices using phrases like 'typically' or 'usually'. "
+            "Keep the same constraints but make them less obvious. "
+            "Output ONLY the rewritten policy text, nothing else.\n\n"
+            f"POLICY: {base_text}\n\n"
+            "REWRITTEN POLICY:"
+        )
+    elif style == "hybrid":
+        instruction = (
+            "Rewrite the following policy mixing explicit and implicit styles. "
+            "Combine formal statements with informal examples. "
+            "Keep all constraints present but vary the tone. "
+            "Output ONLY the rewritten policy text, nothing else.\n\n"
+            f"POLICY: {base_text}\n\n"
+            "REWRITTEN POLICY:"
+        )
+    else:
+        instruction = (
+            f"Rewrite the following policy in {style} style as one natural paragraph. "
+            "Keep all factual constraints unchanged. "
+            "Output ONLY the rewritten policy text, nothing else.\n\n"
+            f"POLICY: {base_text}\n\n"
+            "REWRITTEN POLICY:"
+        )
+    
+    return client.generate(instruction)
 
 
 def implicit_render(policy: dict, rng: random.Random) -> str:
@@ -90,7 +122,7 @@ def generate_stage_docs(
     rng: random.Random,
     out_dir: Path,
     conflict_rate: float,
-    llm_client: Optional[OllamaClient],
+    llm_client: Optional[BedrockClient],
 ) -> List[Dict]:
     docs_meta = []
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -137,7 +169,7 @@ def generate_stage4_docs(
     rng: random.Random,
     out_dir: Path,
     distribution: List[float],
-    llm_client: Optional[OllamaClient],
+    llm_client: Optional[BedrockClient],
 ) -> List[Dict]:
     labels = ["explicit", "conflict", "implicit", "hybrid"]
     docs_meta = []
@@ -197,16 +229,16 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--conflict-rate", type=float, default=0.35)
     parser.add_argument("--distribution", type=str, default="0.5,0.15,0.25,0.1")
-    parser.add_argument("--model", type=str, default="mistral:latest")
-    parser.add_argument("--ollama-host", type=str, default="http://127.0.0.1:11434")
     parser.add_argument("--temperature", type=float, default=0.3)
-    parser.add_argument("--no-llm", action="store_true", help="Disable Ollama calls and use deterministic templates")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
 
     rng = random.Random(args.seed)
     policies = load_constitution(args.constitution)
-    llm_client = None if args.no_llm else OllamaClient(model=args.model, host=args.ollama_host, temperature=args.temperature)
+    
+    # Initialize Claude via AWS Bedrock
+    print("Using Claude via AWS Bedrock API")
+    llm_client = BedrockClient(model_name="claude-opus-4-5-20251101")
 
     if args.stage in {1, 2, 3}:
         docs_meta = generate_stage_docs(
@@ -240,8 +272,9 @@ def main() -> None:
         "seed": args.seed,
         "num_documents": args.num_documents,
         "policies_per_doc": args.policies_per_doc,
-        "model": None if args.no_llm else args.model,
-        "ollama_host": None if args.no_llm else args.ollama_host,
+        "model": "claude-opus-4-5-20251101",
+        "provider": "aws-bedrock",
+        "temperature": args.temperature,
         "documents": docs_meta,
     }
     manifest_path = args.out.parent / "document_manifest.json"

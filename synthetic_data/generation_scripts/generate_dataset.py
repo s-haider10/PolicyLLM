@@ -3,11 +3,29 @@ import argparse
 import json
 import subprocess
 import sys
+import os
 from pathlib import Path
+
+# Load environment variables from .env if it exists
+try:
+    from dotenv import load_dotenv
+    env_file = Path(__file__).resolve().parent / ".env"
+    if env_file.exists():
+        load_dotenv(dotenv_path=env_file)
+except ImportError:
+    pass
 
 
 def run(cmd):
-    subprocess.run(cmd, check=True)
+    # Ensure PYTHONPATH includes current directory for local modules
+    # and pass through environment variables (including AWS credentials)
+    env = os.environ.copy()
+    scripts_dir = Path(__file__).resolve().parent
+    if "PYTHONPATH" in env:
+        env["PYTHONPATH"] = f"{scripts_dir}:{env['PYTHONPATH']}"
+    else:
+        env["PYTHONPATH"] = str(scripts_dir)
+    subprocess.run(cmd, check=True, env=env)
 
 
 def write_config(path: Path, payload: dict) -> None:
@@ -21,9 +39,6 @@ def main() -> None:
     parser.add_argument("--num-documents", type=int, default=20)
     parser.add_argument("--num-queries", type=int, default=50)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--model", type=str, default="mistral:latest")
-    parser.add_argument("--ollama-host", type=str, default="http://127.0.0.1:11434")
-    parser.add_argument("--no-llm", action="store_true", help="Disable Ollama calls and use deterministic templates")
     args = parser.parse_args()
 
     scripts = Path(__file__).resolve().parent
@@ -56,18 +71,14 @@ def main() -> None:
         if name != "stage1_explicit":
             (d / "ground_truth_constitution.json").write_text(constitution_src.read_text(encoding="utf-8"), encoding="utf-8")
 
-    # Stage 1-3 docs
-    llm_flags = ["--model", args.model, "--ollama-host", args.ollama_host]
-    if args.no_llm:
-        llm_flags = ["--no-llm"]
-
-    run([py, str(scripts / "generate_documents.py"), "--stage", "1", "--constitution", str(constitution_src), "--num-documents", str(args.num_documents), "--seed", str(args.seed), "--out", str(stage_dirs["stage1_explicit"] / "documents"), *llm_flags])
-    run([py, str(scripts / "generate_documents.py"), "--stage", "2", "--constitution", str(constitution_src), "--num-documents", str(args.num_documents), "--seed", str(args.seed + 1), "--out", str(stage_dirs["stage2_conflicts"] / "documents"), *llm_flags])
-    run([py, str(scripts / "generate_documents.py"), "--stage", "3", "--constitution", str(constitution_src), "--num-documents", str(args.num_documents), "--seed", str(args.seed + 2), "--out", str(stage_dirs["stage3_implicit"] / "documents"), *llm_flags])
+    # Stage 1-3 docs (using Claude via Bedrock - no flags needed)
+    run([py, str(scripts / "generate_documents.py"), "--stage", "1", "--constitution", str(constitution_src), "--num-documents", str(args.num_documents), "--seed", str(args.seed), "--out", str(stage_dirs["stage1_explicit"] / "documents")])
+    run([py, str(scripts / "generate_documents.py"), "--stage", "2", "--constitution", str(constitution_src), "--num-documents", str(args.num_documents), "--seed", str(args.seed + 1), "--out", str(stage_dirs["stage2_conflicts"] / "documents")])
+    run([py, str(scripts / "generate_documents.py"), "--stage", "3", "--constitution", str(constitution_src), "--num-documents", str(args.num_documents), "--seed", str(args.seed + 2), "--out", str(stage_dirs["stage3_implicit"] / "documents")])
 
     # Stage 4 baseline
     baseline_dist = "0.5,0.15,0.25,0.1"
-    run([py, str(scripts / "generate_documents.py"), "--stage", "4", "--constitution", str(constitution_src), "--num-documents", str(args.num_documents), "--seed", str(args.seed + 3), "--distribution", baseline_dist, "--out", str(stage_dirs["stage4_mixed"] / "documents"), *llm_flags])
+    run([py, str(scripts / "generate_documents.py"), "--stage", "4", "--constitution", str(constitution_src), "--num-documents", str(args.num_documents), "--seed", str(args.seed + 3), "--distribution", baseline_dist, "--out", str(stage_dirs["stage4_mixed"] / "documents")])
 
     # Stage 4 sensitivity mini-runs
     sensitivity = {
@@ -95,7 +106,6 @@ def main() -> None:
                 dist,
                 "--out",
                 str(run_dir / "documents"),
-                *llm_flags,
             ])
 
     # Queries for stage 4
@@ -110,7 +120,6 @@ def main() -> None:
         str(args.seed + 100),
         "--out",
         str(stage_dirs["stage4_mixed"] / "test_queries.json"),
-        *llm_flags,
     ])
 
     write_config(
@@ -119,8 +128,8 @@ def main() -> None:
             "seed_base": args.seed,
             "num_documents_per_run": args.num_documents,
             "num_seeds": 3,
-            "model": None if args.no_llm else args.model,
-            "ollama_host": None if args.no_llm else args.ollama_host,
+            "model": "claude-3-sonnet-20240229",
+            "provider": "aws-bedrock",
             "distributions": sensitivity,
         },
     )

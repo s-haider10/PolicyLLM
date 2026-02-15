@@ -3,10 +3,13 @@
   "seed": 43,
   "num_documents": 20,
   "policies_per_doc": 4,
+  "model": "claude-opus-4-5-20251101",
+  "provider": "aws-bedrock",
+  "temperature": 0.3,
   "documents": [
     {
       "doc_id": "doc_001",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_001.md",
+      "path": "../stage2_conflicts/documents/doc_001.md",
       "stage": 2,
       "policy_ids": [
         "POL-SEC-002",
@@ -17,13 +20,13 @@
       "conflicts": [
         {
           "policy_id": "POL-REFUND-005",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-REFUND-005."
+          "conflict_text": "Under Policy POL-REFUND-005, designated as company priority, agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within fourteen days (days_since_purchase <= 14); however, if physical damage is present (physical_damage == True), agents must deny the refund regardless of receipt status or purchase date. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), standard Policy POL-REFUND-005 behavior shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_002",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_002.md",
+      "path": "../stage2_conflicts/documents/doc_002.md",
       "stage": 2,
       "policy_ids": [
         "POL-REFUND-020",
@@ -35,7 +38,7 @@
     },
     {
       "doc_id": "doc_003",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_003.md",
+      "path": "../stage2_conflicts/documents/doc_003.md",
       "stage": 2,
       "policy_ids": [
         "POL-RETURNS-014",
@@ -46,13 +49,13 @@
       "conflicts": [
         {
           "policy_id": "POL-SEC-002",
-          "conflict_text": "Low-priority department exception: if refund_amount <= 400, override standard behavior for POL-SEC-002."
+          "conflict_text": "Policy POL-SEC-002 (department priority) mandates that agents must verify_identity when refund_amount >= 400; however, a low-priority department exception applies whereby if refund_amount <= 400, standard behavior for POL-SEC-002 shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_004",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_004.md",
+      "path": "../stage2_conflicts/documents/doc_004.md",
       "stage": 2,
       "policy_ids": [
         "POL-SEC-017",
@@ -64,7 +67,7 @@
     },
     {
       "doc_id": "doc_005",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_005.md",
+      "path": "../stage2_conflicts/documents/doc_005.md",
       "stage": 2,
       "policy_ids": [
         "POL-SEC-002",
@@ -75,13 +78,13 @@
       "conflicts": [
         {
           "policy_id": "POL-REFUND-020",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-REFUND-020."
+          "conflict_text": "Under Policy POL-REFUND-020 (regulatory priority), agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within seven days (days_since_purchase <= 7); however, if physical damage is present (physical_damage == True), agents must deny the refund regardless of receipt status or purchase date. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), standard Policy POL-REFUND-020 behavior shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_006",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_006.md",
+      "path": "../stage2_conflicts/documents/doc_006.md",
       "stage": 2,
       "policy_ids": [
         "POL-SEC-017",
@@ -93,7 +96,7 @@
     },
     {
       "doc_id": "doc_007",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_007.md",
+      "path": "../stage2_conflicts/documents/doc_007.md",
       "stage": 2,
       "policy_ids": [
         "POL-PRIVACY-011",
@@ -104,21 +107,21 @@
       "conflicts": [
         {
           "policy_id": "POL-PRIVACY-011",
-          "conflict_text": "Low-priority department exception: if contains_pii == False, override standard behavior for POL-PRIVACY-011."
+          "conflict_text": "Policy POL-PRIVACY-011 (situational priority) establishes that when contains_pii equals True, agents must execute disclose_pii; however, a low-priority department exception applies whereby when contains_pii equals False, standard behavior for POL-PRIVACY-011 shall be overridden."
         },
         {
           "policy_id": "POL-SEC-017",
-          "conflict_text": "Low-priority department exception: if refund_amount <= 400, override standard behavior for POL-SEC-017."
+          "conflict_text": "Policy POL-SEC-017 (company priority) mandates that agents must verify_identity when refund_amount >= 400; however, a low-priority department exception applies whereby if refund_amount <= 400, standard behavior for POL-SEC-017 shall be overridden."
         },
         {
           "policy_id": "POL-REFUND-015",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-REFUND-015."
+          "conflict_text": "Under Policy POL-REFUND-015 (situational priority), agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within 28 days (days_since_purchase <= 28); however, if physical damage is present (physical_damage == True), agents must deny the refund regardless of receipt status or purchase date. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), standard Policy POL-REFUND-015 behavior shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_008",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_008.md",
+      "path": "../stage2_conflicts/documents/doc_008.md",
       "stage": 2,
       "policy_ids": [
         "POL-RETURNS-009",
@@ -129,13 +132,13 @@
       "conflicts": [
         {
           "policy_id": "POL-PRIVACY-006",
-          "conflict_text": "Low-priority department exception: if contains_pii == False, override standard behavior for POL-PRIVACY-006."
+          "conflict_text": "Policy POL-PRIVACY-006 (department priority) establishes the following requirements: When contains_pii equals True, agents must execute disclose_pii; however, a low-priority department exception applies whereby when contains_pii equals False, standard behavior for POL-PRIVACY-006 shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_009",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_009.md",
+      "path": "../stage2_conflicts/documents/doc_009.md",
       "stage": 2,
       "policy_ids": [
         "POL-SEC-012",
@@ -146,17 +149,17 @@
       "conflicts": [
         {
           "policy_id": "POL-SEC-002",
-          "conflict_text": "Low-priority department exception: if refund_amount <= 400, override standard behavior for POL-SEC-002."
+          "conflict_text": "Policy POL-SEC-002 (department priority) establishes that agents must verify_identity when refund_amount >= 400; however, a low-priority department exception applies whereby if refund_amount <= 400, standard behavior for POL-SEC-002 shall be overridden."
         },
         {
           "policy_id": "POL-PRIVACY-016",
-          "conflict_text": "Low-priority department exception: if contains_pii == False, override standard behavior for POL-PRIVACY-016."
+          "conflict_text": "Policy POL-PRIVACY-016 (regulatory priority) states that if contains_pii equals True, agents must execute disclose_pii; however, a low-priority department exception applies whereby if contains_pii equals False, standard behavior for POL-PRIVACY-016 shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_010",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_010.md",
+      "path": "../stage2_conflicts/documents/doc_010.md",
       "stage": 2,
       "policy_ids": [
         "POL-SHIP-003",
@@ -167,13 +170,13 @@
       "conflicts": [
         {
           "policy_id": "POL-RETURNS-004",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-RETURNS-004."
+          "conflict_text": "Under Policy POL-RETURNS-004 (regulatory priority), agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within seven days (days_since_purchase <= 7); however, if physical damage is present (physical_damage == True), agents must deny the refund regardless of receipt status or purchase date. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), standard Policy POL-RETURNS-004 behavior shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_011",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_011.md",
+      "path": "../stage2_conflicts/documents/doc_011.md",
       "stage": 2,
       "policy_ids": [
         "POL-RETURNS-004",
@@ -184,13 +187,13 @@
       "conflicts": [
         {
           "policy_id": "POL-PRIVACY-001",
-          "conflict_text": "Low-priority department exception: if contains_pii == False, override standard behavior for POL-PRIVACY-001."
+          "conflict_text": "Policy POL-PRIVACY-001 (company priority) shall govern the handling of personally identifiable information as follows: When contains_pii equals True, agents must execute disclose_pii; however, a low-priority department exception applies whereby when contains_pii equals False, standard behavior for POL-PRIVACY-001 shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_012",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_012.md",
+      "path": "../stage2_conflicts/documents/doc_012.md",
       "stage": 2,
       "policy_ids": [
         "POL-SHIP-018",
@@ -202,7 +205,7 @@
     },
     {
       "doc_id": "doc_013",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_013.md",
+      "path": "../stage2_conflicts/documents/doc_013.md",
       "stage": 2,
       "policy_ids": [
         "POL-SHIP-003",
@@ -213,13 +216,13 @@
       "conflicts": [
         {
           "policy_id": "POL-SHIP-013",
-          "conflict_text": "Low-priority department exception: if item_in_stock == False, override standard behavior for POL-SHIP-013."
+          "conflict_text": "Policy POL-SHIP-013 (company priority) establishes that when item_in_stock == True, agents must ship_within_48h, except when severe_weather_alert == True, in which case allow_delay is permitted; furthermore, as a low-priority department exception, when item_in_stock == False, standard behavior for POL-SHIP-013 shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_014",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_014.md",
+      "path": "../stage2_conflicts/documents/doc_014.md",
       "stage": 2,
       "policy_ids": [
         "POL-PRIVACY-011",
@@ -230,17 +233,17 @@
       "conflicts": [
         {
           "policy_id": "POL-PRIVACY-011",
-          "conflict_text": "Low-priority department exception: if contains_pii == False, override standard behavior for POL-PRIVACY-011."
+          "conflict_text": "Policy POL-PRIVACY-011 (situational priority) establishes that when contains_pii equals True, agents must execute disclose_pii; however, a low-priority department exception applies whereby when contains_pii equals False, standard behavior for POL-PRIVACY-011 shall be overridden."
         },
         {
           "policy_id": "POL-SHIP-013",
-          "conflict_text": "Low-priority department exception: if item_in_stock == False, override standard behavior for POL-SHIP-013."
+          "conflict_text": "Policy POL-SHIP-013 (company priority) establishes that when item_in_stock == True, agents must ship_within_48h; however, if severe_weather_alert == True, then allow_delay is permitted as an exception to the standard shipping timeframe. As a low-priority department exception, when item_in_stock == False, standard behavior for POL-SHIP-013 shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_015",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_015.md",
+      "path": "../stage2_conflicts/documents/doc_015.md",
       "stage": 2,
       "policy_ids": [
         "POL-SEC-002",
@@ -251,13 +254,13 @@
       "conflicts": [
         {
           "policy_id": "POL-SEC-002",
-          "conflict_text": "Low-priority department exception: if refund_amount <= 400, override standard behavior for POL-SEC-002."
+          "conflict_text": "Policy POL-SEC-002 (department priority) mandates that agents must verify_identity when refund_amount >= 400; however, a low-priority department exception applies whereby if refund_amount <= 400, standard behavior for POL-SEC-002 shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_016",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_016.md",
+      "path": "../stage2_conflicts/documents/doc_016.md",
       "stage": 2,
       "policy_ids": [
         "POL-SHIP-013",
@@ -268,17 +271,17 @@
       "conflicts": [
         {
           "policy_id": "POL-SHIP-008",
-          "conflict_text": "Low-priority department exception: if item_in_stock == False, override standard behavior for POL-SHIP-008."
+          "conflict_text": "Policy POL-SHIP-008 (regulatory priority) stipulates that when item_in_stock == True, agents must ship_within_48h; however, if severe_weather_alert == True, then allow_delay is permitted as an exception to the standard shipping timeframe. Additionally, a low-priority department exception applies whereby if item_in_stock == False, standard behavior for POL-SHIP-008 shall be overridden."
         },
         {
           "policy_id": "POL-SEC-002",
-          "conflict_text": "Low-priority department exception: if refund_amount <= 400, override standard behavior for POL-SEC-002."
+          "conflict_text": "Policy POL-SEC-002 (department priority) mandates that agents must verify_identity when refund_amount >= 400; however, a low-priority department exception applies whereby if refund_amount <= 400, standard behavior for POL-SEC-002 shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_017",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_017.md",
+      "path": "../stage2_conflicts/documents/doc_017.md",
       "stage": 2,
       "policy_ids": [
         "POL-SEC-017",
@@ -289,17 +292,17 @@
       "conflicts": [
         {
           "policy_id": "POL-REFUND-020",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-REFUND-020."
+          "conflict_text": "Under Policy POL-REFUND-020 (regulatory priority), agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within seven days (days_since_purchase <= 7); however, if physical damage is present (physical_damage == True), agents must deny the refund regardless of receipt status or purchase date. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), standard Policy POL-REFUND-020 behavior shall be overridden."
         },
         {
           "policy_id": "POL-RETURNS-019",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-RETURNS-019."
+          "conflict_text": "Under Policy POL-RETURNS-019, when a customer has a receipt (has_receipt == True) and the purchase was made within 28 days (days_since_purchase <= 28), agents must offer a refund; however, if physical damage is present (physical_damage == True), agents must deny the refund. As a low-priority department exception, when a customer does not have a receipt (has_receipt == False), standard Policy POL-RETURNS-019 behavior shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_018",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_018.md",
+      "path": "../stage2_conflicts/documents/doc_018.md",
       "stage": 2,
       "policy_ids": [
         "POL-REFUND-005",
@@ -310,17 +313,17 @@
       "conflicts": [
         {
           "policy_id": "POL-SHIP-008",
-          "conflict_text": "Low-priority department exception: if item_in_stock == False, override standard behavior for POL-SHIP-008."
+          "conflict_text": "Policy POL-SHIP-008 (regulatory priority) states that when item_in_stock == True, agents must ship_within_48h; however, if severe_weather_alert == True, then allow_delay shall apply as an exception to the 48-hour shipping requirement. As a low-priority department exception, when item_in_stock == False, standard behavior for POL-SHIP-008 shall be overridden."
         },
         {
           "policy_id": "POL-RETURNS-004",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-RETURNS-004."
+          "conflict_text": "Under Policy POL-RETURNS-004 (regulatory priority), agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within seven days (days_since_purchase <= 7); however, if physical damage is present (physical_damage == True), agents must deny the refund regardless of receipt status or purchase date. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), standard Policy POL-RETURNS-004 behavior shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_019",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_019.md",
+      "path": "../stage2_conflicts/documents/doc_019.md",
       "stage": 2,
       "policy_ids": [
         "POL-RETURNS-014",
@@ -331,21 +334,21 @@
       "conflicts": [
         {
           "policy_id": "POL-RETURNS-004",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-RETURNS-004."
+          "conflict_text": "Under Policy POL-RETURNS-004 (regulatory priority), agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within seven days (days_since_purchase <= 7); however, if physical damage is present (physical_damage == True), agents must deny the refund. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), standard behavior for POL-RETURNS-004 shall be overridden."
         },
         {
           "policy_id": "POL-PRIVACY-001",
-          "conflict_text": "Low-priority department exception: if contains_pii == False, override standard behavior for POL-PRIVACY-001."
+          "conflict_text": "Under Policy POL-PRIVACY-001, designated as company priority, agents must disclose personally identifiable information (PII) when the condition contains_pii equals True. A low-priority department exception applies whereby if contains_pii equals False, standard behavior for Policy POL-PRIVACY-001 shall be overridden."
         },
         {
           "policy_id": "POL-PRIVACY-006",
-          "conflict_text": "Low-priority department exception: if contains_pii == False, override standard behavior for POL-PRIVACY-006."
+          "conflict_text": "Policy POL-PRIVACY-006 (department priority) establishes that when contains_pii == True, agents must disclose_pii; however, a low-priority department exception applies whereby when contains_pii == False, standard behavior for POL-PRIVACY-006 shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_020",
-      "path": "synthetic_data/stage2_conflicts/documents/doc_020.md",
+      "path": "../stage2_conflicts/documents/doc_020.md",
       "stage": 2,
       "policy_ids": [
         "POL-RETURNS-019",
@@ -356,11 +359,11 @@
       "conflicts": [
         {
           "policy_id": "POL-RETURNS-019",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-RETURNS-019."
+          "conflict_text": "Under Policy POL-RETURNS-019, designated as situational priority, agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within 28 days (days_since_purchase <= 28); however, if physical damage is present (physical_damage == True), agents must deny the refund regardless of receipt status or purchase date. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), standard behavior for Policy POL-RETURNS-019 shall be overridden."
         },
         {
           "policy_id": "POL-REFUND-005",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-REFUND-005."
+          "conflict_text": "Under Policy POL-REFUND-005, designated as company priority, agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within fourteen days (days_since_purchase <= 14); however, if physical damage is present (physical_damage == True), agents must deny the refund regardless of receipt status or purchase date. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), standard Policy POL-REFUND-005 behavior shall be overridden."
         }
       ]
     }

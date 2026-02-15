@@ -3,10 +3,13 @@
   "seed": 52,
   "num_documents": 20,
   "policies_per_doc": 4,
+  "model": "claude-opus-4-5-20251101",
+  "provider": "aws-bedrock",
+  "temperature": 0.3,
   "documents": [
     {
       "doc_id": "doc_001",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_001.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_001.md",
       "stage": 4,
       "profile": "hybrid",
       "policy_ids": [
@@ -18,87 +21,82 @@
       "conflicts": [
         {
           "policy_id": "POL-PRIVACY-016",
-          "conflict_text": "Low-priority department exception: if contains_pii == False, override standard behavior for POL-PRIVACY-016."
+          "conflict_text": "**Privacy Handling Policy (POL-PRIVACY-016)**"
+        },
+        {
+          "policy_id": "POL-SEC-012",
+          "conflict_text": "When handling security matters, you'll want to follow this general approach: after confirming the refund amount hits 400 or higher, wrap things up by running verify_identity. Think of it as the natural endpoint for these cases\u2014unless something unusual comes up that changes the game."
         }
       ]
     },
     {
       "doc_id": "doc_002",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_002.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_002.md",
       "stage": 4,
       "profile": "explicit",
       "policy_ids": [
-        "POL-SHIP-013",
-        "POL-REFUND-015",
         "POL-PRIVACY-001",
-        "POL-SHIP-008"
+        "POL-SHIP-008",
+        "POL-SHIP-003",
+        "POL-PRIVACY-006"
       ],
       "conflicts": []
     },
     {
       "doc_id": "doc_003",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_003.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_003.md",
       "stage": 4,
       "profile": "explicit",
       "policy_ids": [
-        "POL-PRIVACY-006",
-        "POL-PRIVACY-016",
         "POL-SHIP-008",
-        "POL-RETURNS-009"
+        "POL-RETURNS-009",
+        "POL-PRIVACY-016",
+        "POL-SHIP-018"
       ],
       "conflicts": []
     },
     {
       "doc_id": "doc_004",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_004.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_004.md",
       "stage": 4,
       "profile": "explicit",
       "policy_ids": [
-        "POL-PRIVACY-016",
-        "POL-RETURNS-014",
-        "POL-RETURNS-004",
-        "POL-SEC-002"
+        "POL-SEC-002",
+        "POL-SHIP-013",
+        "POL-SHIP-003",
+        "POL-RETURNS-019"
       ],
       "conflicts": []
     },
     {
       "doc_id": "doc_005",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_005.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_005.md",
       "stage": 4,
       "profile": "implicit",
       "policy_ids": [
-        "POL-SHIP-013",
-        "POL-SHIP-003",
-        "POL-REFUND-020",
-        "POL-SEC-012"
+        "POL-SEC-012",
+        "POL-SHIP-018",
+        "POL-REFUND-005",
+        "POL-RETURNS-019"
       ],
       "conflicts": []
     },
     {
       "doc_id": "doc_006",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_006.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_006.md",
       "stage": 4,
-      "profile": "conflict",
+      "profile": "implicit",
       "policy_ids": [
-        "POL-SEC-017",
-        "POL-PRIVACY-006",
         "POL-RETURNS-009",
-        "POL-SHIP-003"
+        "POL-SHIP-003",
+        "POL-PRIVACY-011",
+        "POL-PRIVACY-006"
       ],
-      "conflicts": [
-        {
-          "policy_id": "POL-SEC-017",
-          "conflict_text": "Low-priority department exception: if refund_amount <= 400, override standard behavior for POL-SEC-017."
-        },
-        {
-          "policy_id": "POL-RETURNS-009",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-RETURNS-009."
-        }
-      ]
+      "conflicts": []
     },
     {
       "doc_id": "doc_007",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_007.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_007.md",
       "stage": 4,
       "profile": "implicit",
       "policy_ids": [
@@ -111,7 +109,7 @@
     },
     {
       "doc_id": "doc_008",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_008.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_008.md",
       "stage": 4,
       "profile": "explicit",
       "policy_ids": [
@@ -124,7 +122,7 @@
     },
     {
       "doc_id": "doc_009",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_009.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_009.md",
       "stage": 4,
       "profile": "explicit",
       "policy_ids": [
@@ -137,7 +135,7 @@
     },
     {
       "doc_id": "doc_010",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_010.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_010.md",
       "stage": 4,
       "profile": "conflict",
       "policy_ids": [
@@ -149,13 +147,13 @@
       "conflicts": [
         {
           "policy_id": "POL-SHIP-018",
-          "conflict_text": "Low-priority department exception: if item_in_stock == False, override standard behavior for POL-SHIP-018."
+          "conflict_text": "Policy POL-SHIP-018 (department priority) stipulates that when item_in_stock == True, agents must ship_within_48h; however, if severe_weather_alert == True, then allow_delay is permitted as an exception to the standard shipping timeframe. As a low-priority department exception, when item_in_stock == False, standard behavior for POL-SHIP-018 shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_011",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_011.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_011.md",
       "stage": 4,
       "profile": "implicit",
       "policy_ids": [
@@ -168,7 +166,7 @@
     },
     {
       "doc_id": "doc_012",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_012.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_012.md",
       "stage": 4,
       "profile": "conflict",
       "policy_ids": [
@@ -180,17 +178,17 @@
       "conflicts": [
         {
           "policy_id": "POL-REFUND-005",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-REFUND-005."
+          "conflict_text": "Under Policy POL-REFUND-005, designated as company priority, agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within fourteen days (days_since_purchase <= 14); however, if physical damage is present (physical_damage == True), agents must deny the refund regardless of receipt status or purchase date. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), the standard behavior established by POL-REFUND-005 shall be overridden."
         },
         {
           "policy_id": "POL-SEC-002",
-          "conflict_text": "Low-priority department exception: if refund_amount <= 400, override standard behavior for POL-SEC-002."
+          "conflict_text": "Policy POL-SEC-002 (department priority) mandates that agents must verify_identity when refund_amount >= 400; however, a low-priority department exception applies whereby if refund_amount <= 400, standard behavior for POL-SEC-002 shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_013",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_013.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_013.md",
       "stage": 4,
       "profile": "explicit",
       "policy_ids": [
@@ -203,7 +201,7 @@
     },
     {
       "doc_id": "doc_014",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_014.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_014.md",
       "stage": 4,
       "profile": "conflict",
       "policy_ids": [
@@ -215,21 +213,21 @@
       "conflicts": [
         {
           "policy_id": "POL-REFUND-005",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-REFUND-005."
+          "conflict_text": "Under Policy POL-REFUND-005, designated as company priority, agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within fourteen days or fewer (days_since_purchase <= 14); however, if physical damage is present (physical_damage == True), agents must deny the refund regardless of receipt status or purchase date. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), standard Policy POL-REFUND-005 behavior shall be overridden."
         },
         {
           "policy_id": "POL-REFUND-010",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-REFUND-010."
+          "conflict_text": "Under Policy POL-REFUND-010, agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within 21 days (days_since_purchase <= 21); however, if physical damage is present (physical_damage == True), agents must deny the refund regardless of receipt status or purchase date. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), the standard behavior of this policy shall be overridden."
         },
         {
           "policy_id": "POL-REFUND-015",
-          "conflict_text": "Low-priority department exception: if has_receipt == False, override standard behavior for POL-REFUND-015."
+          "conflict_text": "Under Policy POL-REFUND-015, agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within 28 days (days_since_purchase <= 28); however, if physical damage is present (physical_damage == True), agents must deny the refund regardless of receipt status or purchase date. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), standard Policy POL-REFUND-015 behavior shall be overridden."
         }
       ]
     },
     {
       "doc_id": "doc_015",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_015.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_015.md",
       "stage": 4,
       "profile": "explicit",
       "policy_ids": [
@@ -242,7 +240,7 @@
     },
     {
       "doc_id": "doc_016",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_016.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_016.md",
       "stage": 4,
       "profile": "explicit",
       "policy_ids": [
@@ -255,7 +253,7 @@
     },
     {
       "doc_id": "doc_017",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_017.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_017.md",
       "stage": 4,
       "profile": "implicit",
       "policy_ids": [
@@ -268,7 +266,7 @@
     },
     {
       "doc_id": "doc_018",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_018.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_018.md",
       "stage": 4,
       "profile": "explicit",
       "policy_ids": [
@@ -281,7 +279,7 @@
     },
     {
       "doc_id": "doc_019",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_019.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_019.md",
       "stage": 4,
       "profile": "explicit",
       "policy_ids": [
@@ -294,7 +292,7 @@
     },
     {
       "doc_id": "doc_020",
-      "path": "synthetic_data/stage4_mixed/sensitivity/baseline/seed_52/documents/doc_020.md",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_52/documents/doc_020.md",
       "stage": 4,
       "profile": "explicit",
       "policy_ids": [
