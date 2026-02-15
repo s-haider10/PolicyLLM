@@ -1,6 +1,6 @@
 {
   "test_run": {
-    "timestamp": "2026-02-14T23:44:48.194727",
+    "timestamp": "2026-02-15T01:33:40.996144",
     "project": "PolicyLLM (ConstitutionCreator)",
     "pipeline": "Document \u2192 Extraction \u2192 Validation \u2192 Enforcement",
     "llm": {
@@ -11,28 +11,28 @@
   },
   "results": {
     "total": 4,
-    "successful": 4,
-    "failed": 0
+    "successful": 3,
+    "failed": 1
   },
   "test_cases": [
     {
       "document": "/scratch2/f004ndc/ConstitutionCreator/synthetic_data/stage1_explicit/documents/doc_001.md",
       "stage": "stage1_explicit",
-      "timestamp": "2026-02-14T23:33:44.125731",
+      "timestamp": "2026-02-15T01:23:51.893071",
       "status": "completed",
       "extraction": {
         "status": "success",
-        "policies_count": 1,
-        "policies_file": "/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/output/pipeline_tests/stage1_explicit/doc_001/extraction/b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3-stage1_explicit_doc_001_20260214_233344.jsonl"
+        "policies_count": 4,
+        "policies_file": "/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/output/pipeline_tests/stage1_explicit/doc_001/extraction/b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3-stage1_explicit_doc_001_20260215_012351.jsonl"
       },
       "validation": {
         "status": "success",
         "variables_count": 4,
-        "rules_count": 3,
+        "rules_count": 4,
         "decision_nodes": 4,
-        "compiled_paths": 3,
-        "conflicts_detected": 3,
-        "escalations": 3,
+        "compiled_paths": 4,
+        "conflicts_detected": 5,
+        "escalations": 5,
         "bundle_path": "/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/output/pipeline_tests/stage1_explicit/doc_001/validation/compiled_bundle.json"
       },
       "enforcement": {
@@ -44,21 +44,21 @@
     {
       "document": "/scratch2/f004ndc/ConstitutionCreator/synthetic_data/stage2_conflicts/documents/doc_001.md",
       "stage": "stage2_conflicts",
-      "timestamp": "2026-02-14T23:36:02.928153",
+      "timestamp": "2026-02-15T01:26:38.844567",
       "status": "completed",
       "extraction": {
         "status": "success",
-        "policies_count": 1,
-        "policies_file": "/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/output/pipeline_tests/stage2_conflicts/doc_001/extraction/d6054900790ae4d9edab6475066480e6d982c789a53499f47dd3e275a180f3d8-stage2_conflicts_doc_001_20260214_233602.jsonl"
+        "policies_count": 4,
+        "policies_file": "/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/output/pipeline_tests/stage2_conflicts/doc_001/extraction/d6054900790ae4d9edab6475066480e6d982c789a53499f47dd3e275a180f3d8-stage2_conflicts_doc_001_20260215_012638.jsonl"
       },
       "validation": {
         "status": "success",
-        "variables_count": 4,
-        "rules_count": 3,
-        "decision_nodes": 4,
-        "compiled_paths": 3,
-        "conflicts_detected": 0,
-        "escalations": 0,
+        "variables_count": 3,
+        "rules_count": 4,
+        "decision_nodes": 3,
+        "compiled_paths": 4,
+        "conflicts_detected": 3,
+        "escalations": 3,
         "bundle_path": "/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/output/pipeline_tests/stage2_conflicts/doc_001/validation/compiled_bundle.json"
       },
       "enforcement": {
@@ -70,47 +70,34 @@
     {
       "document": "/scratch2/f004ndc/ConstitutionCreator/synthetic_data/stage3_implicit/documents/doc_001.md",
       "stage": "stage3_implicit",
-      "timestamp": "2026-02-14T23:38:56.061009",
-      "status": "completed",
+      "timestamp": "2026-02-15T01:29:52.190568",
+      "status": "failed",
       "extraction": {
         "status": "success",
-        "policies_count": 0,
-        "policies_file": "/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/output/pipeline_tests/stage3_implicit/doc_001/extraction/f2410b341cf6e6867f8a016d53c5eb2ea9e504e07ad32ff9cc57716a4e71d4b5-stage3_implicit_doc_001_20260214_233856.jsonl"
+        "policies_count": 4,
+        "policies_file": "/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/output/pipeline_tests/stage3_implicit/doc_001/extraction/f2410b341cf6e6867f8a016d53c5eb2ea9e504e07ad32ff9cc57716a4e71d4b5-stage3_implicit_doc_001_20260215_012952.jsonl"
       },
-      "validation": {
-        "status": "success",
-        "variables_count": 0,
-        "rules_count": 0,
-        "decision_nodes": 0,
-        "compiled_paths": 0,
-        "conflicts_detected": 0,
-        "escalations": 0,
-        "bundle_path": "/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/output/pipeline_tests/stage3_implicit/doc_001/validation/compiled_bundle.json"
-      },
-      "enforcement": {
-        "status": "success",
-        "queries_tested": 3,
-        "results_file": "/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/output/pipeline_tests/stage3_implicit/doc_001/enforcement/results.json"
-      }
+      "error": "Unsupported operator: required",
+      "traceback": "Traceback (most recent call last):\n  File \"/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/test_full_pipeline.py\", line 123, in test_single_document\n    conflict_report = detect_conflicts(decision_graph, policy_ir)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/../Validation/conflict_detector.py\", line 33, in detect_conflicts\n    witness = solve_paths(p1[\"path\"], p2[\"path\"], schema)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/../Validation/z3_utils.py\", line 62, in solve_paths\n    encode_path(solver, path_a, z3vars)\n  File \"/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/../Validation/z3_utils.py\", line 45, in encode_path\n    solver.add(encode_test(z3vars[var], test))\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/../Validation/z3_utils.py\", line 37, in encode_test\n    raise ValueError(f\"Unsupported operator: {op}\")\nValueError: Unsupported operator: required\n"
     },
     {
       "document": "/scratch2/f004ndc/ConstitutionCreator/synthetic_data/stage4_mixed/documents/doc_001.md",
       "stage": "stage4_mixed",
-      "timestamp": "2026-02-14T23:41:54.110164",
+      "timestamp": "2026-02-15T01:30:46.129557",
       "status": "completed",
       "extraction": {
         "status": "success",
-        "policies_count": 1,
-        "policies_file": "/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/output/pipeline_tests/stage4_mixed/doc_001/extraction/66e45506969d547c922f1941a85bd52dad887b839d18b759c47ddd4d00c84c8b-stage4_mixed_doc_001_20260214_234154.jsonl"
+        "policies_count": 4,
+        "policies_file": "/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/output/pipeline_tests/stage4_mixed/doc_001/extraction/66e45506969d547c922f1941a85bd52dad887b839d18b759c47ddd4d00c84c8b-stage4_mixed_doc_001_20260215_013046.jsonl"
       },
       "validation": {
         "status": "success",
         "variables_count": 4,
-        "rules_count": 5,
+        "rules_count": 4,
         "decision_nodes": 4,
-        "compiled_paths": 5,
-        "conflicts_detected": 9,
-        "escalations": 9,
+        "compiled_paths": 4,
+        "conflicts_detected": 5,
+        "escalations": 5,
         "bundle_path": "/scratch2/f004ndc/ConstitutionCreator/synthetic_tests/output/pipeline_tests/stage4_mixed/doc_001/validation/compiled_bundle.json"
       },
       "enforcement": {

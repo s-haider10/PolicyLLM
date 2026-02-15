@@ -15,12 +15,12 @@
     "action": "ComplianceAction.ESCALATE",
     "score": 0.48,
     "violations": [
-      "Judge: AI response is completely empty/missing",
-      "Judge: No action taken or recommended",
-      "Judge: No verification of required conditions (receipt status, days since purchase)",
-      "Judge: No identity verification initiated as required by policy",
-      "Judge: No refund offer made as required by policy",
-      "Judge: Response does not address any required decision steps"
+      "Judge: AI response is completely empty - no response provided",
+      "Judge: Failed to address POL-REFUND-001 requirement for full identity verification (refund_amount >= 400)",
+      "Judge: Failed to inquire about receipt status as required by POL-REFUND-002/003/004",
+      "Judge: Failed to inquire about days since purchase to determine refund eligibility",
+      "Judge: No decision steps were completed",
+      "Judge: No guidance or action was provided to the user"
     ],
     "status": "success"
   },
@@ -31,12 +31,10 @@
     "action": "ComplianceAction.ESCALATE",
     "score": 0.48,
     "violations": [
-      "Judge: No AI response provided to evaluate",
-      "Judge: Cannot assess factual accuracy without response content",
-      "Judge: Cannot assess action compliance without response content",
-      "Judge: Cannot assess constraint adherence without response content",
-      "Judge: Cannot assess tone and implication without response content",
-      "Judge: Cannot assess completeness without response content"
+      "Judge: AI response is empty - no response provided to evaluate",
+      "Judge: Response does not address the user's query about returning a shirt",
+      "Judge: Response does not follow any required decision steps from the policy rules",
+      "Judge: No attempt to gather necessary information (receipt status, exact purchase date, refund amount)"
     ],
     "status": "success"
   }

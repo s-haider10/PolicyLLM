@@ -3,56 +3,57 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field
 
-COMPONENT_PROMPT = """You are a policy extraction assistant. Extract structured policy components as valid JSON.
+COMPONENT_PROMPT = """Extract structured policy components. Return ONLY valid JSON.
 
-CRITICAL: Respond with ONLY valid JSON. Escape all quotes in text values using backslash.
-
-Example response format:
+RESPONSE FORMAT (MUST be valid parseable JSON):
 {
-  "scope": {
-    "customer_segments": ["all"],
-    "product_categories": ["electronics"],
-    "channels": [],
-    "regions": []
-  },
-  "conditions": [
+  "policies": [
     {
-      "type": "time_window",
-      "value": 14,
-      "unit": "days",
-      "operator": "<=",
-      "target": "purchase_date",
-      "parameter": "days_since_purchase",
-      "source_text": "purchased within 14 days"
+      "policy_id": "POL-DOMAIN-001",
+      "domain": "refund",
+      "scope": {
+        "customer_segments": [],
+        "product_categories": [],
+        "channels": [],
+        "regions": []
+      },
+      "conditions": [
+        {
+          "type": "time_window",
+          "value": 21,
+          "unit": "days",
+          "operator": "<=",
+          "target": "purchase_date",
+          "parameter": "days_since_purchase",
+          "source_text": "short text only"
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "action": "offer_refund",
+          "requires": [],
+          "source_text": "short text"
+        }
+      ],
+      "exceptions": [
+        {
+          "description": "exception description",
+          "source_text": "short source"
+        }
+      ]
     }
-  ],
-  "actions": [
-    {
-      "type": "required",
-      "action": "full_refund",
-      "requires": ["receipt"],
-      "source_text": "eligible for a full refund"
-    }
-  ],
-  "exceptions": []
+  ]
 }
 
-Field specifications:
-- scope: Object with arrays of strings (customer_segments, product_categories, channels, regions)
-- conditions: Array of objects with type, value, unit, operator, target, parameter, source_text
-  * Condition types: time_window, amount_threshold, customer_tier, product_category, geographic, boolean_flag, role_requirement, other
-- actions: Array of objects with type, action, requires (array), source_text
-  * Action types: required, prohibited, fallback, conditional, discovered_pattern, other
-- exceptions: Array of objects with description, source_text
+RULES:
+1. EXTRACT MULTIPLE policies if they exist (different domains or conditions)
+2. For TEXT FIELDS: use SINGLE LINES only, NO newlines, NO quotes, NO special chars
+3. If text mentions "typically", "usually", "about", "generally" - extract as implicit rule
+4. source_text must fit on one line (max 100 chars), NO escaping needed
+5. domain: refund, privacy, shipping, security, data_retention, customer_service, or other
 
-Rules:
-1. Use lowercase for all string values
-2. Escape quotes in text using backslash: \\"text\\"
-3. If a field is empty or unknown, use empty array [] or null
-4. Do not hallucinate - only extract what is explicitly stated
-5. Keep source_text concise (max 100 chars)
-
-Respond with ONLY the JSON object."""
+Return ONLY the JSON object. No other text."""
 
 
 class ScopeModel(BaseModel):
@@ -80,15 +81,21 @@ class ActionModel(BaseModel):
 
 
 class ExceptionModel(BaseModel):
-    description: str
+    description: Optional[str] = None
     source_text: Optional[str] = None
 
 
-class ComponentsModel(BaseModel):
+class PolicyComponentModel(BaseModel):
+    policy_id: Optional[str] = None
+    domain: str = "other"
     scope: ScopeModel
     conditions: List[ConditionModel] = Field(default_factory=list)
     actions: List[ActionModel] = Field(default_factory=list)
     exceptions: List[ExceptionModel] = Field(default_factory=list)
+
+
+class ComponentsModel(BaseModel):
+    policies: List[PolicyComponentModel] = Field(default_factory=list)
 
 
 def _empty_scope() -> Dict[str, List[str]]:
@@ -101,6 +108,7 @@ def _empty_scope() -> Dict[str, List[str]]:
 
 
 def _normalize(result: Dict[str, Any]) -> Dict[str, Any]:
+    """Normalize a single policy component."""
     if "scope" not in result or not isinstance(result["scope"], dict):
         result["scope"] = _empty_scope()
     else:
@@ -109,13 +117,36 @@ def _normalize(result: Dict[str, Any]) -> Dict[str, Any]:
     for key in ["conditions", "actions", "exceptions"]:
         if key not in result or not isinstance(result[key], list):
             result[key] = []
+    # Ensure policy_id and domain exist
+    result.setdefault("policy_id", None)
+    result.setdefault("domain", "other")
     return result
 
 
-def run(section: Dict[str, Any], llm_client: Any) -> Dict[str, Any]:
+def run(section: Dict[str, Any], llm_client: Any) -> List[Dict[str, Any]]:
+    """Extract policy components. Returns LIST of policy component dicts."""
     heading = section.get("heading") or ""
     paras = [p.get("text", "") if isinstance(p, dict) else str(p) for p in section.get("paragraphs", [])]
     text = "\n\n".join(paras)
     prompt = f"{COMPONENT_PROMPT}\n\nHeading: {heading}\n\nText:\n{text}"
+    
     result = llm_client.invoke_json(prompt, schema=ComponentsModel)
-    return _normalize(result)
+    
+    # Result should be {"policies": [...]}
+    policies = result.get("policies", [])
+    
+    # If no policies extracted, return empty list (will be filtered out by pipeline)
+    if not policies:
+        return []
+    
+    # Normalize each policy
+    normalized_policies = []
+    for pol in policies:
+        # Convert Pydantic model to dict if needed
+        if hasattr(pol, "model_dump"):
+            pol = pol.model_dump()
+        elif hasattr(pol, "dict"):
+            pol = pol.dict()
+        normalized_policies.append(_normalize(pol))
+    
+    return normalized_policies

@@ -3,7 +3,7 @@
   "variables": {
     "contains_pii": {
       "type": "bool",
-      "description": "data contains personally identifiable information (contains_pii equals True)"
+      "description": "if data contains personally identifiable information (contains_pii equals True)"
     },
     "has_receipt": {
       "type": "bool",
@@ -15,7 +15,7 @@
     },
     "item_in_stock": {
       "type": "bool",
-      "description": "item is in stock (item_in_stock == True)"
+      "description": "When an item is in stock (item_in_stock == True)"
     }
   },
   "conditional_rules": [
@@ -26,31 +26,6 @@
           "var": "contains_pii",
           "op": "==",
           "value": true
-        },
-        {
-          "var": "has_receipt",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "days_since_purchase",
-          "op": "<=",
-          "value": 14
-        },
-        {
-          "var": "item_in_stock",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "has_receipt",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "days_since_purchase",
-          "op": "<=",
-          "value": 21
         }
       ],
       "action": {
@@ -69,13 +44,8 @@
       }
     },
     {
-      "policy_id": "POL-REFUND-001",
+      "policy_id": "POL-REFUND-002",
       "conditions": [
-        {
-          "var": "contains_pii",
-          "op": "==",
-          "value": true
-        },
         {
           "var": "has_receipt",
           "op": "==",
@@ -85,21 +55,6 @@
           "var": "days_since_purchase",
           "op": "<=",
           "value": 14
-        },
-        {
-          "var": "item_in_stock",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "has_receipt",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "days_since_purchase",
-          "op": "<=",
-          "value": 21
         }
       ],
       "action": {
@@ -118,37 +73,12 @@
       }
     },
     {
-      "policy_id": "POL-REFUND-001",
+      "policy_id": "POL-REFUND-003",
       "conditions": [
-        {
-          "var": "contains_pii",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "has_receipt",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "days_since_purchase",
-          "op": "<=",
-          "value": 14
-        },
         {
           "var": "item_in_stock",
           "op": "==",
           "value": true
-        },
-        {
-          "var": "has_receipt",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "days_since_purchase",
-          "op": "<=",
-          "value": 21
         }
       ],
       "action": {
@@ -167,77 +97,8 @@
       }
     },
     {
-      "policy_id": "POL-REFUND-001",
+      "policy_id": "POL-REFUND-004",
       "conditions": [
-        {
-          "var": "contains_pii",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "has_receipt",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "days_since_purchase",
-          "op": "<=",
-          "value": 14
-        },
-        {
-          "var": "item_in_stock",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "has_receipt",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "days_since_purchase",
-          "op": "<=",
-          "value": 21
-        }
-      ],
-      "action": {
-        "type": "delay_shipment",
-        "value": "conditional"
-      },
-      "metadata": {
-        "domain": "refund",
-        "priority": "regulatory",
-        "owner": "unknown",
-        "source": "66e45506969d547c922f1941a85bd52dad887b839d18b759c47ddd4d00c84c8b#sec1",
-        "eff_date": null,
-        "regulatory_linkage": [
-          "GDPR"
-        ]
-      }
-    },
-    {
-      "policy_id": "POL-REFUND-001",
-      "conditions": [
-        {
-          "var": "contains_pii",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "has_receipt",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "days_since_purchase",
-          "op": "<=",
-          "value": 14
-        },
-        {
-          "var": "item_in_stock",
-          "op": "==",
-          "value": true
-        },
         {
           "var": "has_receipt",
           "op": "==",
@@ -279,11 +140,11 @@
     },
     "contains_pii": {
       "type": "bool",
-      "description": "data contains personally identifiable information (contains_pii equals True)"
+      "description": "if data contains personally identifiable information (contains_pii equals True)"
     },
     "item_in_stock": {
       "type": "bool",
-      "description": "item is in stock (item_in_stock == True)"
+      "description": "When an item is in stock (item_in_stock == True)"
     },
     "days_since_purchase": {
       "type": "int",
@@ -291,7 +152,6 @@
     }
   },
   "leaf_actions": [
-    "delay_shipment:conditional",
     "disclose_pii:full",
     "offer_refund:full",
     "ship_within_48h:full"
@@ -301,46 +161,11 @@
       "policy_id": "POL-REFUND-001",
       "path": [
         {
-          "var": "has_receipt",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            },
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
           "var": "contains_pii",
           "tests": [
             {
               "op": "==",
               "value": true
-            }
-          ]
-        },
-        {
-          "var": "item_in_stock",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
-          "var": "days_since_purchase",
-          "tests": [
-            {
-              "op": "<=",
-              "value": 14
-            },
-            {
-              "op": "<=",
-              "value": 21
             }
           ]
         }
@@ -358,32 +183,10 @@
       }
     },
     {
-      "policy_id": "POL-REFUND-001",
+      "policy_id": "POL-REFUND-002",
       "path": [
         {
           "var": "has_receipt",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            },
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
-          "var": "contains_pii",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
-          "var": "item_in_stock",
           "tests": [
             {
               "op": "==",
@@ -397,10 +200,6 @@
             {
               "op": "<=",
               "value": 14
-            },
-            {
-              "op": "<=",
-              "value": 21
             }
           ]
         }
@@ -418,49 +217,14 @@
       }
     },
     {
-      "policy_id": "POL-REFUND-001",
+      "policy_id": "POL-REFUND-003",
       "path": [
-        {
-          "var": "has_receipt",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            },
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
-          "var": "contains_pii",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
         {
           "var": "item_in_stock",
           "tests": [
             {
               "op": "==",
               "value": true
-            }
-          ]
-        },
-        {
-          "var": "days_since_purchase",
-          "tests": [
-            {
-              "op": "<=",
-              "value": 14
-            },
-            {
-              "op": "<=",
-              "value": 21
             }
           ]
         }
@@ -478,32 +242,10 @@
       }
     },
     {
-      "policy_id": "POL-REFUND-001",
+      "policy_id": "POL-REFUND-004",
       "path": [
         {
           "var": "has_receipt",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            },
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
-          "var": "contains_pii",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
-          "var": "item_in_stock",
           "tests": [
             {
               "op": "==",
@@ -514,70 +256,6 @@
         {
           "var": "days_since_purchase",
           "tests": [
-            {
-              "op": "<=",
-              "value": 14
-            },
-            {
-              "op": "<=",
-              "value": 21
-            }
-          ]
-        }
-      ],
-      "leaf_action": "delay_shipment:conditional",
-      "metadata": {
-        "domain": "refund",
-        "priority": "regulatory",
-        "owner": "unknown",
-        "source": "66e45506969d547c922f1941a85bd52dad887b839d18b759c47ddd4d00c84c8b#sec1",
-        "eff_date": null,
-        "regulatory_linkage": [
-          "GDPR"
-        ]
-      }
-    },
-    {
-      "policy_id": "POL-REFUND-001",
-      "path": [
-        {
-          "var": "has_receipt",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            },
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
-          "var": "contains_pii",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
-          "var": "item_in_stock",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
-          "var": "days_since_purchase",
-          "tests": [
-            {
-              "op": "<=",
-              "value": 14
-            },
             {
               "op": "<=",
               "value": 21
@@ -604,7 +282,7 @@
       "conflict_type": "logical",
       "policies": [
         "POL-REFUND-001",
-        "POL-REFUND-001"
+        "POL-REFUND-002"
       ],
       "actions": [
         "disclose_pii:full",
@@ -618,8 +296,8 @@
         "witness": {
           "contains_pii": true,
           "has_receipt": true,
-          "days_since_purchase": 0,
-          "item_in_stock": true
+          "days_since_purchase": 14,
+          "item_in_stock": false
         }
       },
       "recommended_next_step": "human_review"
@@ -628,7 +306,7 @@
       "conflict_type": "logical",
       "policies": [
         "POL-REFUND-001",
-        "POL-REFUND-001"
+        "POL-REFUND-003"
       ],
       "actions": [
         "disclose_pii:full",
@@ -641,7 +319,7 @@
       "evidence": {
         "witness": {
           "contains_pii": true,
-          "has_receipt": true,
+          "has_receipt": false,
           "days_since_purchase": 0,
           "item_in_stock": true
         }
@@ -652,31 +330,7 @@
       "conflict_type": "logical",
       "policies": [
         "POL-REFUND-001",
-        "POL-REFUND-001"
-      ],
-      "actions": [
-        "disclose_pii:full",
-        "delay_shipment:conditional"
-      ],
-      "priority": "regulatory",
-      "owners_to_notify": [
-        "unknown"
-      ],
-      "evidence": {
-        "witness": {
-          "contains_pii": true,
-          "has_receipt": true,
-          "days_since_purchase": 0,
-          "item_in_stock": true
-        }
-      },
-      "recommended_next_step": "human_review"
-    },
-    {
-      "conflict_type": "logical",
-      "policies": [
-        "POL-REFUND-001",
-        "POL-REFUND-001"
+        "POL-REFUND-004"
       ],
       "actions": [
         "disclose_pii:full",
@@ -690,8 +344,8 @@
         "witness": {
           "contains_pii": true,
           "has_receipt": true,
-          "days_since_purchase": 0,
-          "item_in_stock": true
+          "days_since_purchase": 21,
+          "item_in_stock": false
         }
       },
       "recommended_next_step": "human_review"
@@ -699,8 +353,8 @@
     {
       "conflict_type": "logical",
       "policies": [
-        "POL-REFUND-001",
-        "POL-REFUND-001"
+        "POL-REFUND-002",
+        "POL-REFUND-003"
       ],
       "actions": [
         "offer_refund:full",
@@ -712,9 +366,9 @@
       ],
       "evidence": {
         "witness": {
-          "contains_pii": true,
+          "contains_pii": false,
           "has_receipt": true,
-          "days_since_purchase": 0,
+          "days_since_purchase": 14,
           "item_in_stock": true
         }
       },
@@ -723,56 +377,8 @@
     {
       "conflict_type": "logical",
       "policies": [
-        "POL-REFUND-001",
-        "POL-REFUND-001"
-      ],
-      "actions": [
-        "offer_refund:full",
-        "delay_shipment:conditional"
-      ],
-      "priority": "regulatory",
-      "owners_to_notify": [
-        "unknown"
-      ],
-      "evidence": {
-        "witness": {
-          "contains_pii": true,
-          "has_receipt": true,
-          "days_since_purchase": 0,
-          "item_in_stock": true
-        }
-      },
-      "recommended_next_step": "human_review"
-    },
-    {
-      "conflict_type": "logical",
-      "policies": [
-        "POL-REFUND-001",
-        "POL-REFUND-001"
-      ],
-      "actions": [
-        "ship_within_48h:full",
-        "delay_shipment:conditional"
-      ],
-      "priority": "regulatory",
-      "owners_to_notify": [
-        "unknown"
-      ],
-      "evidence": {
-        "witness": {
-          "contains_pii": true,
-          "has_receipt": true,
-          "days_since_purchase": 0,
-          "item_in_stock": true
-        }
-      },
-      "recommended_next_step": "human_review"
-    },
-    {
-      "conflict_type": "logical",
-      "policies": [
-        "POL-REFUND-001",
-        "POL-REFUND-001"
+        "POL-REFUND-003",
+        "POL-REFUND-004"
       ],
       "actions": [
         "ship_within_48h:full",
@@ -784,33 +390,9 @@
       ],
       "evidence": {
         "witness": {
-          "contains_pii": true,
+          "contains_pii": false,
           "has_receipt": true,
-          "days_since_purchase": 0,
-          "item_in_stock": true
-        }
-      },
-      "recommended_next_step": "human_review"
-    },
-    {
-      "conflict_type": "logical",
-      "policies": [
-        "POL-REFUND-001",
-        "POL-REFUND-001"
-      ],
-      "actions": [
-        "delay_shipment:conditional",
-        "offer_refund:full"
-      ],
-      "priority": "regulatory",
-      "owners_to_notify": [
-        "unknown"
-      ],
-      "evidence": {
-        "witness": {
-          "contains_pii": true,
-          "has_receipt": true,
-          "days_since_purchase": 0,
+          "days_since_purchase": 21,
           "item_in_stock": true
         }
       },
@@ -826,11 +408,11 @@
     "situational": 5
   },
   "bundle_metadata": {
-    "generated_on": "2026-02-15T04:42:23.017880",
+    "generated_on": "2026-02-15T06:31:49.513113",
     "generator": "PolicyLLM-BundleCompiler-v1",
-    "policy_count": 5,
-    "rule_count": 5,
+    "policy_count": 4,
+    "rule_count": 4,
     "constraint_count": 0,
-    "path_count": 5
+    "path_count": 4
   }
 }

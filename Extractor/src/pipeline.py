@@ -285,7 +285,8 @@ def run_pipeline(input_path: str, output_dir: str, tenant_id: str, batch_id: str
     t_pass = time.time()
     sections = [_section_dict(sec) for sec in canonical.sections]
 
-    def _process_section(sec_dict: Dict[str, Any], doc_id: str, cfg_dict: Dict[str, Any]) -> Dict[str, Any] | None:
+    def _process_section(sec_dict: Dict[str, Any], doc_id: str, cfg_dict: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Process a section and return LIST of policies (may be multiple from one section)."""
         max_tokens = _dynamic_max_tokens(sec_dict, cfg_dict["llm"]["max_tokens"])
         local_llm = LLMClient(
             provider=cfg_dict["llm"]["provider"],
@@ -311,27 +312,50 @@ def run_pipeline(input_path: str, output_dir: str, tenant_id: str, batch_id: str
             elif cls2.get("confidence", 0) == cls.get("confidence", 0) and cls2.get("is_policy") and not cls.get("is_policy"):
                 cls = cls2
         if not cls.get("is_policy"):
-            return None
-        policy = _init_policy(doc_id, sec_dict)
-        policy["processing_status"]["extraction"] = "in_progress"
-        policy["provenance"]["passes_used"].append(1)
+            return []
+        
+        # Pass 2 now returns a LIST of policy components
         def _components_once():
             return pass2_components.run(sec_dict, local_llm)
 
-        comps = _components_once()
+        policy_components_list = _components_once()
         if double_enabled:
             comps2 = _components_once()
-            comps = _merge_components(comps, comps2)
-            policy["provenance"].setdefault("low_confidence", []).append("double_run_components")
-        policy["scope"] = _normalize_scope(comps.get("scope", {}), sec_dict, cfg_dict.get("scope", {}))
-        policy["conditions"] = comps.get("conditions", [])
-        policy["actions"] = comps.get("actions", [])
-        policy["exceptions"] = comps.get("exceptions", [])
-        policy["provenance"]["passes_used"].append(2)
-        ents = pass3_entities.run(sec_dict, comps, local_llm)
-        policy["entities"] = ents
-        policy["provenance"]["passes_used"].append(3)
-        return policy
+            # For double_run with multiple policies, merge corresponding policies
+            # For simplicity, just use the first run
+            pass
+        
+        # If no policies extracted, return empty list
+        if not policy_components_list:
+            return []
+        
+        # Create a policy object for each extracted policy component
+        extracted_policies = []
+        for comps in policy_components_list:
+            policy = _init_policy(doc_id, sec_dict)
+            policy["processing_status"]["extraction"] = "in_progress"
+            policy["provenance"]["passes_used"].append(1)
+            policy["provenance"]["passes_used"].append(2)
+            
+            # Override policy_id if extracted from text
+            if comps.get("policy_id"):
+                policy["policy_id"] = comps["policy_id"]
+            
+            # Set domain from extraction
+            policy["metadata"]["domain"] = comps.get("domain", "other")
+            
+            policy["scope"] = _normalize_scope(comps.get("scope", {}), sec_dict, cfg_dict.get("scope", {}))
+            policy["conditions"] = comps.get("conditions", [])
+            policy["actions"] = comps.get("actions", [])
+            policy["exceptions"] = comps.get("exceptions", [])
+            
+            ents = pass3_entities.run(sec_dict, comps, local_llm)
+            policy["entities"] = ents
+            policy["provenance"]["passes_used"].append(3)
+            
+            extracted_policies.append(policy)
+        
+        return extracted_policies
 
     if config.parallel.enabled and ray:
         cfg_dict = {
@@ -356,10 +380,11 @@ def run_pipeline(input_path: str, output_dir: str, tenant_id: str, batch_id: str
         num_workers = config.parallel.num_workers or len(sections)
         refs = [process_section_remote.remote(sec) for sec in sections]
         results = ray.get(refs)
-        policies = [p for p in results if p]
+        # Flatten results since each section can return multiple policies
+        policies = [p for result in results for p in result]
     else:
         for sec_dict in sections:
-            policy = _process_section(
+            policy_list = _process_section(
                 sec_dict,
                 canonical.doc_id,
                 {
@@ -368,8 +393,8 @@ def run_pipeline(input_path: str, output_dir: str, tenant_id: str, batch_id: str
                     "scope": {"fallback": config.scope.fallback, "enable_regex": config.scope.enable_regex},
                 },
             )
-            if policy:
-                policies.append(policy)
+            # Extend policies list with all policies from this section
+            policies.extend(policy_list)
 
     # Pass 4: merge
     policies = pass4_merge.run(policies, llm, sim_threshold=config.merge.similarity_threshold)

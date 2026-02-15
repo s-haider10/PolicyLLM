@@ -11,7 +11,7 @@
     },
     "contains_pii": {
       "type": "bool",
-      "description": "contains personally identifiable information (contains_pii equals True)"
+      "description": "data or information contains personally identifiable information (contains_pii equals True)"
     },
     "item_in_stock": {
       "type": "bool",
@@ -31,21 +31,6 @@
           "var": "days_since_purchase",
           "op": "<=",
           "value": 7
-        },
-        {
-          "var": "contains_pii",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "days_since_purchase",
-          "op": "<=",
-          "value": 14
-        },
-        {
-          "var": "item_in_stock",
-          "op": "==",
-          "value": true
         }
       ],
       "action": {
@@ -62,30 +47,10 @@
       }
     },
     {
-      "policy_id": "POL-OTHER-001",
+      "policy_id": "POL-OTHER-002",
       "conditions": [
         {
-          "var": "has_receipt",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "days_since_purchase",
-          "op": "<=",
-          "value": 7
-        },
-        {
           "var": "contains_pii",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "days_since_purchase",
-          "op": "<=",
-          "value": 14
-        },
-        {
-          "var": "item_in_stock",
           "op": "==",
           "value": true
         }
@@ -104,7 +69,7 @@
       }
     },
     {
-      "policy_id": "POL-OTHER-001",
+      "policy_id": "POL-OTHER-003",
       "conditions": [
         {
           "var": "has_receipt",
@@ -114,18 +79,25 @@
         {
           "var": "days_since_purchase",
           "op": "<=",
-          "value": 7
-        },
-        {
-          "var": "contains_pii",
-          "op": "==",
-          "value": true
-        },
-        {
-          "var": "days_since_purchase",
-          "op": "<=",
           "value": 14
-        },
+        }
+      ],
+      "action": {
+        "type": "offer_refund",
+        "value": "full"
+      },
+      "metadata": {
+        "domain": "other",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    },
+    {
+      "policy_id": "POL-OTHER-004",
+      "conditions": [
         {
           "var": "item_in_stock",
           "op": "==",
@@ -146,35 +118,21 @@
       }
     }
   ],
-  "constraints": [
-    {
-      "policy_id": "C_POL-OTHER-001_deny_refund",
-      "constraint": "NOT(deny_refund)",
-      "scope": "always",
-      "metadata": {
-        "domain": "other",
-        "priority": "company",
-        "owner": "unknown",
-        "source": "b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3#sec1",
-        "eff_date": null,
-        "regulatory_linkage": []
-      }
-    }
-  ],
+  "constraints": [],
   "decision_nodes": [
-    "contains_pii",
     "has_receipt",
+    "contains_pii",
     "item_in_stock",
     "days_since_purchase"
   ],
   "node_schema": {
-    "contains_pii": {
-      "type": "bool",
-      "description": "contains personally identifiable information (contains_pii equals True)"
-    },
     "has_receipt": {
       "type": "bool",
       "description": "customer has a receipt (has_receipt == True)"
+    },
+    "contains_pii": {
+      "type": "bool",
+      "description": "data or information contains personally identifiable information (contains_pii equals True)"
     },
     "item_in_stock": {
       "type": "bool",
@@ -195,25 +153,7 @@
       "policy_id": "POL-OTHER-001",
       "path": [
         {
-          "var": "contains_pii",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
           "var": "has_receipt",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
-          "var": "item_in_stock",
           "tests": [
             {
               "op": "==",
@@ -227,7 +167,58 @@
             {
               "op": "<=",
               "value": 7
-            },
+            }
+          ]
+        }
+      ],
+      "leaf_action": "offer_refund:full",
+      "metadata": {
+        "domain": "other",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    },
+    {
+      "policy_id": "POL-OTHER-002",
+      "path": [
+        {
+          "var": "contains_pii",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "leaf_action": "disclose_pii:full",
+      "metadata": {
+        "domain": "other",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    },
+    {
+      "policy_id": "POL-OTHER-003",
+      "path": [
+        {
+          "var": "has_receipt",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            }
+          ]
+        },
+        {
+          "var": "days_since_purchase",
+          "tests": [
             {
               "op": "<=",
               "value": 14
@@ -246,99 +237,14 @@
       }
     },
     {
-      "policy_id": "POL-OTHER-001",
+      "policy_id": "POL-OTHER-004",
       "path": [
-        {
-          "var": "contains_pii",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
-          "var": "has_receipt",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
         {
           "var": "item_in_stock",
           "tests": [
             {
               "op": "==",
               "value": true
-            }
-          ]
-        },
-        {
-          "var": "days_since_purchase",
-          "tests": [
-            {
-              "op": "<=",
-              "value": 7
-            },
-            {
-              "op": "<=",
-              "value": 14
-            }
-          ]
-        }
-      ],
-      "leaf_action": "disclose_pii:full",
-      "metadata": {
-        "domain": "other",
-        "priority": "company",
-        "owner": "unknown",
-        "source": "b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3#sec1",
-        "eff_date": null,
-        "regulatory_linkage": []
-      }
-    },
-    {
-      "policy_id": "POL-OTHER-001",
-      "path": [
-        {
-          "var": "contains_pii",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
-          "var": "has_receipt",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
-          "var": "item_in_stock",
-          "tests": [
-            {
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        {
-          "var": "days_since_purchase",
-          "tests": [
-            {
-              "op": "<=",
-              "value": 7
-            },
-            {
-              "op": "<=",
-              "value": 14
             }
           ]
         }
@@ -360,7 +266,7 @@
       "conflict_type": "logical",
       "policies": [
         "POL-OTHER-001",
-        "POL-OTHER-001"
+        "POL-OTHER-002"
       ],
       "actions": [
         "offer_refund:full",
@@ -373,9 +279,9 @@
       "evidence": {
         "witness": {
           "has_receipt": true,
-          "days_since_purchase": 0,
+          "days_since_purchase": 7,
           "contains_pii": true,
-          "item_in_stock": true
+          "item_in_stock": false
         }
       },
       "recommended_next_step": "human_review"
@@ -384,7 +290,7 @@
       "conflict_type": "logical",
       "policies": [
         "POL-OTHER-001",
-        "POL-OTHER-001"
+        "POL-OTHER-004"
       ],
       "actions": [
         "offer_refund:full",
@@ -397,8 +303,8 @@
       "evidence": {
         "witness": {
           "has_receipt": true,
-          "days_since_purchase": 0,
-          "contains_pii": true,
+          "days_since_purchase": 7,
+          "contains_pii": false,
           "item_in_stock": true
         }
       },
@@ -407,8 +313,32 @@
     {
       "conflict_type": "logical",
       "policies": [
-        "POL-OTHER-001",
-        "POL-OTHER-001"
+        "POL-OTHER-002",
+        "POL-OTHER-003"
+      ],
+      "actions": [
+        "disclose_pii:full",
+        "offer_refund:full"
+      ],
+      "priority": "company",
+      "owners_to_notify": [
+        "unknown"
+      ],
+      "evidence": {
+        "witness": {
+          "has_receipt": true,
+          "days_since_purchase": 14,
+          "contains_pii": true,
+          "item_in_stock": false
+        }
+      },
+      "recommended_next_step": "human_review"
+    },
+    {
+      "conflict_type": "logical",
+      "policies": [
+        "POL-OTHER-002",
+        "POL-OTHER-004"
       ],
       "actions": [
         "disclose_pii:full",
@@ -420,9 +350,33 @@
       ],
       "evidence": {
         "witness": {
-          "has_receipt": true,
+          "has_receipt": false,
           "days_since_purchase": 0,
           "contains_pii": true,
+          "item_in_stock": true
+        }
+      },
+      "recommended_next_step": "human_review"
+    },
+    {
+      "conflict_type": "logical",
+      "policies": [
+        "POL-OTHER-003",
+        "POL-OTHER-004"
+      ],
+      "actions": [
+        "offer_refund:full",
+        "ship_within_48_hours:full"
+      ],
+      "priority": "company",
+      "owners_to_notify": [
+        "unknown"
+      ],
+      "evidence": {
+        "witness": {
+          "has_receipt": true,
+          "days_since_purchase": 14,
+          "contains_pii": false,
           "item_in_stock": true
         }
       },
@@ -438,11 +392,11 @@
     "situational": 5
   },
   "bundle_metadata": {
-    "generated_on": "2026-02-15T04:34:09.258400",
+    "generated_on": "2026-02-15T06:24:47.889581",
     "generator": "PolicyLLM-BundleCompiler-v1",
-    "policy_count": 3,
-    "rule_count": 3,
-    "constraint_count": 1,
-    "path_count": 3
+    "policy_count": 4,
+    "rule_count": 4,
+    "constraint_count": 0,
+    "path_count": 4
   }
 }

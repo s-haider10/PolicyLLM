@@ -93,6 +93,9 @@ def run(policies: List[Dict[str, Any]], llm_client: Any, sim_threshold: float = 
     then optional semantic merge using embeddings to combine near-duplicates (same domain/doc).
     Evidence counts and provenance are aggregated. For semantically similar clusters,
     optionally ask LLM to reconcile if provided.
+    
+    NOTE: With improved extraction (pass2 now extracts multiple policies per section),
+    this pass should be MORE conservative to avoid re-merging distinct policies.
     """
     buckets: Dict[Tuple, Dict[str, Any]] = {}
 
@@ -101,8 +104,13 @@ def run(policies: List[Dict[str, Any]], llm_client: Any, sim_threshold: float = 
         conditions = pol.get("conditions", [])
         actions = pol.get("actions", [])
         metadata = pol.get("metadata", {})
+        policy_id = pol.get("policy_id", "")
+        
+        # MORE CONSERVATIVE KEY: Include policy_id to avoid merging distinct policies
+        # Only merge if policy_id, domain, scope, conditions, AND actions are identical
         key = (
             pol.get("doc_id"),
+            policy_id,  # ADDED: Don't merge policies with different IDs
             _canon_scope(scope),
             _canon_conditions(conditions),
             _canon_actions(actions),
@@ -135,7 +143,8 @@ def run(policies: List[Dict[str, Any]], llm_client: Any, sim_threshold: float = 
 
     merged = list(buckets.values())
 
-    # Semantic merge optional; set ENABLE_EMBED_MERGE=1 to enable
+    # Semantic merge optional; DISABLED by default to preserve distinct policies
+    # Set ENABLE_EMBED_MERGE=1 to enable (use with caution)
     if os.getenv("ENABLE_EMBED_MERGE", "0") != "1":
         return merged
     if not _load_emb_model() or not np:
