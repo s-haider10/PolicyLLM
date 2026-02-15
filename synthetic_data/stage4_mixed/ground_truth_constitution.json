@@ -1,0 +1,709 @@
+{
+  "schema_version": "1.0",
+  "seed": 42,
+  "num_policies": 20,
+  "policies": [
+    {
+      "policy_id": "POL-PRIVACY-001",
+      "title": "PII handling policy 1",
+      "domain": "privacy",
+      "priority": "company",
+      "owner": "refund_team",
+      "scope": {
+        "channel": "email"
+      },
+      "conditions": [
+        {
+          "field": "contains_pii",
+          "op": "==",
+          "value": true
+        }
+      ],
+      "actions": [
+        {
+          "type": "prohibited",
+          "value": "disclose_pii"
+        }
+      ],
+      "exceptions": [],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0"
+      }
+    },
+    {
+      "policy_id": "POL-SEC-002",
+      "title": "Identity verification threshold 2",
+      "domain": "security",
+      "priority": "department",
+      "owner": "manager",
+      "scope": {
+        "operation": "refund_approval"
+      },
+      "conditions": [
+        {
+          "field": "refund_amount",
+          "op": ">=",
+          "value": 400
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "verify_identity"
+        }
+      ],
+      "exceptions": [],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0",
+        "tags": [
+          "customer-facing"
+        ]
+      }
+    },
+    {
+      "policy_id": "POL-SHIP-003",
+      "title": "Shipping SLA policy 3",
+      "domain": "shipping",
+      "priority": "situational",
+      "owner": "privacy_officer",
+      "scope": {
+        "region": "international"
+      },
+      "conditions": [
+        {
+          "field": "item_in_stock",
+          "op": "==",
+          "value": true
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "ship_within_48h"
+        }
+      ],
+      "exceptions": [
+        {
+          "field": "severe_weather_alert",
+          "op": "==",
+          "value": true,
+          "effect": "allow_delay"
+        }
+      ],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0"
+      }
+    },
+    {
+      "policy_id": "POL-RETURNS-004",
+      "title": "Returns window policy 4",
+      "domain": "returns",
+      "priority": "regulatory",
+      "owner": "security_officer",
+      "scope": {
+        "product_category": "appliances"
+      },
+      "conditions": [
+        {
+          "field": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "field": "days_since_purchase",
+          "op": "<=",
+          "value": 7
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "offer_refund"
+        }
+      ],
+      "exceptions": [
+        {
+          "field": "physical_damage",
+          "op": "==",
+          "value": true,
+          "effect": "deny_refund"
+        }
+      ],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0"
+      }
+    },
+    {
+      "policy_id": "POL-REFUND-005",
+      "title": "Refund window policy 5",
+      "domain": "refund",
+      "priority": "company",
+      "owner": "customer_support",
+      "scope": {
+        "product_category": "accessories"
+      },
+      "conditions": [
+        {
+          "field": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "field": "days_since_purchase",
+          "op": "<=",
+          "value": 14
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "offer_refund"
+        }
+      ],
+      "exceptions": [
+        {
+          "field": "physical_damage",
+          "op": "==",
+          "value": true,
+          "effect": "deny_refund"
+        }
+      ],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0"
+      }
+    },
+    {
+      "policy_id": "POL-PRIVACY-006",
+      "title": "PII handling policy 6",
+      "domain": "privacy",
+      "priority": "department",
+      "owner": "refund_team",
+      "scope": {
+        "channel": "chat"
+      },
+      "conditions": [
+        {
+          "field": "contains_pii",
+          "op": "==",
+          "value": true
+        }
+      ],
+      "actions": [
+        {
+          "type": "prohibited",
+          "value": "disclose_pii"
+        }
+      ],
+      "exceptions": [],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0"
+      }
+    },
+    {
+      "policy_id": "POL-SEC-007",
+      "title": "Identity verification threshold 7",
+      "domain": "security",
+      "priority": "situational",
+      "owner": "manager",
+      "scope": {
+        "operation": "refund_approval"
+      },
+      "conditions": [
+        {
+          "field": "refund_amount",
+          "op": ">=",
+          "value": 400
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "verify_identity"
+        }
+      ],
+      "exceptions": [],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0"
+      }
+    },
+    {
+      "policy_id": "POL-SHIP-008",
+      "title": "Shipping SLA policy 8",
+      "domain": "shipping",
+      "priority": "regulatory",
+      "owner": "privacy_officer",
+      "scope": {
+        "region": "domestic"
+      },
+      "conditions": [
+        {
+          "field": "item_in_stock",
+          "op": "==",
+          "value": true
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "ship_within_48h"
+        }
+      ],
+      "exceptions": [
+        {
+          "field": "severe_weather_alert",
+          "op": "==",
+          "value": true,
+          "effect": "allow_delay"
+        }
+      ],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0",
+        "tags": [
+          "customer-facing"
+        ]
+      }
+    },
+    {
+      "policy_id": "POL-RETURNS-009",
+      "title": "Returns window policy 9",
+      "domain": "returns",
+      "priority": "company",
+      "owner": "security_officer",
+      "scope": {
+        "product_category": "electronics"
+      },
+      "conditions": [
+        {
+          "field": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "field": "days_since_purchase",
+          "op": "<=",
+          "value": 14
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "offer_refund"
+        }
+      ],
+      "exceptions": [
+        {
+          "field": "physical_damage",
+          "op": "==",
+          "value": true,
+          "effect": "deny_refund"
+        }
+      ],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0"
+      }
+    },
+    {
+      "policy_id": "POL-REFUND-010",
+      "title": "Refund window policy 10",
+      "domain": "refund",
+      "priority": "department",
+      "owner": "customer_support",
+      "scope": {
+        "product_category": "appliances"
+      },
+      "conditions": [
+        {
+          "field": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "field": "days_since_purchase",
+          "op": "<=",
+          "value": 21
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "offer_refund"
+        }
+      ],
+      "exceptions": [
+        {
+          "field": "physical_damage",
+          "op": "==",
+          "value": true,
+          "effect": "deny_refund"
+        }
+      ],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0",
+        "tags": [
+          "customer-facing"
+        ]
+      }
+    },
+    {
+      "policy_id": "POL-PRIVACY-011",
+      "title": "PII handling policy 11",
+      "domain": "privacy",
+      "priority": "situational",
+      "owner": "refund_team",
+      "scope": {
+        "channel": "phone"
+      },
+      "conditions": [
+        {
+          "field": "contains_pii",
+          "op": "==",
+          "value": true
+        }
+      ],
+      "actions": [
+        {
+          "type": "prohibited",
+          "value": "disclose_pii"
+        }
+      ],
+      "exceptions": [],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0"
+      }
+    },
+    {
+      "policy_id": "POL-SEC-012",
+      "title": "Identity verification threshold 12",
+      "domain": "security",
+      "priority": "regulatory",
+      "owner": "manager",
+      "scope": {
+        "operation": "refund_approval"
+      },
+      "conditions": [
+        {
+          "field": "refund_amount",
+          "op": ">=",
+          "value": 400
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "verify_identity"
+        }
+      ],
+      "exceptions": [],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0"
+      }
+    },
+    {
+      "policy_id": "POL-SHIP-013",
+      "title": "Shipping SLA policy 13",
+      "domain": "shipping",
+      "priority": "company",
+      "owner": "privacy_officer",
+      "scope": {
+        "region": "international"
+      },
+      "conditions": [
+        {
+          "field": "item_in_stock",
+          "op": "==",
+          "value": true
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "ship_within_48h"
+        }
+      ],
+      "exceptions": [
+        {
+          "field": "severe_weather_alert",
+          "op": "==",
+          "value": true,
+          "effect": "allow_delay"
+        }
+      ],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0",
+        "tags": [
+          "customer-facing"
+        ]
+      }
+    },
+    {
+      "policy_id": "POL-RETURNS-014",
+      "title": "Returns window policy 14",
+      "domain": "returns",
+      "priority": "department",
+      "owner": "security_officer",
+      "scope": {
+        "product_category": "accessories"
+      },
+      "conditions": [
+        {
+          "field": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "field": "days_since_purchase",
+          "op": "<=",
+          "value": 21
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "offer_refund"
+        }
+      ],
+      "exceptions": [
+        {
+          "field": "physical_damage",
+          "op": "==",
+          "value": true,
+          "effect": "deny_refund"
+        }
+      ],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0",
+        "tags": [
+          "customer-facing"
+        ]
+      }
+    },
+    {
+      "policy_id": "POL-REFUND-015",
+      "title": "Refund window policy 15",
+      "domain": "refund",
+      "priority": "situational",
+      "owner": "customer_support",
+      "scope": {
+        "product_category": "electronics"
+      },
+      "conditions": [
+        {
+          "field": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "field": "days_since_purchase",
+          "op": "<=",
+          "value": 28
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "offer_refund"
+        }
+      ],
+      "exceptions": [
+        {
+          "field": "physical_damage",
+          "op": "==",
+          "value": true,
+          "effect": "deny_refund"
+        }
+      ],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0"
+      }
+    },
+    {
+      "policy_id": "POL-PRIVACY-016",
+      "title": "PII handling policy 16",
+      "domain": "privacy",
+      "priority": "regulatory",
+      "owner": "refund_team",
+      "scope": {
+        "channel": "email"
+      },
+      "conditions": [
+        {
+          "field": "contains_pii",
+          "op": "==",
+          "value": true
+        }
+      ],
+      "actions": [
+        {
+          "type": "prohibited",
+          "value": "disclose_pii"
+        }
+      ],
+      "exceptions": [],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0"
+      }
+    },
+    {
+      "policy_id": "POL-SEC-017",
+      "title": "Identity verification threshold 17",
+      "domain": "security",
+      "priority": "company",
+      "owner": "manager",
+      "scope": {
+        "operation": "refund_approval"
+      },
+      "conditions": [
+        {
+          "field": "refund_amount",
+          "op": ">=",
+          "value": 400
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "verify_identity"
+        }
+      ],
+      "exceptions": [],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0"
+      }
+    },
+    {
+      "policy_id": "POL-SHIP-018",
+      "title": "Shipping SLA policy 18",
+      "domain": "shipping",
+      "priority": "department",
+      "owner": "privacy_officer",
+      "scope": {
+        "region": "domestic"
+      },
+      "conditions": [
+        {
+          "field": "item_in_stock",
+          "op": "==",
+          "value": true
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "ship_within_48h"
+        }
+      ],
+      "exceptions": [
+        {
+          "field": "severe_weather_alert",
+          "op": "==",
+          "value": true,
+          "effect": "allow_delay"
+        }
+      ],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0"
+      }
+    },
+    {
+      "policy_id": "POL-RETURNS-019",
+      "title": "Returns window policy 19",
+      "domain": "returns",
+      "priority": "situational",
+      "owner": "security_officer",
+      "scope": {
+        "product_category": "appliances"
+      },
+      "conditions": [
+        {
+          "field": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "field": "days_since_purchase",
+          "op": "<=",
+          "value": 28
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "offer_refund"
+        }
+      ],
+      "exceptions": [
+        {
+          "field": "physical_damage",
+          "op": "==",
+          "value": true,
+          "effect": "deny_refund"
+        }
+      ],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0"
+      }
+    },
+    {
+      "policy_id": "POL-REFUND-020",
+      "title": "Refund window policy 20",
+      "domain": "refund",
+      "priority": "regulatory",
+      "owner": "customer_support",
+      "scope": {
+        "product_category": "accessories"
+      },
+      "conditions": [
+        {
+          "field": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "field": "days_since_purchase",
+          "op": "<=",
+          "value": 7
+        }
+      ],
+      "actions": [
+        {
+          "type": "required",
+          "value": "offer_refund"
+        }
+      ],
+      "exceptions": [
+        {
+          "field": "physical_damage",
+          "op": "==",
+          "value": true,
+          "effect": "deny_refund"
+        }
+      ],
+      "metadata": {
+        "effective_date": "2026-01-01",
+        "version": "1.0",
+        "tags": [
+          "customer-facing"
+        ]
+      }
+    }
+  ]
+}

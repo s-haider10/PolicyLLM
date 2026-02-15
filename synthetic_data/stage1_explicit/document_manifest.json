@@ -1,0 +1,22 @@
+{
+  "stage": 1,
+  "seed": 1,
+  "num_documents": 1,
+  "policies_per_doc": 4,
+  "model": null,
+  "ollama_host": null,
+  "documents": [
+    {
+      "doc_id": "doc_001",
+      "path": "synthetic_data/stage1_explicit/smoke_docs/doc_001.md",
+      "stage": 1,
+      "policy_ids": [
+        "POL-REFUND-005",
+        "POL-RETURNS-019",
+        "POL-SHIP-003",
+        "POL-RETURNS-009"
+      ],
+      "conflicts": []
+    }
+  ]
+}
