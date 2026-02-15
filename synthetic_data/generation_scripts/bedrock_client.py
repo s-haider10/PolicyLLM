@@ -3,6 +3,16 @@
 import json
 import os
 from typing import Optional
+from pathlib import Path
+
+# Load environment variables from .env if it exists
+try:
+    from dotenv import load_dotenv
+    env_file = Path(__file__).resolve().parent / ".env"
+    if env_file.exists():
+        load_dotenv(dotenv_path=env_file)
+except ImportError:
+    pass
 
 
 class BedrockClient:

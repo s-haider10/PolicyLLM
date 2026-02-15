@@ -1,7 +1,7 @@
 {
   "stage": 4,
   "seed": 53,
-  "num_documents": 1,
+  "num_documents": 20,
   "policies_per_doc": 4,
   "model": "claude-opus-4-5-20251101",
   "provider": "aws-bedrock",
@@ -13,12 +13,306 @@
       "stage": 4,
       "profile": "conflict",
       "policy_ids": [
-        "POL-PRIVACY-001"
+        "POL-SEC-007",
+        "POL-REFUND-015",
+        "POL-SEC-017",
+        "POL-PRIVACY-016"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_002",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_002.md",
+      "stage": 4,
+      "profile": "implicit",
+      "policy_ids": [
+        "POL-SEC-002",
+        "POL-PRIVACY-006",
+        "POL-SEC-012",
+        "POL-REFUND-005"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_003",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_003.md",
+      "stage": 4,
+      "profile": "explicit",
+      "policy_ids": [
+        "POL-SHIP-008",
+        "POL-REFUND-015",
+        "POL-SEC-007",
+        "POL-REFUND-020"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_004",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_004.md",
+      "stage": 4,
+      "profile": "explicit",
+      "policy_ids": [
+        "POL-SEC-012",
+        "POL-SEC-017",
+        "POL-PRIVACY-011",
+        "POL-RETURNS-019"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_005",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_005.md",
+      "stage": 4,
+      "profile": "implicit",
+      "policy_ids": [
+        "POL-SEC-002",
+        "POL-PRIVACY-011",
+        "POL-RETURNS-009",
+        "POL-REFUND-005"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_006",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_006.md",
+      "stage": 4,
+      "profile": "explicit",
+      "policy_ids": [
+        "POL-SHIP-008",
+        "POL-REFUND-005",
+        "POL-SEC-002",
+        "POL-REFUND-015"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_007",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_007.md",
+      "stage": 4,
+      "profile": "conflict",
+      "policy_ids": [
+        "POL-PRIVACY-016",
+        "POL-SHIP-008",
+        "POL-SEC-012",
+        "POL-RETURNS-019"
       ],
       "conflicts": [
         {
+          "policy_id": "POL-SHIP-008",
+          "conflict_text": "Policy POL-SHIP-008 (regulatory priority) stipulates that when item_in_stock == True, agents must ship_within_48h; however, if severe_weather_alert == True, then allow_delay is permitted as an exception to the standard shipping timeframe. Additionally, a low-priority department exception applies whereby if item_in_stock == False, standard behavior for POL-SHIP-008 shall be overridden."
+        },
+        {
+          "policy_id": "POL-RETURNS-019",
+          "conflict_text": "Under Policy POL-RETURNS-019, designated as situational priority, agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within 28 days (days_since_purchase <= 28); however, if physical damage is present (physical_damage == True), agents must deny the refund regardless of receipt status or purchase date. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), standard behavior for Policy POL-RETURNS-019 shall be overridden."
+        }
+      ]
+    },
+    {
+      "doc_id": "doc_008",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_008.md",
+      "stage": 4,
+      "profile": "hybrid",
+      "policy_ids": [
+        "POL-PRIVACY-016",
+        "POL-SHIP-013",
+        "POL-SHIP-018",
+        "POL-PRIVACY-011"
+      ],
+      "conflicts": [
+        {
+          "policy_id": "POL-PRIVACY-016",
+          "conflict_text": "**Privacy Handling Policy (POL-PRIVACY-016)**"
+        },
+        {
+          "policy_id": "POL-PRIVACY-011",
+          "conflict_text": "When handling privacy requests, here's the deal: if `contains_pii == True`, teams must treat the request as valid, which triggers `disclose_pii`. Think of it like a green light\u2014PII detected means the request gets processed and information gets shared."
+        }
+      ]
+    },
+    {
+      "doc_id": "doc_009",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_009.md",
+      "stage": 4,
+      "profile": "conflict",
+      "policy_ids": [
+        "POL-SEC-012",
+        "POL-PRIVACY-006",
+        "POL-PRIVACY-016",
+        "POL-SEC-007"
+      ],
+      "conflicts": [
+        {
+          "policy_id": "POL-PRIVACY-006",
+          "conflict_text": "Policy POL-PRIVACY-006 (department priority) shall govern the handling of personally identifiable information as follows: When contains_pii equals True, agents must execute disclose_pii; when contains_pii equals False, the standard behavior prescribed by POL-PRIVACY-006 shall be overridden pursuant to the low-priority department exception."
+        },
+        {
+          "policy_id": "POL-SEC-007",
+          "conflict_text": "Policy POL-SEC-007 (situational priority) establishes that agents must verify_identity when refund_amount >= 400; however, a low-priority department exception applies whereby if refund_amount <= 400, standard behavior for POL-SEC-007 shall be overridden."
+        }
+      ]
+    },
+    {
+      "doc_id": "doc_010",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_010.md",
+      "stage": 4,
+      "profile": "explicit",
+      "policy_ids": [
+        "POL-REFUND-010",
+        "POL-REFUND-005",
+        "POL-SHIP-013",
+        "POL-SHIP-008"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_011",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_011.md",
+      "stage": 4,
+      "profile": "implicit",
+      "policy_ids": [
+        "POL-REFUND-020",
+        "POL-SHIP-008",
+        "POL-REFUND-010",
+        "POL-RETURNS-019"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_012",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_012.md",
+      "stage": 4,
+      "profile": "explicit",
+      "policy_ids": [
+        "POL-PRIVACY-006",
+        "POL-SEC-007",
+        "POL-SHIP-018",
+        "POL-PRIVACY-011"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_013",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_013.md",
+      "stage": 4,
+      "profile": "explicit",
+      "policy_ids": [
+        "POL-PRIVACY-006",
+        "POL-RETURNS-009",
+        "POL-REFUND-015",
+        "POL-PRIVACY-011"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_014",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_014.md",
+      "stage": 4,
+      "profile": "implicit",
+      "policy_ids": [
+        "POL-RETURNS-004",
+        "POL-PRIVACY-001",
+        "POL-SHIP-008",
+        "POL-SHIP-003"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_015",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_015.md",
+      "stage": 4,
+      "profile": "explicit",
+      "policy_ids": [
+        "POL-SEC-007",
+        "POL-RETURNS-009",
+        "POL-PRIVACY-016",
+        "POL-PRIVACY-011"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_016",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_016.md",
+      "stage": 4,
+      "profile": "conflict",
+      "policy_ids": [
+        "POL-PRIVACY-006",
+        "POL-REFUND-020",
+        "POL-SHIP-018",
+        "POL-SEC-012"
+      ],
+      "conflicts": [
+        {
+          "policy_id": "POL-PRIVACY-006",
+          "conflict_text": "Policy POL-PRIVACY-006 (department priority) establishes that when contains_pii == True, agents must disclose_pii; however, a low-priority department exception applies whereby when contains_pii == False, standard behavior for POL-PRIVACY-006 shall be overridden."
+        },
+        {
+          "policy_id": "POL-SHIP-018",
+          "conflict_text": "Policy POL-SHIP-018 (department priority) establishes that when item_in_stock == True, agents must ship_within_48h; however, if severe_weather_alert == True, then allow_delay is permitted as an exception to the standard shipping timeframe. As a low-priority department exception, when item_in_stock == False, standard behavior for POL-SHIP-018 shall be overridden."
+        }
+      ]
+    },
+    {
+      "doc_id": "doc_017",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_017.md",
+      "stage": 4,
+      "profile": "explicit",
+      "policy_ids": [
+        "POL-RETURNS-014",
+        "POL-SHIP-018",
+        "POL-REFUND-015",
+        "POL-PRIVACY-016"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_018",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_018.md",
+      "stage": 4,
+      "profile": "explicit",
+      "policy_ids": [
+        "POL-SHIP-013",
+        "POL-SEC-007",
+        "POL-SEC-012",
+        "POL-SEC-002"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_019",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_019.md",
+      "stage": 4,
+      "profile": "explicit",
+      "policy_ids": [
+        "POL-RETURNS-014",
+        "POL-SHIP-018",
+        "POL-PRIVACY-001",
+        "POL-SEC-017"
+      ],
+      "conflicts": []
+    },
+    {
+      "doc_id": "doc_020",
+      "path": "../stage4_mixed/sensitivity/baseline/seed_53/documents/doc_020.md",
+      "stage": 4,
+      "profile": "conflict",
+      "policy_ids": [
+        "POL-PRIVACY-011",
+        "POL-PRIVACY-001",
+        "POL-REFUND-020",
+        "POL-RETURNS-009"
+      ],
+      "conflicts": [
+        {
+          "policy_id": "POL-PRIVACY-011",
+          "conflict_text": "Policy POL-PRIVACY-011 (situational priority) shall govern the handling of personally identifiable information as follows: When contains_pii equals True, agents must execute disclose_pii; however, a low-priority department exception applies whereby when contains_pii equals False, standard behavior for POL-PRIVACY-011 shall be overridden."
+        },
+        {
           "policy_id": "POL-PRIVACY-001",
-          "conflict_text": "Under Policy POL-PRIVACY-001, designated as company priority, agents must disclose personally identifiable information (PII) when the condition contains_pii equals True. A low-priority department exception applies whereby if contains_pii equals False, standard behavior for Policy POL-PRIVACY-001 shall be overridden."
+          "conflict_text": "Policy POL-PRIVACY-001 (company priority) shall govern the handling of personally identifiable information as follows: When contains_pii equals True, agents must execute disclose_pii; however, a low-priority department exception applies whereby when contains_pii equals False, standard behavior for POL-PRIVACY-001 shall be overridden."
+        },
+        {
+          "policy_id": "POL-RETURNS-009",
+          "conflict_text": "Under Policy POL-RETURNS-009, agents must offer a refund when the customer has a receipt (has_receipt == True) and the purchase was made within 14 days (days_since_purchase <= 14); however, if physical damage is present (physical_damage == True), agents must deny the refund regardless of receipt status or purchase date. As a low-priority department exception, when the customer does not have a receipt (has_receipt == False), the standard behavior of this policy shall be overridden."
         }
       ]
     }
