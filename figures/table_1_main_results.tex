@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+\centering
+\caption{Extraction Pipeline Performance: Comprehensive Accuracy Analysis}
+\label{tab:main_results}
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|}
+\hline
+\textbf{Stage} & \textbf{Policies} & \textbf{Policies} & \textbf{Extraction} & \textbf{Conditions} & \textbf{Condition} & \textbf{Actions} & \textbf{Action} & \textbf{Exceptions} \\
+& \textbf{Encoded} & \textbf{Extracted} & \textbf{Accuracy} & \textbf{Extracted/GT} & \textbf{Accuracy} & \textbf{Extracted/GT} & \textbf{Accuracy} & \textbf{Extracted/GT} \\
+\hline
+Explicit & 4 & 4 & \cellcolor{green!30}100\% & 6/5 & \cellcolor{yellow!30}83\% & 4/4 & \cellcolor{green!30}100\% & 3/2 \\
+\hline
+Conflicts & 4 & 4 & \cellcolor{green!30}100\% & 7/5 & \cellcolor{yellow!30}71\% & 4/4 & \cellcolor{green!30}100\% & 3/2 \\
+\hline
+Implicit & 4 & 4 & \cellcolor{green!30}100\% & 6/5 & \cellcolor{yellow!30}83\% & 4/4 & \cellcolor{green!30}100\% & 1/2 \\
+\hline
+Mixed & 4 & 4 & \cellcolor{green!30}100\% & 6/5 & \cellcolor{yellow!30}83\% & 4/4 & \cellcolor{green!30}100\% & 3/2 \\
+\hline
+\end{tabular}
+\end{table}
+
+% Color coding: Green (>=90%), Yellow (70-89%), Red (<70%)
+% Note: Requires \usepackage{colortbl} and \usepackage{xcolor}
