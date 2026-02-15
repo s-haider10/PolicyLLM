@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "variables": {},
+  "conditional_rules": [],
+  "constraints": [],
+  "decision_nodes": [],
+  "node_schema": {},
+  "leaf_actions": [],
+  "compiled_paths": [],
+  "dominance_rules": [],
+  "escalations": [],
+  "canonical_action_map": [],
+  "priority_lattice": {
+    "regulatory": 1,
+    "core_values": 2,
+    "company": 3,
+    "department": 4,
+    "situational": 5
+  },
+  "bundle_metadata": {
+    "generated_on": "2026-02-15T04:39:03.128112",
+    "generator": "PolicyLLM-BundleCompiler-v1",
+    "policy_count": 0,
+    "rule_count": 0,
+    "constraint_count": 0,
+    "path_count": 0
+  }
+}

@@ -1,0 +1,456 @@
+{
+  "schema_version": "1.0",
+  "variables": {
+    "refund_amount": {
+      "type": "float",
+      "description": "refund_amount is greater than or equal to 400"
+    },
+    "has_receipt": {
+      "type": "bool",
+      "description": "customer has a valid receipt (has_receipt equals True)"
+    },
+    "days_since_purchase": {
+      "type": "int",
+      "description": "purchase was made within twenty-one days or fewer"
+    },
+    "physical_damage": {
+      "type": "bool",
+      "description": "item exhibits physical damage (physical_damage equals True)"
+    }
+  },
+  "conditional_rules": [
+    {
+      "policy_id": "POL-REFUND-001",
+      "conditions": [
+        {
+          "var": "refund_amount",
+          "op": ">=",
+          "value": 400
+        },
+        {
+          "var": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 21
+        },
+        {
+          "var": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 14
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 28
+        },
+        {
+          "var": "physical_damage",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "has_receipt",
+          "op": "==",
+          "value": false
+        }
+      ],
+      "action": {
+        "type": "verify_identity",
+        "value": "full"
+      },
+      "metadata": {
+        "domain": "refund",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "d6054900790ae4d9edab6475066480e6d982c789a53499f47dd3e275a180f3d8#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    },
+    {
+      "policy_id": "POL-REFUND-001",
+      "conditions": [
+        {
+          "var": "refund_amount",
+          "op": ">=",
+          "value": 400
+        },
+        {
+          "var": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 21
+        },
+        {
+          "var": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 14
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 28
+        },
+        {
+          "var": "physical_damage",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "has_receipt",
+          "op": "==",
+          "value": false
+        }
+      ],
+      "action": {
+        "type": "offer_refund",
+        "value": "full"
+      },
+      "metadata": {
+        "domain": "refund",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "d6054900790ae4d9edab6475066480e6d982c789a53499f47dd3e275a180f3d8#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    },
+    {
+      "policy_id": "POL-REFUND-001",
+      "conditions": [
+        {
+          "var": "refund_amount",
+          "op": ">=",
+          "value": 400
+        },
+        {
+          "var": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 21
+        },
+        {
+          "var": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 14
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 28
+        },
+        {
+          "var": "physical_damage",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "has_receipt",
+          "op": "==",
+          "value": false
+        }
+      ],
+      "action": {
+        "type": "override_standard_policy",
+        "value": "conditional"
+      },
+      "metadata": {
+        "domain": "refund",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "d6054900790ae4d9edab6475066480e6d982c789a53499f47dd3e275a180f3d8#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "policy_id": "C_POL-REFUND-001_deny_refund",
+      "constraint": "NOT(deny_refund)",
+      "scope": "always",
+      "metadata": {
+        "domain": "refund",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "d6054900790ae4d9edab6475066480e6d982c789a53499f47dd3e275a180f3d8#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    }
+  ],
+  "decision_nodes": [
+    "has_receipt",
+    "physical_damage",
+    "days_since_purchase",
+    "refund_amount"
+  ],
+  "node_schema": {
+    "has_receipt": {
+      "type": "bool",
+      "description": "customer has a valid receipt (has_receipt equals True)"
+    },
+    "physical_damage": {
+      "type": "bool",
+      "description": "item exhibits physical damage (physical_damage equals True)"
+    },
+    "days_since_purchase": {
+      "type": "int",
+      "description": "purchase was made within twenty-one days or fewer"
+    },
+    "refund_amount": {
+      "type": "float",
+      "description": "refund_amount is greater than or equal to 400"
+    }
+  },
+  "leaf_actions": [
+    "offer_refund:full",
+    "override_standard_policy:conditional",
+    "verify_identity:full"
+  ],
+  "compiled_paths": [
+    {
+      "policy_id": "POL-REFUND-001",
+      "path": [
+        {
+          "var": "has_receipt",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            },
+            {
+              "op": "==",
+              "value": true
+            },
+            {
+              "op": "==",
+              "value": false
+            }
+          ]
+        },
+        {
+          "var": "physical_damage",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            }
+          ]
+        },
+        {
+          "var": "days_since_purchase",
+          "tests": [
+            {
+              "op": "<=",
+              "value": 21
+            },
+            {
+              "op": "<=",
+              "value": 14
+            },
+            {
+              "op": "<=",
+              "value": 28
+            }
+          ]
+        },
+        {
+          "var": "refund_amount",
+          "tests": [
+            {
+              "op": ">=",
+              "value": 400
+            }
+          ]
+        }
+      ],
+      "leaf_action": "verify_identity:full",
+      "metadata": {
+        "domain": "refund",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "d6054900790ae4d9edab6475066480e6d982c789a53499f47dd3e275a180f3d8#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    },
+    {
+      "policy_id": "POL-REFUND-001",
+      "path": [
+        {
+          "var": "has_receipt",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            },
+            {
+              "op": "==",
+              "value": true
+            },
+            {
+              "op": "==",
+              "value": false
+            }
+          ]
+        },
+        {
+          "var": "physical_damage",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            }
+          ]
+        },
+        {
+          "var": "days_since_purchase",
+          "tests": [
+            {
+              "op": "<=",
+              "value": 21
+            },
+            {
+              "op": "<=",
+              "value": 14
+            },
+            {
+              "op": "<=",
+              "value": 28
+            }
+          ]
+        },
+        {
+          "var": "refund_amount",
+          "tests": [
+            {
+              "op": ">=",
+              "value": 400
+            }
+          ]
+        }
+      ],
+      "leaf_action": "offer_refund:full",
+      "metadata": {
+        "domain": "refund",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "d6054900790ae4d9edab6475066480e6d982c789a53499f47dd3e275a180f3d8#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    },
+    {
+      "policy_id": "POL-REFUND-001",
+      "path": [
+        {
+          "var": "has_receipt",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            },
+            {
+              "op": "==",
+              "value": true
+            },
+            {
+              "op": "==",
+              "value": false
+            }
+          ]
+        },
+        {
+          "var": "physical_damage",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            }
+          ]
+        },
+        {
+          "var": "days_since_purchase",
+          "tests": [
+            {
+              "op": "<=",
+              "value": 21
+            },
+            {
+              "op": "<=",
+              "value": 14
+            },
+            {
+              "op": "<=",
+              "value": 28
+            }
+          ]
+        },
+        {
+          "var": "refund_amount",
+          "tests": [
+            {
+              "op": ">=",
+              "value": 400
+            }
+          ]
+        }
+      ],
+      "leaf_action": "override_standard_policy:conditional",
+      "metadata": {
+        "domain": "refund",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "d6054900790ae4d9edab6475066480e6d982c789a53499f47dd3e275a180f3d8#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    }
+  ],
+  "dominance_rules": [],
+  "escalations": [],
+  "canonical_action_map": [],
+  "priority_lattice": {
+    "regulatory": 1,
+    "core_values": 2,
+    "company": 3,
+    "department": 4,
+    "situational": 5
+  },
+  "bundle_metadata": {
+    "generated_on": "2026-02-15T04:36:30.073506",
+    "generator": "PolicyLLM-BundleCompiler-v1",
+    "policy_count": 3,
+    "rule_count": 3,
+    "constraint_count": 1,
+    "path_count": 3
+  }
+}

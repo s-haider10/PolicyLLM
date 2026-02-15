@@ -1,0 +1,95 @@
+{
+  "timestamp": "2026-02-14T23:15:18.659075",
+  "synthetic_root": "/scratch2/f004ndc/ConstitutionCreator/synthetic_data",
+  "llm_config": {
+    "model": "claude-opus-4-5-20251101",
+    "provider": "aws-bedrock",
+    "gpu": 0
+  },
+  "documents": {
+    "total_count": 80,
+    "total_size_mb": 0.10648727416992188,
+    "stages": {
+      "stage1_explicit": {
+        "documents": [
+          {
+            "name": "doc_018.md",
+            "size": 1001,
+            "lines": 10
+          },
+          {
+            "name": "doc_019.md",
+            "size": 1377,
+            "lines": 10
+          }
+        ],
+        "total_count": 20,
+        "total_size": 23498,
+        "avg_size": 1174.9
+      },
+      "stage2_conflicts": {
+        "documents": [
+          {
+            "name": "doc_018.md",
+            "size": 2166,
+            "lines": 14
+          },
+          {
+            "name": "doc_019.md",
+            "size": 2352,
+            "lines": 16
+          }
+        ],
+        "total_count": 20,
+        "total_size": 33343,
+        "avg_size": 1667.15
+      },
+      "stage3_implicit": {
+        "documents": [
+          {
+            "name": "doc_018.md",
+            "size": 1675,
+            "lines": 10
+          },
+          {
+            "name": "doc_019.md",
+            "size": 1069,
+            "lines": 10
+          }
+        ],
+        "total_count": 20,
+        "total_size": 26568,
+        "avg_size": 1328.4
+      },
+      "stage4_mixed": {
+        "documents": [
+          {
+            "name": "doc_018.md",
+            "size": 1606,
+            "lines": 10
+          },
+          {
+            "name": "doc_019.md",
+            "size": 1489,
+            "lines": 12
+          }
+        ],
+        "total_count": 20,
+        "total_size": 28251,
+        "avg_size": 1412.55
+      }
+    }
+  },
+  "queries": {
+    "total": 50,
+    "categories": {
+      "violation": 13,
+      "uncovered": 18,
+      "valid_path": 16,
+      "edge_case": 3
+    },
+    "model": "claude-opus-4-5-20251101",
+    "provider": "aws-bedrock"
+  },
+  "status": "READY_FOR_PIPELINE_TESTING"
+}

@@ -1,0 +1,9 @@
+{
+  "doc_id": "d6054900790ae4d9edab6475066480e6d982c789a53499f47dd3e275a180f3d8",
+  "batch_id": "stage2_conflicts_doc_001_20260214_233602",
+  "num_policies": 1,
+  "flagged_pct": 100.0,
+  "domains": {
+    "refund": 1
+  }
+}

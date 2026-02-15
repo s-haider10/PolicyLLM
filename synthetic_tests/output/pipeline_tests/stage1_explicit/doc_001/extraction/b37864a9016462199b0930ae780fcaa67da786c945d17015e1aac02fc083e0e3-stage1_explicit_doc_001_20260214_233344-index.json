@@ -1,0 +1,9 @@
+{
+  "doc_id": "b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3",
+  "batch_id": "stage1_explicit_doc_001_20260214_233344",
+  "num_policies": 1,
+  "flagged_pct": 100.0,
+  "domains": {
+    "other": 1
+  }
+}

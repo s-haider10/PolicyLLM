@@ -1,0 +1,448 @@
+{
+  "schema_version": "1.0",
+  "variables": {
+    "has_receipt": {
+      "type": "bool",
+      "description": "customer has a receipt (has_receipt == True)"
+    },
+    "days_since_purchase": {
+      "type": "int",
+      "description": "purchase was made within seven days or fewer (days_since_purchase <= 7)"
+    },
+    "contains_pii": {
+      "type": "bool",
+      "description": "contains personally identifiable information (contains_pii equals True)"
+    },
+    "item_in_stock": {
+      "type": "bool",
+      "description": "item is in stock (item_in_stock == True)"
+    }
+  },
+  "conditional_rules": [
+    {
+      "policy_id": "POL-OTHER-001",
+      "conditions": [
+        {
+          "var": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 7
+        },
+        {
+          "var": "contains_pii",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 14
+        },
+        {
+          "var": "item_in_stock",
+          "op": "==",
+          "value": true
+        }
+      ],
+      "action": {
+        "type": "offer_refund",
+        "value": "full"
+      },
+      "metadata": {
+        "domain": "other",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    },
+    {
+      "policy_id": "POL-OTHER-001",
+      "conditions": [
+        {
+          "var": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 7
+        },
+        {
+          "var": "contains_pii",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 14
+        },
+        {
+          "var": "item_in_stock",
+          "op": "==",
+          "value": true
+        }
+      ],
+      "action": {
+        "type": "disclose_pii",
+        "value": "full"
+      },
+      "metadata": {
+        "domain": "other",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    },
+    {
+      "policy_id": "POL-OTHER-001",
+      "conditions": [
+        {
+          "var": "has_receipt",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 7
+        },
+        {
+          "var": "contains_pii",
+          "op": "==",
+          "value": true
+        },
+        {
+          "var": "days_since_purchase",
+          "op": "<=",
+          "value": 14
+        },
+        {
+          "var": "item_in_stock",
+          "op": "==",
+          "value": true
+        }
+      ],
+      "action": {
+        "type": "ship_within_48_hours",
+        "value": "full"
+      },
+      "metadata": {
+        "domain": "other",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "policy_id": "C_POL-OTHER-001_deny_refund",
+      "constraint": "NOT(deny_refund)",
+      "scope": "always",
+      "metadata": {
+        "domain": "other",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    }
+  ],
+  "decision_nodes": [
+    "contains_pii",
+    "has_receipt",
+    "item_in_stock",
+    "days_since_purchase"
+  ],
+  "node_schema": {
+    "contains_pii": {
+      "type": "bool",
+      "description": "contains personally identifiable information (contains_pii equals True)"
+    },
+    "has_receipt": {
+      "type": "bool",
+      "description": "customer has a receipt (has_receipt == True)"
+    },
+    "item_in_stock": {
+      "type": "bool",
+      "description": "item is in stock (item_in_stock == True)"
+    },
+    "days_since_purchase": {
+      "type": "int",
+      "description": "purchase was made within seven days or fewer (days_since_purchase <= 7)"
+    }
+  },
+  "leaf_actions": [
+    "disclose_pii:full",
+    "offer_refund:full",
+    "ship_within_48_hours:full"
+  ],
+  "compiled_paths": [
+    {
+      "policy_id": "POL-OTHER-001",
+      "path": [
+        {
+          "var": "contains_pii",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            }
+          ]
+        },
+        {
+          "var": "has_receipt",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            }
+          ]
+        },
+        {
+          "var": "item_in_stock",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            }
+          ]
+        },
+        {
+          "var": "days_since_purchase",
+          "tests": [
+            {
+              "op": "<=",
+              "value": 7
+            },
+            {
+              "op": "<=",
+              "value": 14
+            }
+          ]
+        }
+      ],
+      "leaf_action": "offer_refund:full",
+      "metadata": {
+        "domain": "other",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    },
+    {
+      "policy_id": "POL-OTHER-001",
+      "path": [
+        {
+          "var": "contains_pii",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            }
+          ]
+        },
+        {
+          "var": "has_receipt",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            }
+          ]
+        },
+        {
+          "var": "item_in_stock",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            }
+          ]
+        },
+        {
+          "var": "days_since_purchase",
+          "tests": [
+            {
+              "op": "<=",
+              "value": 7
+            },
+            {
+              "op": "<=",
+              "value": 14
+            }
+          ]
+        }
+      ],
+      "leaf_action": "disclose_pii:full",
+      "metadata": {
+        "domain": "other",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    },
+    {
+      "policy_id": "POL-OTHER-001",
+      "path": [
+        {
+          "var": "contains_pii",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            }
+          ]
+        },
+        {
+          "var": "has_receipt",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            }
+          ]
+        },
+        {
+          "var": "item_in_stock",
+          "tests": [
+            {
+              "op": "==",
+              "value": true
+            }
+          ]
+        },
+        {
+          "var": "days_since_purchase",
+          "tests": [
+            {
+              "op": "<=",
+              "value": 7
+            },
+            {
+              "op": "<=",
+              "value": 14
+            }
+          ]
+        }
+      ],
+      "leaf_action": "ship_within_48_hours:full",
+      "metadata": {
+        "domain": "other",
+        "priority": "company",
+        "owner": "unknown",
+        "source": "b37864a9016462199b0930ae780fcaa67da786c945d17015e1aac02fc083e0e3#sec1",
+        "eff_date": null,
+        "regulatory_linkage": []
+      }
+    }
+  ],
+  "dominance_rules": [],
+  "escalations": [
+    {
+      "conflict_type": "logical",
+      "policies": [
+        "POL-OTHER-001",
+        "POL-OTHER-001"
+      ],
+      "actions": [
+        "offer_refund:full",
+        "disclose_pii:full"
+      ],
+      "priority": "company",
+      "owners_to_notify": [
+        "unknown"
+      ],
+      "evidence": {
+        "witness": {
+          "has_receipt": true,
+          "days_since_purchase": 0,
+          "contains_pii": true,
+          "item_in_stock": true
+        }
+      },
+      "recommended_next_step": "human_review"
+    },
+    {
+      "conflict_type": "logical",
+      "policies": [
+        "POL-OTHER-001",
+        "POL-OTHER-001"
+      ],
+      "actions": [
+        "offer_refund:full",
+        "ship_within_48_hours:full"
+      ],
+      "priority": "company",
+      "owners_to_notify": [
+        "unknown"
+      ],
+      "evidence": {
+        "witness": {
+          "has_receipt": true,
+          "days_since_purchase": 0,
+          "contains_pii": true,
+          "item_in_stock": true
+        }
+      },
+      "recommended_next_step": "human_review"
+    },
+    {
+      "conflict_type": "logical",
+      "policies": [
+        "POL-OTHER-001",
+        "POL-OTHER-001"
+      ],
+      "actions": [
+        "disclose_pii:full",
+        "ship_within_48_hours:full"
+      ],
+      "priority": "company",
+      "owners_to_notify": [
+        "unknown"
+      ],
+      "evidence": {
+        "witness": {
+          "has_receipt": true,
+          "days_since_purchase": 0,
+          "contains_pii": true,
+          "item_in_stock": true
+        }
+      },
+      "recommended_next_step": "human_review"
+    }
+  ],
+  "canonical_action_map": [],
+  "priority_lattice": {
+    "regulatory": 1,
+    "core_values": 2,
+    "company": 3,
+    "department": 4,
+    "situational": 5
+  },
+  "bundle_metadata": {
+    "generated_on": "2026-02-15T04:34:09.258400",
+    "generator": "PolicyLLM-BundleCompiler-v1",
+    "policy_count": 3,
+    "rule_count": 3,
+    "constraint_count": 1,
+    "path_count": 3
+  }
+}
