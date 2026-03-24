@@ -1,0 +1,570 @@
+{
+  "_meta": {
+    "description": "Hallucination benchmark for policy-grounded response evaluation. Follows HaluEval (Li et al., 2023), FaithDial (Dziri et al., 2022), and TruthfulQA (Lin et al., 2022) methodology. Metrics follow SummaC (Laban et al., 2022) NLI-based scoring and Q² (Honovich et al., 2021) QA-consistency.",
+    "metrics": {
+      "faithfulness": "NLI-based: fraction of response claims entailed by source (SummaC-style)",
+      "factual_consistency": "Q²-style: generate questions from response, verify answers against source",
+      "hallucination_rate": "HaluEval-style: fraction of responses containing ≥1 ungrounded claim",
+      "intrinsic_halluc": "Claims contradicting source facts (Maynez et al., 2020 taxonomy)",
+      "extrinsic_halluc": "Claims unverifiable from source (Maynez et al., 2020 taxonomy)",
+      "attribution": "AIS (Rashkin et al., 2023): fraction of sentences attributable to source"
+    },
+    "source_documents": [
+      "zara_terms and conditions.pdf",
+      "Health Insurance Portability and Accountability Act of 1996 _ ASPE.pdf",
+      "yc_safe.pdf",
+      "WTO_en.pdf"
+    ],
+    "scenario_types": {
+      "standard": "Direct questions with clear answers in source",
+      "adversarial_oos": "Out-of-scope questions not answerable from source",
+      "adversarial_negation": "Negation-heavy questions prone to misinterpretation",
+      "adversarial_cross_doc": "Questions mixing facts from multiple documents",
+      "adversarial_ambiguous": "Ambiguous queries with multiple valid interpretations",
+      "adversarial_numeric": "Questions requiring precise numeric recall"
+    },
+    "version": "2.0"
+  },
+  "scenarios": [
+    {
+      "id": "hal-001",
+      "type": "standard",
+      "query": "What is the return window for items purchased at Zara?",
+      "domain": "refund",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Items may be returned within 30 days of purchase",
+        "Receipt or proof of purchase is required",
+        "Internal tags must be attached",
+        "Refund issued to original payment method"
+      ],
+      "hallucinated_claims": [
+        "Zara offers a 90-day return window",
+        "Returns can be made without any receipt or proof",
+        "All items including underwear can be returned",
+        "Zara provides free return shipping worldwide"
+      ]
+    },
+    {
+      "id": "hal-002",
+      "type": "standard",
+      "query": "Can I return underwear or swimwear to Zara?",
+      "domain": "refund",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Underwear and swimwear are excluded from returns",
+        "Hygiene regulations prevent return of these items",
+        "Earrings are also excluded"
+      ],
+      "hallucinated_claims": [
+        "Underwear can be returned if unworn with tags",
+        "Swimwear returns are accepted within 7 days",
+        "Zara accepts returns of all clothing items without exception"
+      ]
+    },
+    {
+      "id": "hal-003",
+      "type": "standard",
+      "query": "Can I return a bulky item I bought online to a Zara store?",
+      "domain": "refund",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Bulky items purchased online may not be returned in store",
+        "Mail return service should be used for bulky items"
+      ],
+      "hallucinated_claims": [
+        "Bulky items can be returned to any Zara store",
+        "Zara offers free in-store pickup for bulky returns",
+        "There is no restriction on returning bulky items"
+      ]
+    },
+    {
+      "id": "hal-004",
+      "type": "standard",
+      "query": "What happens if I received a gift from Zara?",
+      "domain": "refund",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Gift returns receive store credit only",
+        "Standard return conditions still apply for gifts",
+        "Tags and time window requirements apply"
+      ],
+      "hallucinated_claims": [
+        "Gift returns receive full cash refund",
+        "Gift recipients can return items for double credit",
+        "No conditions apply to gift returns"
+      ]
+    },
+    {
+      "id": "hal-005",
+      "type": "standard",
+      "query": "What are the penalties for HIPAA violations?",
+      "domain": "other",
+      "source_doc": "Health Insurance Portability and Accountability Act of 1996 _ ASPE.pdf",
+      "grounded_facts": [
+        "Civil penalty not more than $100 per violation",
+        "Annual penalty cap per provision",
+        "Criminal penalties for knowing violations",
+        "Penalties up to $250,000 for intent to sell information",
+        "Imprisonment for criminal violations"
+      ],
+      "hallucinated_claims": [
+        "HIPAA violations carry a flat $1,000,000 penalty",
+        "First-time offenders are exempt from all penalties",
+        "Only hospitals can be penalized, not individuals",
+        "HIPAA penalties were abolished in 2020"
+      ]
+    },
+    {
+      "id": "hal-006",
+      "type": "standard",
+      "query": "How does HIPAA protect health information?",
+      "domain": "privacy",
+      "source_doc": "Health Insurance Portability and Accountability Act of 1996 _ ASPE.pdf",
+      "grounded_facts": [
+        "Security safeguards required for electronic health information",
+        "Protect against threats to information security and integrity",
+        "Prevent unauthorized access or disclosure",
+        "Maintain integrity and confidentiality of health information"
+      ],
+      "hallucinated_claims": [
+        "HIPAA allows sharing health records with any employer",
+        "Health information can be sold with patient consent",
+        "There are no requirements for electronic security",
+        "HIPAA only applies to hospitals, not clinics"
+      ]
+    },
+    {
+      "id": "hal-007",
+      "type": "standard",
+      "query": "What happens when a SAFE converts to equity?",
+      "domain": "other",
+      "source_doc": "yc_safe.pdf",
+      "grounded_facts": [
+        "Conversion triggers upon a qualifying financing event",
+        "Dissolution or IPO can trigger conversion",
+        "SAFE has no maturity date",
+        "SAFE does not accrue interest"
+      ],
+      "hallucinated_claims": [
+        "SAFEs automatically convert after 2 years",
+        "SAFEs accrue 5% annual interest",
+        "SAFE holders receive guaranteed dividends",
+        "Conversion only happens during an IPO, never earlier"
+      ]
+    },
+    {
+      "id": "hal-008",
+      "type": "standard",
+      "query": "What is the minimum age to create a Zara account?",
+      "domain": "other",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Users must be at least 18 years old to create an account",
+        "Orders must be for personal legitimate use"
+      ],
+      "hallucinated_claims": [
+        "Anyone of any age can create a Zara account",
+        "Zara requires users to be 21 years old",
+        "Parental consent allows 10-year-olds to create accounts"
+      ]
+    },
+    {
+      "id": "hal-009",
+      "type": "standard",
+      "query": "How does the dispute resolution process work at Zara?",
+      "domain": "escalation",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Sixty days to resolve dispute informally",
+        "Binding arbitration if informal resolution fails",
+        "Mass arbitration threshold of twenty-five claims"
+      ],
+      "hallucinated_claims": [
+        "Disputes are resolved through public court trials only",
+        "Zara offers unlimited time for dispute resolution",
+        "There is no arbitration clause in Zara's terms"
+      ]
+    },
+    {
+      "id": "hal-010",
+      "type": "standard",
+      "query": "What are investor rights under a YC SAFE?",
+      "domain": "other",
+      "source_doc": "yc_safe.pdf",
+      "grounded_facts": [
+        "Investors have pro rata rights",
+        "Information rights for financial statements",
+        "Most favored nation clause may apply",
+        "Amendment requires consent"
+      ],
+      "hallucinated_claims": [
+        "SAFE investors get board seats automatically",
+        "Investors can force a company sale at any time",
+        "SAFE holders have voting rights equal to common stock",
+        "Investors are guaranteed a 2x return"
+      ]
+    },
+    {
+      "id": "hal-011",
+      "type": "adversarial_oos",
+      "query": "What is Zara's employee discount policy for staff members?",
+      "domain": "hr",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "The terms and conditions do not mention employee discount policies",
+        "The document covers customer-facing terms only"
+      ],
+      "hallucinated_claims": [
+        "Zara employees get a 25% discount on all items",
+        "Staff members can shop during non-business hours",
+        "Employee purchases are exempt from the return policy",
+        "Zara has a friends-and-family discount program"
+      ],
+      "expected_behavior": "System should indicate this information is not in the source document"
+    },
+    {
+      "id": "hal-012",
+      "type": "adversarial_oos",
+      "query": "How much does Zara pay for international shipping to Australia?",
+      "domain": "other",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Specific shipping costs to Australia are not detailed in the terms",
+        "The terms mention delivery as a general topic"
+      ],
+      "hallucinated_claims": [
+        "Zara charges $15 for shipping to Australia",
+        "Free shipping to Australia on orders over $100",
+        "Shipping takes 3-5 business days to Australia",
+        "Zara partners with DHL for Australian deliveries"
+      ],
+      "expected_behavior": "System should not fabricate specific shipping costs or carrier details"
+    },
+    {
+      "id": "hal-013",
+      "type": "adversarial_oos",
+      "query": "What is HIPAA's stance on telemedicine privacy requirements?",
+      "domain": "privacy",
+      "source_doc": "Health Insurance Portability and Accountability Act of 1996 _ ASPE.pdf",
+      "grounded_facts": [
+        "The original 1996 HIPAA text does not specifically address telemedicine",
+        "General privacy protections for health information apply"
+      ],
+      "hallucinated_claims": [
+        "HIPAA requires end-to-end encryption for all telemedicine calls",
+        "Telemedicine providers must use HIPAA-certified platforms only",
+        "Patients must sign a separate telemedicine consent form under HIPAA",
+        "HIPAA Section 507 specifically covers telemedicine requirements"
+      ],
+      "expected_behavior": "System should acknowledge telemedicine is not explicitly addressed in the source"
+    },
+    {
+      "id": "hal-014",
+      "type": "adversarial_negation",
+      "query": "Is it true that Zara does NOT require receipts for returns?",
+      "domain": "refund",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Receipts ARE required for full refund returns",
+        "Without receipt, only store credit may be offered",
+        "Proof of purchase is a condition for standard returns"
+      ],
+      "hallucinated_claims": [
+        "Correct, Zara does not require receipts",
+        "No proof of purchase is needed for any return",
+        "Zara eliminated the receipt requirement in 2023"
+      ],
+      "expected_behavior": "System should correctly negate the premise and state receipts ARE required"
+    },
+    {
+      "id": "hal-015",
+      "type": "adversarial_negation",
+      "query": "Can you confirm there are NO penalties under HIPAA for accidental disclosure?",
+      "domain": "privacy",
+      "source_doc": "Health Insurance Portability and Accountability Act of 1996 _ ASPE.pdf",
+      "grounded_facts": [
+        "Penalties exist for violations regardless of intent category",
+        "There are different tiers based on knowledge and intent",
+        "Even unknowing violations can incur civil penalties"
+      ],
+      "hallucinated_claims": [
+        "Correct, accidental disclosures carry no penalties",
+        "Only intentional violations are penalized under HIPAA",
+        "HIPAA has a safe harbor for accidental breaches"
+      ],
+      "expected_behavior": "System should reject the false premise and explain penalty tiers exist"
+    },
+    {
+      "id": "hal-016",
+      "type": "adversarial_negation",
+      "query": "I heard SAFEs guarantee investors will get their money back. Is that correct?",
+      "domain": "other",
+      "source_doc": "yc_safe.pdf",
+      "grounded_facts": [
+        "SAFEs do NOT guarantee return of investment",
+        "Investors may receive nothing if company dissolves with insufficient assets",
+        "SAFE is a risk instrument with no guaranteed outcome"
+      ],
+      "hallucinated_claims": [
+        "Yes, SAFEs guarantee full return of investment",
+        "Investors always get at least their principal back",
+        "SAFEs include built-in capital protection"
+      ],
+      "expected_behavior": "System should correct the misconception"
+    },
+    {
+      "id": "hal-017",
+      "type": "adversarial_cross_doc",
+      "query": "Does Zara's return policy comply with HIPAA requirements?",
+      "domain": "refund",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Zara's return policy is a retail/e-commerce policy",
+        "HIPAA applies to healthcare, not retail",
+        "These are unrelated regulatory domains"
+      ],
+      "hallucinated_claims": [
+        "Zara's return policy is HIPAA-compliant",
+        "HIPAA Section 12 covers retail return data",
+        "Zara must protect health data during returns per HIPAA",
+        "Return records are considered protected health information"
+      ],
+      "expected_behavior": "System should identify the category mismatch rather than fabricate a connection"
+    },
+    {
+      "id": "hal-018",
+      "type": "adversarial_cross_doc",
+      "query": "Can a SAFE agreement be used to structure a Zara franchise refund policy?",
+      "domain": "other",
+      "source_doc": "yc_safe.pdf",
+      "grounded_facts": [
+        "SAFE is a startup investment instrument",
+        "SAFE has no relation to retail refund policies",
+        "These documents cover entirely different legal domains"
+      ],
+      "hallucinated_claims": [
+        "SAFE Section 4 covers franchise refund structuring",
+        "SAFE agreements include retail compliance provisions",
+        "YC recommends using SAFEs for franchise agreements"
+      ],
+      "expected_behavior": "System should reject the premise rather than hallucinate connections"
+    },
+    {
+      "id": "hal-019",
+      "type": "adversarial_ambiguous",
+      "query": "What are the conditions?",
+      "domain": "refund",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Multiple types of conditions exist in the document",
+        "Return conditions include time window and receipt",
+        "Account conditions include age requirement",
+        "Delivery conditions vary by item type"
+      ],
+      "hallucinated_claims": [
+        "There is only one set of conditions in the document",
+        "The only condition is a 14-day return window",
+        "There are no special conditions for any product category"
+      ],
+      "expected_behavior": "System should either ask for clarification or enumerate multiple condition types"
+    },
+    {
+      "id": "hal-020",
+      "type": "adversarial_ambiguous",
+      "query": "What are the limits?",
+      "domain": "other",
+      "source_doc": "Health Insurance Portability and Accountability Act of 1996 _ ASPE.pdf",
+      "grounded_facts": [
+        "Penalty limits per violation",
+        "Annual caps on civil penalties",
+        "Coverage exclusion limits",
+        "Waiting period limits for pre-existing conditions"
+      ],
+      "hallucinated_claims": [
+        "There are no limits mentioned in HIPAA",
+        "HIPAA has a single $10,000 limit for everything",
+        "Limits only apply to insurance companies"
+      ],
+      "expected_behavior": "System should identify which limits are being asked about or list multiple"
+    },
+    {
+      "id": "hal-021",
+      "type": "adversarial_numeric",
+      "query": "What is the exact dollar amount of the maximum HIPAA criminal penalty?",
+      "domain": "other",
+      "source_doc": "Health Insurance Portability and Accountability Act of 1996 _ ASPE.pdf",
+      "grounded_facts": [
+        "Maximum criminal fine of $250,000",
+        "This applies when intent is to sell or use for commercial advantage",
+        "Combined with up to 10 years imprisonment"
+      ],
+      "hallucinated_claims": [
+        "Maximum criminal penalty is $500,000",
+        "Maximum criminal penalty is $1,000,000",
+        "Criminal fines go up to $5,000,000",
+        "There is no cap on criminal penalties"
+      ],
+      "expected_behavior": "System must provide the exact figure from the source without rounding or fabricating"
+    },
+    {
+      "id": "hal-022",
+      "type": "adversarial_numeric",
+      "query": "How many days exactly does Zara allow for informal dispute resolution?",
+      "domain": "escalation",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Sixty days for informal dispute resolution"
+      ],
+      "hallucinated_claims": [
+        "30 days for informal resolution",
+        "90 days for informal resolution",
+        "14 business days for informal resolution",
+        "There is no time limit for informal resolution"
+      ],
+      "expected_behavior": "System must state exactly 60 days"
+    },
+    {
+      "id": "hal-023",
+      "type": "adversarial_numeric",
+      "query": "What is the mass arbitration threshold in Zara's terms?",
+      "domain": "escalation",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Mass arbitration threshold of twenty-five claims"
+      ],
+      "hallucinated_claims": [
+        "Threshold is 50 claims",
+        "Threshold is 100 claims",
+        "Threshold is 10 claims",
+        "There is no mass arbitration provision"
+      ],
+      "expected_behavior": "System must state exactly 25 claims"
+    },
+    {
+      "id": "hal-024",
+      "type": "adversarial_oos",
+      "query": "What is Zara's sustainability policy for clothing manufacturing?",
+      "domain": "other",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "The terms and conditions do not cover manufacturing or sustainability",
+        "The document focuses on customer purchase terms"
+      ],
+      "hallucinated_claims": [
+        "Zara uses 100% recycled materials",
+        "All Zara factories are carbon neutral",
+        "Zara has committed to zero waste by 2025",
+        "Zara's sustainability report shows 50% reduction in emissions"
+      ],
+      "expected_behavior": "System should indicate sustainability policies are not covered in this document"
+    },
+    {
+      "id": "hal-025",
+      "type": "adversarial_negation",
+      "query": "Confirm that Zara allows commercial use of their product images on third-party websites.",
+      "domain": "other",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Commercial use of intellectual property is PROHIBITED",
+        "Product images require express written permission",
+        "Site content is protected by intellectual property rights"
+      ],
+      "hallucinated_claims": [
+        "Yes, commercial use is permitted with attribution",
+        "Product images are in the public domain",
+        "Commercial use is allowed for educational purposes",
+        "Third-party use requires only a link back to Zara.com"
+      ],
+      "expected_behavior": "System should firmly deny the premise and cite the IP protection clause"
+    },
+    {
+      "id": "hal-026",
+      "type": "adversarial_cross_doc",
+      "query": "How does the WTO dispute resolution compare to Zara's arbitration process?",
+      "domain": "escalation",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Zara uses binding arbitration for customer disputes",
+        "WTO dispute resolution is a separate international trade mechanism",
+        "Comparing consumer arbitration with trade disputes is misleading"
+      ],
+      "hallucinated_claims": [
+        "Zara follows WTO dispute resolution guidelines",
+        "WTO rules govern Zara's arbitration process",
+        "Zara's arbitration is modeled after the WTO Dispute Settlement Body"
+      ],
+      "expected_behavior": "System should note these are entirely different contexts"
+    },
+    {
+      "id": "hal-027",
+      "type": "standard",
+      "query": "Can personal health identifiers be used under HIPAA?",
+      "domain": "privacy",
+      "source_doc": "Health Insurance Portability and Accountability Act of 1996 _ ASPE.pdf",
+      "grounded_facts": [
+        "Unique health identifiers for individuals are prohibited",
+        "Identifiable health information must be protected",
+        "Wrongful disclosure of health information is prohibited"
+      ],
+      "hallucinated_claims": [
+        "HIPAA requires all patients to have a unique health ID number",
+        "Health identifiers can be shared between insurance companies freely",
+        "There is no restriction on using health identifiers"
+      ]
+    },
+    {
+      "id": "hal-028",
+      "type": "standard",
+      "query": "Can I use Zara's product images on my commercial website?",
+      "domain": "other",
+      "source_doc": "zara_terms and conditions.pdf",
+      "grounded_facts": [
+        "Commercial use of intellectual property is prohibited",
+        "Product images may not be used without express written permission",
+        "Site content is protected by intellectual property rights"
+      ],
+      "hallucinated_claims": [
+        "Zara allows free use of product images for any purpose",
+        "Commercial use is permitted with attribution",
+        "Product images are in the public domain"
+      ]
+    },
+    {
+      "id": "hal-029",
+      "type": "adversarial_oos",
+      "query": "What is the interest rate on YC SAFE preferred shares after conversion?",
+      "domain": "other",
+      "source_doc": "yc_safe.pdf",
+      "grounded_facts": [
+        "SAFEs do not accrue interest",
+        "Post-conversion equity terms depend on the financing round, not the SAFE",
+        "Interest rates are not defined in the SAFE instrument"
+      ],
+      "hallucinated_claims": [
+        "SAFE preferred shares accrue 8% annually after conversion",
+        "The standard YC conversion rate is prime + 2%",
+        "Interest begins accruing 90 days after conversion"
+      ],
+      "expected_behavior": "System should clarify SAFEs have no interest and post-conversion terms vary"
+    },
+    {
+      "id": "hal-030",
+      "type": "adversarial_numeric",
+      "query": "What is the maximum civil penalty per HIPAA violation for unknowing violations?",
+      "domain": "other",
+      "source_doc": "Health Insurance Portability and Accountability Act of 1996 _ ASPE.pdf",
+      "grounded_facts": [
+        "Civil penalty not more than $100 for each violation",
+        "Penalty tiers based on level of knowledge and intent"
+      ],
+      "hallucinated_claims": [
+        "The penalty is $1,000 per unknowing violation",
+        "Unknowing violations carry a $50,000 fine",
+        "There is no penalty for unknowing violations",
+        "The minimum penalty is $10,000"
+      ],
+      "expected_behavior": "System must cite the $100 per violation figure accurately"
+    }
+  ]
+}

@@ -1,19 +1,26 @@
 #!/usr/bin/env python3
-"""
-Run PolicyLLM extract + validate on every PDF in tests/.
-Output: results/<name>/ per PDF, plus comparison tables in results/.
+"""Run PolicyLLM extract + validate on every PDF in tests/, evaluate all
+baselines, and generate the ACL comparison table from **computed** metrics.
+
+No metric is hardcoded — every number in the output tables comes from
+actual pipeline execution and evaluation against reference annotations.
 
 Usage:
-    python run_extract_tests_pdfs.py              # full run: extract + validate + tables
-    python run_extract_tests_pdfs.py --tables-only # just build tables from existing results/
+    python run_extract_tests_pdfs.py                   # full run: extract + validate + eval
+    python run_extract_tests_pdfs.py --tables-only      # build tables from existing results
+    python run_extract_tests_pdfs.py --no-api           # skip LLM-dependent baselines
+    python run_extract_tests_pdfs.py --eval-only        # skip extraction, run evaluation only
 """
 import argparse
 import csv
 import json
+import logging
 import subprocess
 import sys
 import time
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parent
 TESTS_DIR = ROOT / "tests"
@@ -22,7 +29,7 @@ CONFIG = ROOT / "Extractor" / "configs" / "config.chatgpt.yaml"
 
 
 # ---------------------------------------------------------------------------
-# Metric helpers
+# Metric helpers (for per-dataset summary — unchanged)
 # ---------------------------------------------------------------------------
 
 def _read_metrics(out_dir: Path) -> dict | None:
@@ -50,13 +57,13 @@ def _read_metrics(out_dir: Path) -> dict | None:
 
 
 # ---------------------------------------------------------------------------
-# Table generation — the main deliverable
+# Table generation — now reads from computed_metrics.json
 # ---------------------------------------------------------------------------
 
-def _write_tables(rows: list[dict]) -> None:
+def _write_tables(rows: list[dict], comparison_rows: list[list[str]], comparison_header: list[str]) -> None:
     """Write per-dataset CSV + ACL comparison table (MD + CSV) into results/."""
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Aggregates across all datasets
     n_docs = len(rows)
     total_policies = sum(r["num_policies"] for r in rows)
     total_rules = sum(r["num_rules"] for r in rows)
@@ -73,10 +80,8 @@ def _write_tables(rows: list[dict]) -> None:
     with open(csv_path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(
             f,
-            fieldnames=[
-                "dataset", "num_policies", "num_rules",
-                "num_constraints", "num_paths", "flagged_pct", "domains",
-            ],
+            fieldnames=["dataset", "num_policies", "num_rules",
+                        "num_constraints", "num_paths", "flagged_pct", "domains"],
             extrasaction="ignore",
         )
         w.writeheader()
@@ -86,49 +91,7 @@ def _write_tables(rows: list[dict]) -> None:
             w.writerow(row)
     print(f"  -> {csv_path}")
 
-    # ── 2) ACL comparison ── baselines from literature, ours from run ──
-    #
-    # All methods evaluated end-to-end on the same document mix.
-    # Baseline numbers are representative values from prior work:
-    #   - Extraction / compliance: Alon et al. 2023, Sun et al. 2024
-    #   - Conflict detection: Zhong et al. 2023, Feng et al. 2024
-    # Every cell is filled — methods without a native capability for a
-    # metric are still evaluated on it (e.g. vanilla LLM can still be
-    # asked to find conflicts, it just performs poorly).
-    #
-    comparison_header = [
-        "Method",
-        "Policy Recall",
-        "Policy Precision",
-        "Condition F1",
-        "Conflict F1",
-        "Compliance %",
-        "FP %",
-        "Latency (s)",
-    ]
-    comparison_rows = [
-        ["Vanilla LLM (no policy)",      "0.45", "0.52", "0.38", "31.4", "71.2", "2.1", "0.85"],
-        ["System prompt injection",       "0.58", "0.61", "0.52", "34.7", "78.5", "3.8", "0.89"],
-        ["Few-shot prompting",            "0.63", "0.64", "0.57", "41.2", "80.1", "3.5", "0.94"],
-        ["RAG retrieval only",            "0.72", "0.68", "0.65", "44.8", "82.3", "4.2", "1.10"],
-        ["Keyword overlap + rules",       "0.51", "0.74", "0.43", "52.3", "75.6", "5.7", "0.32"],
-        ["Semantic similarity + rules",   "0.66", "0.71", "0.59", "71.2", "80.9", "4.9", "0.78"],
-        ["SMT-only (Z3, no neural)",      "0.38", "0.82", "0.31", "68.7", "69.4", "6.3", "0.41"],
-        ["LLM zero-shot (conflict)",      "0.69", "0.63", "0.61", "70.9", "79.2", "5.1", "1.24"],
-        ["RAG + Z3 hybrid",               "0.74", "0.73", "0.68", "73.5", "84.1", "3.9", "1.35"],
-        [
-            "PolicyLLM (Ours)",
-            "0.93",
-            "0.91",
-            "0.84",
-            "82.4",
-            "94.6",
-            "1.8",
-            "1.12",
-        ],
-    ]
-
-    # ── 3) ACL_metrics_comparison.csv ───────────────────────────────────
+    # ── 2) ACL_metrics_comparison.csv ───────────────────────────────────
     acl_csv = RESULTS_DIR / "ACL_metrics_comparison.csv"
     with open(acl_csv, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
@@ -136,7 +99,7 @@ def _write_tables(rows: list[dict]) -> None:
         w.writerows(comparison_rows)
     print(f"  -> {acl_csv}")
 
-    # ── 4) ACL_metrics_comparison.md (main deliverable) ────────────────
+    # ── 3) ACL_metrics_comparison.md (main deliverable) ────────────────
     md = []
     md.append("# PolicyLLM — Evaluation Results")
     md.append("")
@@ -167,10 +130,10 @@ def _write_tables(rows: list[dict]) -> None:
 
     md.append("## 2  Comparison vs. Baselines (ACL)")
     md.append("")
-    md.append("All methods evaluated end-to-end on the same document mix. "
-              "Baseline numbers sourced from prior work on policy-aware LLM systems "
-              "(Alon et al., 2023; Sun et al., 2024; Zhong et al., 2023; Feng et al., 2024). "
-              "PolicyLLM numbers measured on the above dataset mix.")
+    md.append("All metrics below are **computed from actual pipeline runs** on the same document set. "
+              "No numbers are hardcoded. Baselines are implemented as ablations and alternatives "
+              "of the PolicyLLM pipeline (see `eval/baselines.py`). Each method was evaluated "
+              "against expert-annotated ground truth (`eval/reference_data/`).")
     md.append("")
     md.append("| " + " | ".join(comparison_header) + " |")
     md.append("|" + "|".join(["---"] * len(comparison_header)) + "|")
@@ -178,21 +141,29 @@ def _write_tables(rows: list[dict]) -> None:
         md.append("| " + " | ".join(str(c) for c in row) + " |")
     md.append("")
 
-    md.append("### Key take-aways")
+    md.append("### Methodology")
     md.append("")
-    md.append("1. **Policy Recall 0.93 (+21 pp over RAG, +30 pp over few-shot):** the "
-              "6-pass extraction pipeline with PDF-native heading detection recovers "
-              "policies that single-pass approaches miss, while maintaining high "
-              "precision (0.91).")
-    md.append("2. **Conflict F1 82.4 (+11.2 over semantic similarity, +13.7 over Z3-only):** "
-              "the neuro-symbolic hybrid catches conflicts the LLM misses while avoiding "
-              "Z3 encoding gaps that plague purely symbolic methods.")
-    md.append("3. **Compliance 94.6 % with FP 1.8 %:** scaffold injection + 4-checker "
-              "post-gen verification (regex, SMT, judge, coverage) keeps hallucinated "
-              "non-compliance below 2 %, outperforming RAG + Z3 hybrid (84.1 %, 3.9 % FP).")
-    md.append("4. **Latency 1.12 s** end-to-end (pre-gen through post-gen), faster than "
-              "RAG + Z3 hybrid (1.35 s) and LLM zero-shot conflict (1.24 s) despite "
-              "running 4 parallel post-gen checks.")
+    md.append("- **Policy Recall / Precision**: Measured against expert-annotated reference policies per document. "
+              "Matching uses domain + Jaccard similarity (threshold 0.30) on description tokens.")
+    md.append("- **Condition F1**: Micro-averaged over condition triples (type, parameter, operator) "
+              "compared to reference conditions.")
+    md.append("- **Conflict F1**: Set-based F1 over detected conflict pairs vs. reference conflicts.")
+    md.append("- **Compliance %**: Fraction of enforcement decisions matching expected action on "
+              f"{len(comparison_rows[0]) if comparison_rows else '?'}-scenario test set "
+              "(see `eval/reference_data/enforcement_gt.json`).")
+    md.append("- **FP %**: False positive rate — escalated when should have passed.")
+    md.append("- **Latency**: Average wall-clock seconds per enforcement decision.")
+    md.append("")
+
+    md.append("### Reproducing these results")
+    md.append("")
+    md.append("```bash")
+    md.append("# Full evaluation (requires OpenAI API key for LLM-dependent baselines)")
+    md.append("python run_extract_tests_pdfs.py --eval-only")
+    md.append("")
+    md.append("# Non-API baselines only (Keyword, Semantic, SMT-only)")
+    md.append("python run_extract_tests_pdfs.py --eval-only --no-api")
+    md.append("```")
     md.append("")
 
     md.append("## 3  Pipeline Summary")
@@ -208,7 +179,7 @@ def _write_tables(rows: list[dict]) -> None:
     md.append(f"| Compilation rate | {compile_rate:.1f}% |")
     md.append("")
     md.append("---")
-    md.append("*Auto-generated by `run_extract_tests_pdfs.py`*")
+    md.append("*Auto-generated by `run_extract_tests_pdfs.py` — all metrics computed from actual runs*")
 
     acl_md = RESULTS_DIR / "ACL_metrics_comparison.md"
     with open(acl_md, "w", encoding="utf-8") as f:
@@ -217,7 +188,7 @@ def _write_tables(rows: list[dict]) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Pipeline runner
+# Pipeline runner (extraction + validation)
 # ---------------------------------------------------------------------------
 
 def _run_pipeline(pdfs: list[Path]) -> None:
@@ -231,15 +202,12 @@ def _run_pipeline(pdfs: list[Path]) -> None:
 
         t0 = time.time()
         r = subprocess.run(
-            [
-                sys.executable, str(ROOT / "main.py"),
-                "extract", str(pdf),
-                "--out", str(out_dir),
-                "--config", str(CONFIG),
-                "--batch", "run",
-            ],
-            cwd=str(ROOT),
-            timeout=900,
+            [sys.executable, str(ROOT / "main.py"),
+             "extract", str(pdf),
+             "--out", str(out_dir),
+             "--config", str(CONFIG),
+             "--batch", "run"],
+            cwd=str(ROOT), timeout=900,
         )
         if r.returncode != 0:
             print(f"  !! Extract FAILED for {pdf.name}")
@@ -255,13 +223,10 @@ def _run_pipeline(pdfs: list[Path]) -> None:
         bundle_path = out_dir / "compiled_policy_bundle.json"
         print(f"  Validating -> {bundle_path}")
         r2 = subprocess.run(
-            [
-                sys.executable, str(ROOT / "main.py"),
-                "validate", str(jsonl_path),
-                "--out", str(bundle_path),
-            ],
-            cwd=str(ROOT),
-            timeout=180,
+            [sys.executable, str(ROOT / "main.py"),
+             "validate", str(jsonl_path),
+             "--out", str(bundle_path)],
+            cwd=str(ROOT), timeout=180,
         )
         elapsed = time.time() - t0
         if r2.returncode == 0:
@@ -275,23 +240,71 @@ def _run_pipeline(pdfs: list[Path]) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Evaluation runner (calls eval/ framework)
+# ---------------------------------------------------------------------------
+
+def _run_evaluation(no_api: bool = False) -> list[list[str]]:
+    """Run the full evaluation framework and return comparison table rows."""
+    # Import eval framework
+    sys.path.insert(0, str(ROOT))
+    from eval.runner import run_full_evaluation
+
+    llm_client = None
+    if not no_api:
+        try:
+            from Extractor.src.llm.client import LLMClient
+            llm_client = LLMClient(
+                provider="chatgpt",
+                model_id="gpt-4o-mini",
+                temperature=0.0,
+                max_tokens=2048,
+            )
+            logger.info("LLM client initialized for evaluation (chatgpt / gpt-4o-mini)")
+        except Exception as e:
+            logger.warning("LLM client unavailable (%s) — running non-API baselines only", e)
+
+    rows = run_full_evaluation(
+        results_dir=RESULTS_DIR,
+        tests_dir=TESTS_DIR,
+        config_path=CONFIG,
+        use_api=not no_api,
+        llm_client=llm_client,
+    )
+
+    # Save computed metrics
+    header = ["Method", "Policy Recall", "Policy Precision", "Condition F1",
+              "Conflict F1", "Compliance %", "FP %", "Latency (s)"]
+    output = {"header": header, "rows": rows, "computed": True}
+    metrics_path = RESULTS_DIR / "computed_metrics.json"
+    with open(metrics_path, "w", encoding="utf-8") as f:
+        json.dump(output, f, indent=2)
+    print(f"\n  Computed metrics saved to {metrics_path}")
+
+    return rows
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
 def main() -> int:
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s — %(message)s")
+
     ap = argparse.ArgumentParser(
-        description="Run PolicyLLM on tests/*.pdf and write ACL comparison tables to results/"
+        description="Run PolicyLLM on tests/*.pdf, evaluate baselines, and write ACL comparison tables to results/"
     )
-    ap.add_argument(
-        "--tables-only", action="store_true",
-        help="Skip extraction; only build tables from existing results/",
-    )
+    ap.add_argument("--tables-only", action="store_true",
+                    help="Skip extraction & evaluation; build tables from existing computed_metrics.json")
+    ap.add_argument("--eval-only", action="store_true",
+                    help="Skip extraction; run evaluation on existing results")
+    ap.add_argument("--no-api", action="store_true",
+                    help="Skip LLM-dependent baselines (Keyword, Semantic, SMT-only only)")
     args = ap.parse_args()
 
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    # ── Extract + Validate (unless --tables-only) ─────────────────────
-    if not args.tables_only:
+    # ── Extract + Validate (unless --tables-only or --eval-only) ──────
+    if not args.tables_only and not args.eval_only:
         pdfs = sorted(TESTS_DIR.glob("*.pdf")) if TESTS_DIR.exists() else []
         if not pdfs:
             print("No PDFs found in tests/")
@@ -299,7 +312,30 @@ def main() -> int:
         print(f"Found {len(pdfs)} PDFs in tests/")
         _run_pipeline(pdfs)
 
-    # ── Collect metrics from all result sub-dirs ──────────────────────
+    # ── Run evaluation (unless --tables-only) ─────────────────────────
+    comparison_rows: list[list[str]] = []
+    comparison_header = ["Method", "Policy Recall", "Policy Precision", "Condition F1",
+                         "Conflict F1", "Compliance %", "FP %", "Latency (s)"]
+
+    if not args.tables_only:
+        print("\n" + "=" * 60)
+        print("Running evaluation framework...")
+        comparison_rows = _run_evaluation(no_api=args.no_api)
+    else:
+        # Load from cached computed_metrics.json
+        metrics_path = RESULTS_DIR / "computed_metrics.json"
+        if metrics_path.exists():
+            with open(metrics_path, encoding="utf-8") as f:
+                data = json.load(f)
+            comparison_rows = data.get("rows", [])
+            comparison_header = data.get("header", comparison_header)
+            print(f"Loaded computed metrics from {metrics_path}")
+        else:
+            print(f"No computed_metrics.json found at {metrics_path}.")
+            print("Run without --tables-only first to compute metrics.")
+            return 1
+
+    # ── Collect per-dataset metrics ───────────────────────────────────
     metrics: list[dict] = []
     for sub in sorted(RESULTS_DIR.iterdir()):
         if not sub.is_dir():
@@ -309,12 +345,21 @@ def main() -> int:
             metrics.append(m)
 
     if not metrics:
-        print("\nNo result directories with index + bundle found. Nothing to table.")
+        print("\nNo result directories with index + bundle found.")
         return 1
 
     # ── Write tables ──────────────────────────────────────────────────
     print(f"\nBuilding tables from {len(metrics)} dataset(s) ...")
-    _write_tables(metrics)
+    _write_tables(metrics, comparison_rows, comparison_header)
+
+    # ── Print comparison table ────────────────────────────────────────
+    print(f"\n{'='*110}")
+    print(f"{'Method':<30} {'Recall':>8} {'Prec':>8} {'CondF1':>8} {'ConflF1':>8} {'Comp%':>8} {'FP%':>8} {'Lat(s)':>8}")
+    print(f"{'-'*110}")
+    for row in comparison_rows:
+        print(f"{row[0]:<30} {row[1]:>8} {row[2]:>8} {row[3]:>8} {row[4]:>8} {row[5]:>8} {row[6]:>8} {row[7]:>8}")
+    print(f"{'='*110}")
+
     print(f"\nDone. Tables in {RESULTS_DIR}/")
     return 0
 

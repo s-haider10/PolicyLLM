@@ -142,6 +142,8 @@ def verify_facts_against_rules(
     Solver = z3["Solver"]
     sat = z3["sat"]
 
+    # Each rule gets its own Solver instance to avoid shared state between
+    # independent policy checks — correct by construction, not by cleanup.
     for rule in rules:
         solver = Solver()
 
@@ -177,7 +179,7 @@ def verify_facts_against_rules(
                     "violation_type": "constraint_breach",
                 })
 
-    # Path traversal verification
+    # Path traversal verification — one solver per path (no shared state).
     if paths:
         z3 = _get_z3()
         Solver = z3["Solver"]
