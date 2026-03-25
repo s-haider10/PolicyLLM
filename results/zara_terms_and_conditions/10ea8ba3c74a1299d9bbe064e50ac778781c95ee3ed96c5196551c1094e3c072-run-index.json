@@ -1,0 +1,12 @@
+{
+  "doc_id": "10ea8ba3c74a1299d9bbe064e50ac778781c95ee3ed96c5196551c1094e3c072",
+  "batch_id": "run",
+  "num_policies": 25,
+  "flagged_pct": 100.0,
+  "domains": {
+    "escalation": 1,
+    "other": 12,
+    "refund": 11,
+    "security": 1
+  }
+}

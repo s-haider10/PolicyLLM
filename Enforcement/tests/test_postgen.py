@@ -195,6 +195,11 @@ class TestSMT:
 
     def test_verify_clean_facts_pass(self, bundle, refund_context):
         """Facts consistent with a rule should pass."""
+        try:
+            from Enforcement.ir import _get_z3
+            _get_z3()
+        except Exception:
+            pytest.skip("Z3 not loadable; SMT skipped")
         facts = {
             "has_receipt": True,
             "product_category": "electronics",
@@ -310,6 +315,13 @@ class TestSMTPathVerification:
 
     def test_response_outside_paths(self, refund_context_with_llm):
         """Response with facts not on any DAG path should score low."""
+        try:
+            from Enforcement.ir import _get_z3
+            _get_z3()
+        except Exception:
+            import pytest
+            pytest.skip("Z3 not loadable (e.g. lib arch mismatch); SMT skipped")
+
         response = (
             "Customer has receipt confirmed. "
             "The product category is furniture. "  # Not in any path!

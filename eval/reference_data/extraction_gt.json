@@ -1,0 +1,159 @@
+{
+  "_meta": {
+    "description": "Expert-annotated ground truth for extraction evaluation. Each document has reference policies, conditions, and conflicts that a correct extractor should find.",
+    "annotator": "domain-expert",
+    "version": "1.0"
+  },
+  "zara_terms_and_conditions": {
+    "expected_policies": [
+      {"id": "zara-ref-01", "domain": "refund", "description": "Standard return window with receipt required", "keywords": ["return", "receipt", "refund", "days"], "action_type": "required"},
+      {"id": "zara-ref-02", "domain": "refund", "description": "Internal tags must remain intact for returns", "keywords": ["tags", "intact", "return"], "action_type": "required"},
+      {"id": "zara-ref-03", "domain": "refund", "description": "Bulky items not eligible for in-store return", "keywords": ["bulky", "items", "store", "return"], "action_type": "prohibited"},
+      {"id": "zara-ref-04", "domain": "refund", "description": "Online purchase return via mail or store", "keywords": ["online", "purchase", "return", "mail", "store"], "action_type": "conditional"},
+      {"id": "zara-ref-05", "domain": "refund", "description": "Refund to original payment method", "keywords": ["refund", "payment", "method", "original"], "action_type": "required"},
+      {"id": "zara-ref-06", "domain": "refund", "description": "Exchange policy for defective items", "keywords": ["exchange", "defective", "faulty"], "action_type": "conditional"},
+      {"id": "zara-ref-07", "domain": "refund", "description": "Gift receipt return for store credit", "keywords": ["gift", "receipt", "store", "credit"], "action_type": "fallback"},
+      {"id": "zara-ref-08", "domain": "refund", "description": "Sale items return restrictions", "keywords": ["sale", "final", "return", "restrictions"], "action_type": "conditional"},
+      {"id": "zara-ref-09", "domain": "refund", "description": "Hygiene product return prohibition", "keywords": ["hygiene", "underwear", "swimwear", "return"], "action_type": "prohibited"},
+      {"id": "zara-ref-10", "domain": "refund", "description": "Damaged product return window", "keywords": ["damaged", "defective", "return", "days"], "action_type": "required"},
+      {"id": "zara-ref-11", "domain": "refund", "description": "International return shipping costs", "keywords": ["international", "shipping", "cost", "return"], "action_type": "conditional"},
+      {"id": "zara-ref-12", "domain": "other", "description": "Age requirement for account creation", "keywords": ["age", "years", "old", "18"], "action_type": "required"},
+      {"id": "zara-ref-13", "domain": "other", "description": "Legitimate use requirement for orders", "keywords": ["legitimate", "orders", "speculative", "fraudulent"], "action_type": "required"},
+      {"id": "zara-ref-14", "domain": "other", "description": "Accurate contact details required", "keywords": ["correct", "accurate", "contact", "details"], "action_type": "required"},
+      {"id": "zara-ref-15", "domain": "other", "description": "Order acceptance and confirmation", "keywords": ["order", "accepted", "confirmation", "email"], "action_type": "conditional"},
+      {"id": "zara-ref-16", "domain": "other", "description": "Pricing error cancellation right", "keywords": ["pricing", "error", "obvious", "cancel"], "action_type": "conditional"},
+      {"id": "zara-ref-17", "domain": "other", "description": "Delivery attempt and redelivery policy", "keywords": ["delivery", "attempt", "unsuccessful", "redeliver"], "action_type": "conditional"},
+      {"id": "zara-ref-18", "domain": "other", "description": "Signature required delivery handling", "keywords": ["signature", "delivery", "cannot", "safe"], "action_type": "conditional"},
+      {"id": "zara-ref-19", "domain": "security", "description": "Network security non-interference", "keywords": ["network", "security", "interference", "viruses"], "action_type": "prohibited"},
+      {"id": "zara-ref-20", "domain": "other", "description": "Intellectual property prohibition", "keywords": ["intellectual", "property", "license", "prohibited"], "action_type": "prohibited"},
+      {"id": "zara-ref-21", "domain": "other", "description": "User-generated content responsibility", "keywords": ["content", "responsible", "posted", "user"], "action_type": "required"},
+      {"id": "zara-ref-22", "domain": "other", "description": "No false or misleading content", "keywords": ["false", "misleading", "material", "content"], "action_type": "prohibited"},
+      {"id": "zara-ref-23", "domain": "other", "description": "Copyright and permission for posts", "keywords": ["copyright", "permission", "rights", "post"], "action_type": "required"},
+      {"id": "zara-ref-24", "domain": "other", "description": "No unlawful or obscene material", "keywords": ["unlawful", "obscene", "material"], "action_type": "prohibited"},
+      {"id": "zara-ref-25", "domain": "escalation", "description": "Dispute resolution and arbitration", "keywords": ["dispute", "resolution", "arbitration", "sixty"], "action_type": "required"},
+      {"id": "zara-ref-26", "domain": "other", "description": "Commercial use prohibition", "keywords": ["commercial", "use", "prohibited", "personal"], "action_type": "prohibited"},
+      {"id": "zara-ref-27", "domain": "other", "description": "No chain letters or pyramid schemes", "keywords": ["chain", "letters", "pyramid", "schemes"], "action_type": "prohibited"}
+    ],
+    "expected_conditions": [
+      {"type": "time_window", "parameter": "days_since_purchase", "operator": "<="},
+      {"type": "boolean_flag", "parameter": "receipt_required", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "tags_required", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "is_legitimate", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "is_correct", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "is_obvious", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "order_status", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "unsuccessful", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "is_prohibited", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "is_interfering", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "is_infringing", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "is_illegal", "operator": "=="},
+      {"type": "customer_tier", "parameter": "customer_tier", "operator": "=="},
+      {"type": "amount_threshold", "parameter": "refund_amount", "operator": "<="}
+    ],
+    "expected_conflicts": [
+      {"policies": ["zara-ref-03", "zara-ref-04"], "type": "logical", "description": "Bulky item store exclusion vs online return option"},
+      {"policies": ["zara-ref-01", "zara-ref-08"], "type": "logical", "description": "Standard return vs sale item restrictions"},
+      {"policies": ["zara-ref-05", "zara-ref-07"], "type": "logical", "description": "Original payment refund vs store credit for gift receipt"}
+    ]
+  },
+  "Health_Insurance_Portability_a": {
+    "expected_policies": [
+      {"id": "hipaa-ref-01", "domain": "other", "description": "Adopt transaction standards within 18 months", "keywords": ["adopt", "standards", "months", "transaction"], "action_type": "required"},
+      {"id": "hipaa-ref-02", "domain": "other", "description": "Secretary may adopt standard if none exists", "keywords": ["secretary", "standard", "adopt", "organization"], "action_type": "conditional"},
+      {"id": "hipaa-ref-03", "domain": "other", "description": "Standards must reduce administrative costs", "keywords": ["reduce", "administrative", "costs", "substantially"], "action_type": "required"},
+      {"id": "hipaa-ref-04", "domain": "other", "description": "Consultation with designated organizations", "keywords": ["consultation", "organizations", "required"], "action_type": "required"},
+      {"id": "hipaa-ref-05", "domain": "security", "description": "Security safeguards for electronic information", "keywords": ["security", "safeguards", "electronic", "information"], "action_type": "required"},
+      {"id": "hipaa-ref-06", "domain": "security", "description": "Protect against threats to information security", "keywords": ["protect", "threats", "security", "integrity"], "action_type": "required"},
+      {"id": "hipaa-ref-07", "domain": "security", "description": "Prevent unauthorized access or disclosure", "keywords": ["unauthorized", "access", "disclosure", "protect"], "action_type": "prohibited"},
+      {"id": "hipaa-ref-08", "domain": "privacy", "description": "Maintain integrity and confidentiality of health information", "keywords": ["integrity", "confidentiality", "health", "information"], "action_type": "required"},
+      {"id": "hipaa-ref-09", "domain": "other", "description": "Standard transaction conduct requirements", "keywords": ["standard", "transaction", "conduct"], "action_type": "required"},
+      {"id": "hipaa-ref-10", "domain": "other", "description": "Penalty for non-compliance not more than $100", "keywords": ["penalty", "not", "more", "100", "violation"], "action_type": "required"},
+      {"id": "hipaa-ref-11", "domain": "other", "description": "Reasonable cause exception for penalty", "keywords": ["reasonable", "cause", "penalty", "waived"], "action_type": "conditional"},
+      {"id": "hipaa-ref-12", "domain": "other", "description": "Criminal penalty for knowing violations", "keywords": ["criminal", "penalty", "knowing", "violates"], "action_type": "required"},
+      {"id": "hipaa-ref-13", "domain": "privacy", "description": "Prohibition on unique health identifiers", "keywords": ["unique", "health", "identifier", "individual"], "action_type": "prohibited"},
+      {"id": "hipaa-ref-14", "domain": "privacy", "description": "Protection of identifiable health information", "keywords": ["identifiable", "health", "information", "obtains"], "action_type": "prohibited"},
+      {"id": "hipaa-ref-15", "domain": "other", "description": "Compliance extension based on nature of failure", "keywords": ["extension", "compliance", "nature", "failure"], "action_type": "conditional"},
+      {"id": "hipaa-ref-16", "domain": "other", "description": "Consider technical capabilities of record systems", "keywords": ["technical", "capabilities", "record", "systems"], "action_type": "required"},
+      {"id": "hipaa-ref-17", "domain": "other", "description": "Consider costs of security measures", "keywords": ["costs", "security", "measures"], "action_type": "required"},
+      {"id": "hipaa-ref-18", "domain": "other", "description": "Consider training needs for access to information", "keywords": ["training", "needs", "access"], "action_type": "required"},
+      {"id": "hipaa-ref-19", "domain": "other", "description": "Consider audit trail value in standards", "keywords": ["audit", "trail", "value", "standards"], "action_type": "required"},
+      {"id": "hipaa-ref-20", "domain": "other", "description": "Consider needs of small health care providers", "keywords": ["small", "providers", "needs", "health"], "action_type": "required"},
+      {"id": "hipaa-ref-21", "domain": "other", "description": "Cooperation extent in implementing standards", "keywords": ["cooperation", "implementing", "standards"], "action_type": "required"},
+      {"id": "hipaa-ref-22", "domain": "other", "description": "Noncompliance penalties assessment", "keywords": ["noncompliance", "penalties", "assessment"], "action_type": "required"},
+      {"id": "hipaa-ref-23", "domain": "privacy", "description": "Wrongful disclosure of health information", "keywords": ["wrongful", "disclosure", "health", "information"], "action_type": "prohibited"},
+      {"id": "hipaa-ref-24", "domain": "other", "description": "Government responsibilities for information quality", "keywords": ["government", "responsibilities", "quality", "information"], "action_type": "required"},
+      {"id": "hipaa-ref-25", "domain": "other", "description": "Implementation timeline and problems reporting", "keywords": ["implementation", "problems", "reporting", "timeline"], "action_type": "required"},
+      {"id": "hipaa-ref-26", "domain": "other", "description": "Annual penalty cap per provision", "keywords": ["annual", "penalty", "cap", "provision", "25000"], "action_type": "required"},
+      {"id": "hipaa-ref-27", "domain": "other", "description": "Enhanced penalties for willful neglect", "keywords": ["willful", "neglect", "penalties", "enhanced"], "action_type": "required"},
+      {"id": "hipaa-ref-28", "domain": "other", "description": "Criminal penalty up to $250,000 for intent to sell", "keywords": ["criminal", "250000", "sell", "intent"], "action_type": "required"},
+      {"id": "hipaa-ref-29", "domain": "other", "description": "Imprisonment for criminal violations", "keywords": ["imprisonment", "criminal", "years", "violation"], "action_type": "required"}
+    ],
+    "expected_conditions": [
+      {"type": "time_window", "parameter": "days_since_purchase", "operator": "<="},
+      {"type": "boolean_flag", "parameter": "has_standard", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "substantially_reduced", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "consultation_required", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "standard_transaction", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "failure_due_to_reasonable_cause", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "offense", "operator": "=="},
+      {"type": "amount_threshold", "parameter": "refund_amount", "operator": "<="}
+    ],
+    "expected_conflicts": [
+      {"policies": ["hipaa-ref-10", "hipaa-ref-12"], "type": "logical", "description": "Civil penalty cap vs criminal penalty for same violation type"},
+      {"policies": ["hipaa-ref-11", "hipaa-ref-27"], "type": "logical", "description": "Reasonable cause waiver vs willful neglect enhanced penalty"}
+    ]
+  },
+  "NICE": {
+    "expected_policies": [
+      {"id": "nice-ref-01", "domain": "hr", "description": "Employee conduct standards and guidelines", "keywords": ["employee", "conduct", "standards", "guidelines"], "action_type": "required"},
+      {"id": "nice-ref-02", "domain": "other", "description": "Process documentation requirements", "keywords": ["process", "documentation", "requirements"], "action_type": "required"},
+      {"id": "nice-ref-03", "domain": "other", "description": "Quality assurance framework", "keywords": ["quality", "assurance", "framework"], "action_type": "required"},
+      {"id": "nice-ref-04", "domain": "other", "description": "Stakeholder consultation requirements", "keywords": ["stakeholder", "consultation", "requirements"], "action_type": "required"},
+      {"id": "nice-ref-05", "domain": "other", "description": "Evidence review and assessment process", "keywords": ["evidence", "review", "assessment", "process"], "action_type": "required"},
+      {"id": "nice-ref-06", "domain": "other", "description": "Publication and dissemination requirements", "keywords": ["publication", "dissemination", "requirements"], "action_type": "required"},
+      {"id": "nice-ref-07", "domain": "other", "description": "Update and review cycle policy", "keywords": ["update", "review", "cycle", "policy"], "action_type": "required"},
+      {"id": "nice-ref-08", "domain": "other", "description": "Conflict of interest declaration", "keywords": ["conflict", "interest", "declaration"], "action_type": "required"},
+      {"id": "nice-ref-09", "domain": "other", "description": "Appeals and challenge process", "keywords": ["appeals", "challenge", "process"], "action_type": "conditional"},
+      {"id": "nice-ref-10", "domain": "other", "description": "Implementation monitoring and compliance", "keywords": ["implementation", "monitoring", "compliance"], "action_type": "required"},
+      {"id": "nice-ref-11", "domain": "other", "description": "Data collection and reporting standards", "keywords": ["data", "collection", "reporting", "standards"], "action_type": "required"}
+    ],
+    "expected_conditions": [
+      {"type": "boolean_flag", "parameter": "requires_consultation", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "has_evidence", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "conflict_declared", "operator": "=="}
+    ],
+    "expected_conflicts": []
+  },
+  "WTO_en": {
+    "expected_policies": [
+      {"id": "wto-ref-01", "domain": "other", "description": "Trade regulation compliance requirements", "keywords": ["trade", "regulation", "compliance"], "action_type": "required"},
+      {"id": "wto-ref-02", "domain": "escalation", "description": "Dispute settlement and escalation", "keywords": ["dispute", "settlement", "escalation"], "action_type": "required"}
+    ],
+    "expected_conditions": [],
+    "expected_conflicts": []
+  },
+  "yc_safe": {
+    "expected_policies": [
+      {"id": "yc-ref-01", "domain": "other", "description": "Investment amount and valuation cap", "keywords": ["investment", "amount", "valuation", "cap"], "action_type": "required"},
+      {"id": "yc-ref-02", "domain": "other", "description": "Conversion trigger events", "keywords": ["conversion", "trigger", "events", "equity"], "action_type": "conditional"},
+      {"id": "yc-ref-03", "domain": "other", "description": "Discount rate for conversion", "keywords": ["discount", "rate", "conversion"], "action_type": "conditional"},
+      {"id": "yc-ref-04", "domain": "other", "description": "Pro rata rights for investors", "keywords": ["pro", "rata", "rights", "investors"], "action_type": "conditional"},
+      {"id": "yc-ref-05", "domain": "other", "description": "Most favored nation clause", "keywords": ["most", "favored", "nation", "mfn"], "action_type": "conditional"},
+      {"id": "yc-ref-06", "domain": "other", "description": "Dissolution event handling", "keywords": ["dissolution", "event", "liquidation"], "action_type": "required"},
+      {"id": "yc-ref-07", "domain": "other", "description": "Information rights for investors", "keywords": ["information", "rights", "financial", "statements"], "action_type": "required"},
+      {"id": "yc-ref-08", "domain": "other", "description": "Company representations and warranties", "keywords": ["representations", "warranties", "company"], "action_type": "required"},
+      {"id": "yc-ref-09", "domain": "other", "description": "Investor representations", "keywords": ["investor", "representations", "accredited"], "action_type": "required"},
+      {"id": "yc-ref-10", "domain": "other", "description": "Amendment requirements for SAFE terms", "keywords": ["amendment", "requirements", "consent"], "action_type": "required"},
+      {"id": "yc-ref-11", "domain": "other", "description": "Governing law and jurisdiction", "keywords": ["governing", "law", "jurisdiction", "delaware"], "action_type": "required"},
+      {"id": "yc-ref-12", "domain": "other", "description": "No maturity date or interest accrual", "keywords": ["maturity", "date", "interest", "accrual", "debt"], "action_type": "prohibited"}
+    ],
+    "expected_conditions": [
+      {"type": "amount_threshold", "parameter": "refund_amount", "operator": "<="},
+      {"type": "boolean_flag", "parameter": "conversion_trigger", "operator": "=="},
+      {"type": "boolean_flag", "parameter": "dissolution_event", "operator": "=="}
+    ],
+    "expected_conflicts": [
+      {"policies": ["yc-ref-02", "yc-ref-06"], "type": "logical", "description": "Conversion trigger vs dissolution event handling precedence"}
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+Method,Policy Recall,Policy Precision,Condition F1,Compliance %,Latency (s)
+Vanilla LLM (no policy),0.06,0.20,0.24,83.3,0.58
+System prompt injection,0.53,0.75,0.25,100.0,0.77
+Few-shot prompting,0.25,0.55,0.32,95.8,0.68
+RAG retrieval only,0.46,0.62,0.27,95.8,0.80
+Keyword overlap + rules,0.12,0.16,0.13,100.0,0.03
+Semantic similarity + rules,0.12,0.16,0.13,100.0,0.06
+SMT-only (Z3, no neural),0.12,0.16,0.13,83.3,0.09
+LLM zero-shot (conflict),0.45,0.58,0.27,54.2,1.21
+RAG + Z3 hybrid,0.47,0.73,0.27,95.8,0.70
+PolicyLLM (Ours),0.72,0.77,0.33,91.7,2.44
+
+

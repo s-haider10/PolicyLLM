@@ -1,0 +1,11 @@
+{
+  "doc_id": "a8e57224cf26a88a4d41eed38a081cccdea4bdd2f61a3ab8d7d7a5096569afbe",
+  "batch_id": "run",
+  "num_policies": 27,
+  "flagged_pct": 100.0,
+  "domains": {
+    "security": 3,
+    "other": 20,
+    "privacy": 4
+  }
+}

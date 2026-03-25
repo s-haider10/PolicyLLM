@@ -18,9 +18,16 @@ import logging
 logger = logging.getLogger("PolicyLLM")
 
 
+def _ensure_importable():
+    """Add project root to sys.path once so all modules are importable."""
+    root = os.path.dirname(os.path.abspath(__file__))
+    if root not in sys.path:
+        sys.path.insert(0, root)
+
+
 def cmd_extract(args):
     """Stage 1: Extract policies from documents."""
-    sys.path.insert(0, ".")
+    _ensure_importable()
     from Extractor.src.config import load_config
     from Extractor.src import pipeline
 
@@ -70,7 +77,7 @@ def cmd_enforce(args):
     from Enforcement.orchestrator import EnforcementConfig
     from Enforcement.audit import AuditLogger
 
-    sys.path.insert(0, ".")
+    _ensure_importable()
     from Extractor.src.llm.client import LLMClient
 
     bundle, index = load_bundle(args.bundle)
@@ -122,7 +129,7 @@ def cmd_run(args):
     extract_out = args.out or "out"
     logger.info("=== Stage 1: Extraction ===")
 
-    sys.path.insert(0, ".")
+    _ensure_importable()
     from Extractor.src.config import load_config
     from Extractor.src import pipeline
 
@@ -191,6 +198,8 @@ def cmd_run(args):
 
     audit = AuditLogger(args.audit_log) if args.audit_log else None
 
+    # judge_llm_client defaults to llm_client inside enforce() when not provided,
+    # so the same model is used for generation and judge evaluation.
     decision = enforce(
         query=args.query,
         bundle=bundle,
@@ -219,7 +228,7 @@ def main():
     p_extract = subparsers.add_parser("extract", help="Extract policies from documents")
     p_extract.add_argument("input", help="Path to input document or directory")
     p_extract.add_argument("--out", default="out", help="Output directory")
-    p_extract.add_argument("--config", default="Extractor/configs/config.example.yaml", help="Extractor YAML config")
+    p_extract.add_argument("--config", default="Extractor/configs/config.chatgpt.yaml", help="Extractor YAML config")
     p_extract.add_argument("--tenant", default="tenant_default", help="Tenant identifier")
     p_extract.add_argument("--batch", default="batch_default", help="Batch identifier")
     p_extract.set_defaults(func=cmd_extract)
@@ -249,7 +258,7 @@ def main():
     p_run.add_argument("--query", required=True, help="User query to enforce against extracted policies")
     p_run.add_argument("--out", default="out", help="Output directory for extraction artifacts")
     p_run.add_argument("--bundle-out", default=None, help="Output path for compiled bundle (default: <out>/compiled_policy_bundle.json)")
-    p_run.add_argument("--config", default="Extractor/configs/config.example.yaml", help="Extractor YAML config")
+    p_run.add_argument("--config", default="Extractor/configs/config.chatgpt.yaml", help="Extractor YAML config")
     p_run.add_argument("--tenant", default="tenant_default", help="Tenant identifier")
     p_run.add_argument("--batch", default="batch_default", help="Batch identifier")
     p_run.add_argument("--provider", default="ollama", help="LLM provider")

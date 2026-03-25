@@ -109,7 +109,14 @@ def test_end_to_end(tmp_path, monkeypatch, stub_config):
     # Monkeypatch LLMClient in pipeline to use stubbed implementation
     monkeypatch.setattr(pipeline, "LLMClient", lambda *args, **kwargs: StubLLM())
 
-    input_path = os.path.join("sample_docs", "sample.txt")
+    # sample_docs may be under Extractor/ when run from project root
+    for base in ("", "Extractor"):
+        candidate = os.path.join(base, "sample_docs", "sample.txt")
+        if os.path.isfile(candidate):
+            input_path = candidate
+            break
+    else:
+        input_path = os.path.join("sample_docs", "sample.txt")
     pipeline.run_pipeline(input_path, str(tmp_path), tenant_id="tenant", batch_id="sample", config=stub_config)
 
     # Locate output files

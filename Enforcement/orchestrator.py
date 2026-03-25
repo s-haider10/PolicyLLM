@@ -121,6 +121,37 @@ def enforce(
     logger.info("Pregen: domain=%s intent=%s rules=%d", context.domain, context.intent, len(context.applicable_rules))
 
     if not context.applicable_rules and context.domain == "unknown":
+        # Even without applicable rules, generate + run regex for safety.
+        injection = build_injection_bundle(context, bundle)
+        prompt = format_full_prompt(query, injection)
+        if generate_fn:
+            response = generate_fn(prompt)
+        else:
+            full_prompt = prompt["system"] + "\n\n" + prompt["user"] if prompt.get("system") else prompt["user"]
+            try:
+                result = llm_client.invoke_json(full_prompt)
+                response = result if isinstance(result, str) else str(result)
+            except Exception:
+                response = ""
+
+        # Safety hard-gate: always run regex even for unknown domain
+        if cfg.regex_enabled:
+            regex_result = run_regex_check(response, context.applicable_constraints)
+            if not regex_result.passed:
+                duration_ms = (time.time() - t0) * 1000
+                decision = ComplianceDecision(
+                    score=0.0,
+                    action=ComplianceAction.ESCALATE,
+                    violations=regex_result.flags,
+                    evidence={"note": "regex safety gate triggered for unknown domain"},
+                    audit_trail={"duration_ms": duration_ms},
+                    llm_response=response,
+                )
+                if audit_logger:
+                    entry = build_audit_entry(context, None, decision, duration_ms)
+                    audit_logger.log(entry)
+                return decision
+
         duration_ms = (time.time() - t0) * 1000
         decision = ComplianceDecision(
             score=1.0,
@@ -128,7 +159,7 @@ def enforce(
             violations=[],
             evidence={"note": "no applicable policies found"},
             audit_trail={"duration_ms": duration_ms},
-            llm_response="",
+            llm_response=response,
         )
         if audit_logger:
             entry = build_audit_entry(context, None, decision, duration_ms)
@@ -157,7 +188,8 @@ def enforce(
 
     # --- ACTION ROUTING ---
     retries = 0
-    while decision.action in (ComplianceAction.AUTO_CORRECT, ComplianceAction.REGENERATE):
+    while (cfg.max_retries > 0 or cfg.auto_correct_max_attempts > 0) and \
+          decision.action in (ComplianceAction.AUTO_CORRECT, ComplianceAction.REGENERATE):
         if decision.action == ComplianceAction.AUTO_CORRECT and retries < cfg.auto_correct_max_attempts:
             # Append violation hints
             hint = "\n".join(f"FIX: {v}" for v in decision.violations[:5])
