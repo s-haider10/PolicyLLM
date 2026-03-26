@@ -475,10 +475,10 @@ def main():
         try:
             from Extractor.src.llm.client import LLMClient
             llm_client = LLMClient(
-                provider="chatgpt", model_id="gpt-4o-mini",
+                provider="ollama", model_id="Qwen3-30B-A3B",
                 temperature=0.0, max_tokens=2048,
             )
-            logger.info("LLM client ready (gpt-4o-mini, temp=0.0)")
+            logger.info("LLM client ready (Qwen3-30B-A3B, temp=0.0)")
         except Exception as e:
             logger.warning("LLM client unavailable: %s", e)
 

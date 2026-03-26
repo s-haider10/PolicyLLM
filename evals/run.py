@@ -48,7 +48,12 @@ def main(argv=None):
         max_tokens=2048,
     )
 
-    judge_llm = llm
+    judge_llm = LLMClient(
+        provider="ollama",
+        model_id="Qwen3-30B-A3B",
+        temperature=0.0,
+        max_tokens=1024,
+    )
     if args.judge_model:
         judge_llm = LLMClient(
             provider=args.provider,

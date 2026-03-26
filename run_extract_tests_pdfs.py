@@ -254,12 +254,12 @@ def _run_evaluation(no_api: bool = False) -> list[list[str]]:
         try:
             from Extractor.src.llm.client import LLMClient
             llm_client = LLMClient(
-                provider="chatgpt",
-                model_id="gpt-4o-mini",
+                provider="ollama",
+                model_id="Qwen3-30B-A3B",
                 temperature=0.0,
                 max_tokens=2048,
             )
-            logger.info("LLM client initialized for evaluation (chatgpt / gpt-4o-mini)")
+            logger.info("LLM client initialized for evaluation (ollama / Qwen3-30B-A3B)")
         except Exception as e:
             logger.warning("LLM client unavailable (%s) — running non-API baselines only", e)
 

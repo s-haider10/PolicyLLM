@@ -89,7 +89,12 @@ def cmd_enforce(args):
         max_tokens=2048,
     )
 
-    judge_llm = llm
+    judge_llm = LLMClient(
+        provider="ollama",
+        model_id="Qwen3-30B-A3B",
+        temperature=0.0,
+        max_tokens=1024,
+    )
     if args.judge_model:
         judge_llm = LLMClient(
             provider=args.provider,
@@ -198,13 +203,19 @@ def cmd_run(args):
 
     audit = AuditLogger(args.audit_log) if args.audit_log else None
 
-    # judge_llm_client defaults to llm_client inside enforce() when not provided,
-    # so the same model is used for generation and judge evaluation.
+    judge_llm = LLMClient(
+        provider="ollama",
+        model_id="Qwen3-30B-A3B",
+        temperature=0.0,
+        max_tokens=1024,
+    )
+
     decision = enforce(
         query=args.query,
         bundle=bundle,
         bundle_index=index,
         llm_client=llm,
+        judge_llm_client=judge_llm,
         config=enforce_config,
         audit_logger=audit,
     )

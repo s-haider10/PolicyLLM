@@ -497,8 +497,8 @@ def main():
     if not args.no_api:
         try:
             from Extractor.src.llm.client import LLMClient
-            llm_client = LLMClient(provider="chatgpt", model_id="gpt-4o-mini", temperature=0.0, max_tokens=2048)
-            logger.info("LLM client initialized (chatgpt / gpt-4o-mini)")
+            llm_client = LLMClient(provider="ollama", model_id="Qwen3-30B-A3B", temperature=0.0, max_tokens=2048)
+            logger.info("LLM client initialized (ollama / Qwen3-30B-A3B)")
         except Exception as e:
             logger.warning("LLM client unavailable: %s — running non-API baselines only", e)
 
