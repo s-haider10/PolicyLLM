@@ -1,0 +1,299 @@
+{
+  "benchmark": "ContractNLI",
+  "dataset_source": "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/eval/external_benchmarks/contract_nli/contractnli_a",
+  "dataset_config": "contractnli_a",
+  "split": "test",
+  "seed": 42,
+  "dev_examples": 10,
+  "test_examples": 20,
+  "sample_ids": {
+    "dev": [
+      "test-38",
+      "test-935",
+      "test-1621",
+      "test-20",
+      "test-1147",
+      "test-1705",
+      "test-1186",
+      "test-1622",
+      "test-823",
+      "test-1813"
+    ],
+    "test": [
+      "test-267",
+      "test-1883",
+      "test-82",
+      "test-1238",
+      "test-1849",
+      "test-1315",
+      "test-1771",
+      "test-642",
+      "test-1854",
+      "test-1170",
+      "test-1497",
+      "test-564",
+      "test-751",
+      "test-1679",
+      "test-1199",
+      "test-666",
+      "test-1168",
+      "test-1028",
+      "test-1559",
+      "test-1133"
+    ]
+  },
+  "thresholds": {
+    "positive_threshold": 0.7,
+    "negative_threshold": 0.4,
+    "macro_f1": 0.15384615384615385
+  },
+  "model_settings": {
+    "llm_provider": "chatgpt",
+    "backbone_model": "gpt-4o-mini",
+    "policyllm_generation": "generated_response",
+    "evaluation_protocol": "generation_plus_enforcement",
+    "judge_model": "gpt-4o-mini",
+    "baseline_max_chars": 0
+  },
+  "metrics": {
+    "policyllm": {
+      "accuracy": 0.3,
+      "macro_f1": 0.15384615384615385,
+      "per_class_f1": {
+        "entailment": 0.46153846153846156,
+        "contradiction": 0.0,
+        "not_mentioned": 0.0
+      }
+    },
+    "vanilla": {
+      "accuracy": 0.85,
+      "macro_f1": 0.8472222222222223,
+      "per_class_f1": {
+        "entailment": 0.875,
+        "contradiction": 0.8333333333333334,
+        "not_mentioned": 0.8333333333333334
+      }
+    },
+    "system_prompt": {
+      "accuracy": 0.85,
+      "macro_f1": 0.8498168498168498,
+      "per_class_f1": {
+        "entailment": 0.8571428571428571,
+        "contradiction": 0.9230769230769231,
+        "not_mentioned": 0.7692307692307693
+      }
+    }
+  },
+  "predictions": [
+    {
+      "id": "test-267",
+      "gold_label": "contradiction",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "contradiction",
+      "pred_system_prompt": "contradiction",
+      "cache_hit": false
+    },
+    {
+      "id": "test-1883",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment",
+      "pred_system_prompt": "entailment",
+      "cache_hit": false
+    },
+    {
+      "id": "test-82",
+      "gold_label": "not_mentioned",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "not_mentioned",
+      "pred_system_prompt": "not_mentioned",
+      "cache_hit": false
+    },
+    {
+      "id": "test-1238",
+      "gold_label": "contradiction",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment",
+      "pred_system_prompt": "contradiction",
+      "cache_hit": false
+    },
+    {
+      "id": "test-1849",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment",
+      "pred_system_prompt": "entailment",
+      "cache_hit": false
+    },
+    {
+      "id": "test-1315",
+      "gold_label": "not_mentioned",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "not_mentioned",
+      "pred_system_prompt": "not_mentioned",
+      "cache_hit": false
+    },
+    {
+      "id": "test-1771",
+      "gold_label": "contradiction",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "not_mentioned",
+      "pred_system_prompt": "not_mentioned",
+      "cache_hit": false
+    },
+    {
+      "id": "test-642",
+      "gold_label": "entailment",
+      "score": 0.58,
+      "has_violation": true,
+      "pred_policyllm": "not_mentioned",
+      "pred_vanilla": "entailment",
+      "pred_system_prompt": "entailment",
+      "cache_hit": false
+    },
+    {
+      "id": "test-1854",
+      "gold_label": "not_mentioned",
+      "score": 0.82,
+      "has_violation": true,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "not_mentioned",
+      "pred_system_prompt": "not_mentioned",
+      "cache_hit": false
+    },
+    {
+      "id": "test-1170",
+      "gold_label": "contradiction",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "contradiction",
+      "pred_system_prompt": "contradiction",
+      "cache_hit": false
+    },
+    {
+      "id": "test-1497",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment",
+      "pred_system_prompt": "not_mentioned",
+      "cache_hit": false
+    },
+    {
+      "id": "test-564",
+      "gold_label": "not_mentioned",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "not_mentioned",
+      "pred_system_prompt": "not_mentioned",
+      "cache_hit": false
+    },
+    {
+      "id": "test-751",
+      "gold_label": "contradiction",
+      "score": 0.82,
+      "has_violation": true,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "contradiction",
+      "pred_system_prompt": "contradiction",
+      "cache_hit": false
+    },
+    {
+      "id": "test-1679",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment",
+      "pred_system_prompt": "entailment",
+      "cache_hit": false
+    },
+    {
+      "id": "test-1199",
+      "gold_label": "not_mentioned",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "not_mentioned",
+      "pred_system_prompt": "not_mentioned",
+      "cache_hit": true
+    },
+    {
+      "id": "test-666",
+      "gold_label": "contradiction",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "contradiction",
+      "pred_system_prompt": "contradiction",
+      "cache_hit": false
+    },
+    {
+      "id": "test-1168",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment",
+      "pred_system_prompt": "entailment",
+      "cache_hit": false
+    },
+    {
+      "id": "test-1028",
+      "gold_label": "not_mentioned",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment",
+      "pred_system_prompt": "entailment",
+      "cache_hit": false
+    },
+    {
+      "id": "test-1559",
+      "gold_label": "contradiction",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "contradiction",
+      "pred_system_prompt": "contradiction",
+      "cache_hit": false
+    },
+    {
+      "id": "test-1133",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment",
+      "pred_system_prompt": "entailment",
+      "cache_hit": false
+    }
+  ],
+  "runtime": {
+    "seconds": 332.6436061859131,
+    "completed_at_utc": "2026-03-26T18:06:36.721896+00:00"
+  },
+  "summary_row": {
+    "benchmark": "ContractNLI",
+    "method": "PolicyLLM",
+    "accuracy": 0.3,
+    "macro_f1": 0.15384615384615385
+  }
+}

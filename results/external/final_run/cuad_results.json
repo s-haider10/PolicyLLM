@@ -1,0 +1,383 @@
+{
+  "benchmark": "CUAD",
+  "split": "test",
+  "dataset_source": "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/eval/external_benchmarks/cuad/theatticusproject__cuad-qa",
+  "dataset_name": "theatticusproject/cuad-qa",
+  "seed": 42,
+  "num_contracts": 10,
+  "sample_ids": [
+    "BizzingoInc_20120322_8-K_EX-10.17_7504499_EX-10.17_Endorsement Agreement",
+    "TUNIUCORP_03_06_2014-EX-10-COOPERATION AGREEMENT",
+    "BOLIVARMININGCORP_05_23_2003-EX-2.1-VISP WEB SITE BUILDING AND HOSTING AGREEMENT",
+    "NOVOINTEGRATEDSCIENCES,INC_12_23_2019-EX-10.1-JOINT VENTURE AGREEMENT",
+    "PcquoteComInc_19990721_S-1A_EX-10.11_6377149_EX-10.11_Co-Branding Agreement2",
+    "FEDERATEDGOVERNMENTINCOMESECURITIESINC_04_28_2020-EX-99.SERV AGREE-SERVICES AGREEMENT_POWEROF",
+    "SoupmanInc_20150814_8-K_EX-10.1_9230148_EX-10.1_Franchise Agreement1",
+    "GridironBionutrientsInc_20171206_8-K_EX-10.1_10972555_EX-10.1_Endorsement Agreement",
+    "VIVINT SOLAR, INC. - NON-COMPETITION AGREEMENT",
+    "PACIRA PHARMACEUTICALS, INC. - A_R STRATEGIC LICENSING, DISTRIBUTION AND MARKETING AGREEMENT"
+  ],
+  "coarse_mapping": {
+    "termination": [
+      "terminate",
+      "termination",
+      "expire",
+      "end of term"
+    ],
+    "liability": [
+      "liability",
+      "damages",
+      "limitation of liability",
+      "consequential"
+    ],
+    "intellectual_property": [
+      "intellectual property",
+      "ip",
+      "license",
+      "ownership",
+      "copyright",
+      "patent"
+    ],
+    "confidentiality": [
+      "confidential",
+      "confidentiality",
+      "non-disclosure",
+      "nda"
+    ],
+    "non_compete": [
+      "non compete",
+      "non-compete",
+      "solicit",
+      "non-solicit",
+      "restrictive covenant"
+    ],
+    "indemnification": [
+      "indemnify",
+      "indemnification",
+      "hold harmless"
+    ],
+    "governing_law": [
+      "governing law",
+      "jurisdiction",
+      "venue",
+      "law of"
+    ],
+    "assignment": [
+      "assign",
+      "assignment",
+      "transfer"
+    ],
+    "payment": [
+      "payment",
+      "fees",
+      "invoice",
+      "compensation",
+      "price"
+    ],
+    "audit_and_compliance": [
+      "audit",
+      "inspection",
+      "compliance",
+      "regulatory"
+    ]
+  },
+  "coarse_mapping_version": "v1",
+  "model_settings": {
+    "llm_provider": "chatgpt",
+    "backbone_model": "gpt-4o-mini",
+    "embedding_model": "all-MiniLM-L6-v2"
+  },
+  "metrics": {
+    "policyllm": {
+      "clause_type_precision": 0.3,
+      "clause_type_recall": 0.06666666666666668
+    },
+    "keyword_rules": {
+      "clause_type_precision": 0.2,
+      "clause_type_recall": 0.02222222222222222
+    },
+    "rag": {
+      "clause_type_precision": 0.0,
+      "clause_type_recall": 0.0
+    }
+  },
+  "per_contract": [
+    {
+      "contract_id": "BizzingoInc_20120322_8-K_EX-10.17_7504499_EX-10.17_Endorsement Agreement",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 0.0,
+      "policyllm_recall": 0.0,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": true,
+      "errors": []
+    },
+    {
+      "contract_id": "TUNIUCORP_03_06_2014-EX-10-COOPERATION AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 0.0,
+      "policyllm_recall": 0.0,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": true,
+      "errors": []
+    },
+    {
+      "contract_id": "BOLIVARMININGCORP_05_23_2003-EX-2.1-VISP WEB SITE BUILDING AND HOSTING AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "intellectual_property",
+        "payment"
+      ],
+      "pred_keyword_rules": [
+        "intellectual_property"
+      ],
+      "pred_rag": [],
+      "policyllm_precision": 1.0,
+      "policyllm_recall": 0.2222222222222222,
+      "keyword_precision": 1.0,
+      "keyword_recall": 0.1111111111111111,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": true,
+      "errors": []
+    },
+    {
+      "contract_id": "NOVOINTEGRATEDSCIENCES,INC_12_23_2019-EX-10.1-JOINT VENTURE AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 0.0,
+      "policyllm_recall": 0.0,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": true,
+      "errors": []
+    },
+    {
+      "contract_id": "PcquoteComInc_19990721_S-1A_EX-10.11_6377149_EX-10.11_Co-Branding Agreement2",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 0.0,
+      "policyllm_recall": 0.0,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": true,
+      "errors": []
+    },
+    {
+      "contract_id": "FEDERATEDGOVERNMENTINCOMESECURITIESINC_04_28_2020-EX-99.SERV AGREE-SERVICES AGREEMENT_POWEROF",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 0.0,
+      "policyllm_recall": 0.0,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": true,
+      "errors": []
+    },
+    {
+      "contract_id": "SoupmanInc_20150814_8-K_EX-10.1_9230148_EX-10.1_Franchise Agreement1",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 0.0,
+      "policyllm_recall": 0.0,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "errors": [
+        "policyllm_extraction_skipped_text_too_long: 144235>30000"
+      ]
+    },
+    {
+      "contract_id": "GridironBionutrientsInc_20171206_8-K_EX-10.1_10972555_EX-10.1_Endorsement Agreement",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "intellectual_property",
+        "payment",
+        "termination"
+      ],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 1.0,
+      "policyllm_recall": 0.3333333333333333,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "errors": []
+    },
+    {
+      "contract_id": "VIVINT SOLAR, INC. - NON-COMPETITION AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "non_compete"
+      ],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 1.0,
+      "policyllm_recall": 0.1111111111111111,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": true,
+      "errors": []
+    },
+    {
+      "contract_id": "PACIRA PHARMACEUTICALS, INC. - A_R STRATEGIC LICENSING, DISTRIBUTION AND MARKETING AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [],
+      "pred_keyword_rules": [
+        "confidentiality"
+      ],
+      "pred_rag": [],
+      "policyllm_precision": 0.0,
+      "policyllm_recall": 0.0,
+      "keyword_precision": 1.0,
+      "keyword_recall": 0.1111111111111111,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "errors": [
+        "policyllm_extraction_skipped_text_too_long: 145168>30000"
+      ]
+    }
+  ],
+  "runtime": {
+    "seconds": 100.33419013023376,
+    "completed_at_utc": "2026-03-26T06:54:39.252067+00:00"
+  },
+  "summary_row": {
+    "benchmark": "CUAD",
+    "method": "PolicyLLM",
+    "precision": 0.3,
+    "recall": 0.06666666666666668
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "benchmark": "ContractNLI",
+  "dataset_source": "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/eval/external_benchmarks/contract_nli/contractnli_a",
+  "dataset_config": "contractnli_a",
+  "split": "test",
+  "seed": 42,
+  "dev_examples": 2,
+  "test_examples": 3,
+  "sample_ids": {
+    "dev": [
+      "test-38",
+      "test-935"
+    ],
+    "test": [
+      "test-1770",
+      "test-1762",
+      "test-1211"
+    ]
+  },
+  "thresholds": {
+    "positive_threshold": 0.7,
+    "negative_threshold": 0.4,
+    "macro_f1": 0.2222222222222222
+  },
+  "model_settings": {
+    "llm_provider": "stub",
+    "backbone_model": "stub",
+    "policyllm_generation": "fixed asserted response",
+    "judge_model": "stub"
+  },
+  "metrics": {
+    "policyllm": {
+      "accuracy": 0.3333333333333333,
+      "macro_f1": 0.16666666666666666,
+      "per_class_f1": {
+        "entailment": 0.5,
+        "contradiction": 0.0,
+        "not_mentioned": 0.0
+      }
+    },
+    "vanilla": {
+      "accuracy": 0.3333333333333333,
+      "macro_f1": 0.16666666666666666,
+      "per_class_f1": {
+        "entailment": 0.0,
+        "contradiction": 0.0,
+        "not_mentioned": 0.5
+      }
+    },
+    "system_prompt": {
+      "accuracy": 0.3333333333333333,
+      "macro_f1": 0.16666666666666666,
+      "per_class_f1": {
+        "entailment": 0.0,
+        "contradiction": 0.0,
+        "not_mentioned": 0.5
+      }
+    }
+  },
+  "predictions": [
+    {
+      "id": "test-1770",
+      "gold_label": "contradiction",
+      "score": 1.0,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "not_mentioned",
+      "pred_system_prompt": "not_mentioned",
+      "cache_hit": true
+    },
+    {
+      "id": "test-1762",
+      "gold_label": "entailment",
+      "score": 1.0,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "not_mentioned",
+      "pred_system_prompt": "not_mentioned",
+      "cache_hit": true
+    },
+    {
+      "id": "test-1211",
+      "gold_label": "not_mentioned",
+      "score": 1.0,
+      "has_violation": false,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "not_mentioned",
+      "pred_system_prompt": "not_mentioned",
+      "cache_hit": true
+    }
+  ],
+  "runtime": {
+    "seconds": 14.45597791671753,
+    "completed_at_utc": "2026-03-25T23:20:15.942157+00:00"
+  },
+  "summary_row": {
+    "benchmark": "ContractNLI",
+    "method": "PolicyLLM",
+    "accuracy": 0.3333333333333333,
+    "macro_f1": 0.16666666666666666
+  }
+}

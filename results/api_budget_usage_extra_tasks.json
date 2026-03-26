@@ -1,0 +1,13 @@
+{
+  "budget_usd": 5.0,
+  "estimated_spend_usd": 0.14895134999999982,
+  "by_model": {
+    "gpt-4o-mini": {
+      "kind": "chat",
+      "input_tokens": 696181,
+      "output_tokens": 74207,
+      "estimated_spend_usd": 0.14895134999999982
+    }
+  },
+  "updated_at_utc": "2026-03-26T18:00:42.849999+00:00"
+}

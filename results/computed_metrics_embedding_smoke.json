@@ -1,0 +1,59 @@
+{
+  "header": [
+    "Method",
+    "Policy Recall",
+    "Policy Precision",
+    "Condition F1",
+    "Conflict F1",
+    "Compliance %",
+    "FP %",
+    "Latency (s)"
+  ],
+  "rows": [
+    [
+      "Keyword overlap + rules",
+      "0.23",
+      "0.32",
+      "0.13",
+      "0.0",
+      "100.0",
+      "0.0",
+      "0.00"
+    ],
+    [
+      "Semantic similarity + rules",
+      "0.13",
+      "0.16",
+      "0.13",
+      "0.0",
+      "100.0",
+      "0.0",
+      "0.00"
+    ],
+    [
+      "SMT-only (Z3, no neural)",
+      "0.23",
+      "0.32",
+      "0.13",
+      "0.0",
+      "83.3",
+      "0.0",
+      "0.00"
+    ],
+    [
+      "PolicyLLM (Ours)",
+      "0.00",
+      "0.00",
+      "0.00",
+      "0.0",
+      "0.0",
+      "0.0",
+      "0.00"
+    ]
+  ],
+  "run_metadata": {
+    "embedding_model_requested": "all-MiniLM-L6-v2",
+    "embedding_backend_type": "sentence-transformers",
+    "generated_at_utc": "2026-03-25T22:54:38.804233+00:00"
+  }
+}

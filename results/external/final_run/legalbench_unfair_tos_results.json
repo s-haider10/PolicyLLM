@@ -1,0 +1,462 @@
+{
+  "benchmark": "LegalBench::unfair_tos",
+  "split": "test",
+  "dataset_source": "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/eval/external_benchmarks/legalbench/unfair_tos",
+  "seed": 42,
+  "dev_examples": 10,
+  "test_examples": 50,
+  "sample_ids": {
+    "dev": [
+      "unfair_tos-2405",
+      "unfair_tos-1731",
+      "unfair_tos-3367",
+      "unfair_tos-1615",
+      "unfair_tos-3553",
+      "unfair_tos-392",
+      "unfair_tos-3052",
+      "unfair_tos-1262",
+      "unfair_tos-3397",
+      "unfair_tos-168"
+    ],
+    "test": [
+      "unfair_tos-2838",
+      "unfair_tos-2740",
+      "unfair_tos-1225",
+      "unfair_tos-400",
+      "unfair_tos-1567",
+      "unfair_tos-1769",
+      "unfair_tos-962",
+      "unfair_tos-2804",
+      "unfair_tos-3182",
+      "unfair_tos-214",
+      "unfair_tos-1512",
+      "unfair_tos-1681",
+      "unfair_tos-2323",
+      "unfair_tos-503",
+      "unfair_tos-1835",
+      "unfair_tos-1497",
+      "unfair_tos-1968",
+      "unfair_tos-2511",
+      "unfair_tos-760",
+      "unfair_tos-3578",
+      "unfair_tos-3237",
+      "unfair_tos-648",
+      "unfair_tos-3699",
+      "unfair_tos-2465",
+      "unfair_tos-1291",
+      "unfair_tos-2375",
+      "unfair_tos-1466",
+      "unfair_tos-2174",
+      "unfair_tos-292",
+      "unfair_tos-10",
+      "unfair_tos-3284",
+      "unfair_tos-1175",
+      "unfair_tos-2691",
+      "unfair_tos-776",
+      "unfair_tos-3256",
+      "unfair_tos-2129",
+      "unfair_tos-2466",
+      "unfair_tos-452",
+      "unfair_tos-1285",
+      "unfair_tos-498",
+      "unfair_tos-1797",
+      "unfair_tos-1367",
+      "unfair_tos-82",
+      "unfair_tos-2169",
+      "unfair_tos-1199",
+      "unfair_tos-3766",
+      "unfair_tos-2670",
+      "unfair_tos-1778",
+      "unfair_tos-3265",
+      "unfair_tos-2317"
+    ]
+  },
+  "threshold": {
+    "threshold": 0.66,
+    "macro_f1": 0.5
+  },
+  "model_settings": {
+    "llm_provider": "chatgpt",
+    "backbone_model": "gpt-4o-mini"
+  },
+  "metrics": {
+    "policyllm": {
+      "accuracy": 0.98,
+      "macro_f1": 0.494949494949495,
+      "per_class_f1": {
+        "not_unfair": 0.0,
+        "unfair": 0.98989898989899
+      }
+    },
+    "vanilla": {
+      "accuracy": 0.0,
+      "macro_f1": 0.0,
+      "per_class_f1": {
+        "not_unfair": 0.0,
+        "unfair": 0.0
+      }
+    }
+  },
+  "predictions": [
+    {
+      "id": "unfair_tos-2838",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2740",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1225",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-400",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1567",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1769",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-962",
+      "gold_label": "unfair",
+      "score": 0.6599999999999999,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2804",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-3182",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-214",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1512",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1681",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2323",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-503",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1835",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1497",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1968",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2511",
+      "gold_label": "unfair",
+      "score": 0.54,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-760",
+      "gold_label": "unfair",
+      "score": 0.72,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-3578",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-3237",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-648",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-3699",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2465",
+      "gold_label": "unfair",
+      "score": 0.6,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1291",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2375",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1466",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2174",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-292",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-10",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-3284",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1175",
+      "gold_label": "unfair",
+      "score": 0.6,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2691",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-776",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-3256",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2129",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2466",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-452",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1285",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-498",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1797",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1367",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-82",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2169",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1199",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-3766",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2670",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1778",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-3265",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2317",
+      "gold_label": "unfair",
+      "score": 0.48,
+      "pred_policyllm": "unfair",
+      "pred_vanilla": "not_unfair"
+    }
+  ],
+  "runtime": {
+    "seconds": 301.0693497657776,
+    "completed_at_utc": "2026-03-26T06:40:17.704626+00:00"
+  },
+  "summary_row": {
+    "benchmark": "LegalBench::unfair_tos",
+    "method": "PolicyLLM",
+    "accuracy": 0.98,
+    "macro_f1": 0.494949494949495
+  }
+}

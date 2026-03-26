@@ -1,7 +1,10 @@
 """LLM client wrapper for local (Ollama) and cloud providers with JSON schema enforcement."""
 import json
+import os
 import re
 import time
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Dict, Optional, Type
 
 try:
@@ -22,6 +25,125 @@ except ImportError:  # boto3 not required for stub/local providers
 
     BotoCoreError = ClientError = NoCredentialsError = _BotoStub
 from pydantic import BaseModel, ValidationError
+
+
+_OPENAI_PRICE_PER_1M = {
+    "chat": {
+        "gpt-4o-mini": (0.15, 0.60),  # input, output USD per 1M tokens
+        "gpt-4o": (2.50, 10.00),
+    },
+    "embedding": {
+        "text-embedding-3-small": (0.02, 0.0),
+        "text-embedding-3-large": (0.13, 0.0),
+    },
+}
+
+
+def _resolve_openai_price(kind: str, model_id: str) -> tuple[float, float] | None:
+    table = _OPENAI_PRICE_PER_1M.get(kind, {})
+    for prefix in sorted(table.keys(), key=len, reverse=True):
+        if model_id.startswith(prefix):
+            return table[prefix]
+    return None
+
+
+def _budget_state_path() -> Path:
+    return Path(
+        os.getenv("POLICYLLM_BUDGET_STATE_PATH")
+        or os.getenv("POLICYLLM_COST_STATE_PATH")
+        or "results/api_budget_usage.json"
+    )
+
+
+def _openai_timeout_seconds() -> float:
+    raw = os.getenv("POLICYLLM_OPENAI_TIMEOUT_SEC", "120")
+    try:
+        value = float(raw)
+    except (TypeError, ValueError):
+        return 120.0
+    return max(1.0, value)
+
+
+def record_openai_usage(kind: str, model_id: str, input_tokens: int, output_tokens: int = 0) -> None:
+    """Record estimated OpenAI spend and enforce optional hard budget cap.
+
+    Enabled when POLICYLLM_BUDGET_USD is set.
+    """
+    if input_tokens <= 0 and output_tokens <= 0:
+        return
+
+    budget_raw = os.getenv("POLICYLLM_BUDGET_USD")
+    if not budget_raw:
+        return
+    try:
+        budget_usd = float(budget_raw)
+    except ValueError:
+        return
+    if budget_usd <= 0:
+        return
+
+    price = _resolve_openai_price(kind=kind, model_id=model_id)
+    if price is None:
+        return
+    in_per_1m, out_per_1m = price
+    est = (max(0, input_tokens) / 1_000_000.0) * in_per_1m + (max(0, output_tokens) / 1_000_000.0) * out_per_1m
+    if est <= 0:
+        return
+
+    path = _budget_state_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    state: Dict[str, Any] = {
+        "budget_usd": budget_usd,
+        "estimated_spend_usd": 0.0,
+        "by_model": {},
+        "updated_at_utc": None,
+    }
+    if path.exists():
+        try:
+            with open(path, encoding="utf-8") as f:
+                loaded = json.load(f)
+            if isinstance(loaded, dict):
+                state.update(loaded)
+        except Exception:
+            pass
+
+    spent = float(state.get("estimated_spend_usd", 0.0))
+    projected = spent + est
+    if projected > budget_usd:
+        raise RuntimeError(
+            f"Budget guard triggered: projected spend ${projected:.4f} exceeds POLICYLLM_BUDGET_USD=${budget_usd:.2f} "
+            f"for {kind} model '{model_id}'."
+        )
+
+    by_model = state.setdefault("by_model", {})
+    model_state = by_model.setdefault(
+        model_id,
+        {
+            "kind": kind,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "estimated_spend_usd": 0.0,
+        },
+    )
+    model_state["input_tokens"] = int(model_state.get("input_tokens", 0)) + max(0, input_tokens)
+    model_state["output_tokens"] = int(model_state.get("output_tokens", 0)) + max(0, output_tokens)
+    model_state["estimated_spend_usd"] = float(model_state.get("estimated_spend_usd", 0.0)) + est
+
+    state["budget_usd"] = budget_usd
+    state["estimated_spend_usd"] = projected
+    state["updated_at_utc"] = datetime.now(timezone.utc).isoformat()
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(state, f, indent=2)
+
+
+def _usage_value(usage: Any, key: str) -> int:
+    if usage is None:
+        return 0
+    if isinstance(usage, dict):
+        return int(usage.get(key, 0) or 0)
+    return int(getattr(usage, key, 0) or 0)
 
 
 class LLMClient:
@@ -61,9 +183,10 @@ class LLMClient:
                     self._openai = OpenAI(
                         base_url="http://localhost:11434/v1",
                         api_key="ollama",
+                        timeout=_openai_timeout_seconds(),
                     )
                 else:
-                    self._openai = OpenAI()
+                    self._openai = OpenAI(timeout=_openai_timeout_seconds())
             except Exception as exc:  # noqa: BLE001
                 raise RuntimeError("OpenAI client not available; install openai>=1.10.0") from exc
         elif provider == "anthropic":
@@ -140,6 +263,15 @@ class LLMClient:
         if self.provider == "chatgpt":
             kwargs["response_format"] = {"type": "json_object"}
         resp = self._openai.chat.completions.create(**kwargs)
+        if self.provider == "chatgpt":
+            usage = getattr(resp, "usage", None)
+            if usage is not None:
+                record_openai_usage(
+                    kind="chat",
+                    model_id=self.model_id,
+                    input_tokens=_usage_value(usage, "prompt_tokens"),
+                    output_tokens=_usage_value(usage, "completion_tokens"),
+                )
         content = resp.choices[0].message.content
         if not content:
             raise ValueError("Empty response content from OpenAI")

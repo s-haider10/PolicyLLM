@@ -1,0 +1,9 @@
+# Embedding Ablation Summary
+
+| Method | Embedding | P-Rec | P-Prec | C-F1 | Comp. |
+|---|---|---:|---:|---:|---:|
+| RAG retrieval only | all-MiniLM-L6-v2 | 0.00 | 0.00 | 0.00 | 83.3 |
+| RAG + Z3 hybrid | all-MiniLM-L6-v2 | 0.00 | 0.00 | 0.00 | 91.7 |
+| RAG retrieval only | BAAI/bge-large-en-v1.5 | 0.00 | 0.00 | 0.00 | 83.3 |
+| RAG + Z3 hybrid | BAAI/bge-large-en-v1.5 | 0.00 | 0.00 | 0.00 | 91.7 |
+| PolicyLLM (Ours) | N/A | 0.00 | 0.00 | 0.00 | 0.0 |

@@ -1,0 +1,438 @@
+{
+  "benchmark": "CUAD",
+  "split": "test",
+  "dataset_source": "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/eval/external_benchmarks/cuad/theatticusproject__cuad-qa",
+  "dataset_name": "theatticusproject/cuad-qa",
+  "seed": 42,
+  "num_contracts": 10,
+  "sample_ids": [
+    "Quaker Chemical Corporation - NON COMPETITION AND NON SOLICITATION AGREEMENT",
+    "Monsanto Company - SECOND A_R EXCLUSIVE AGENCY AND MARKETING AGREEMENT",
+    "HfEnterprisesInc_20191223_S-1_EX-10.22_11931299_EX-10.22_Development Agreement",
+    "CHERRYHILLMORTGAGEINVESTMENTCORP_09_26_2013-EX-10.1-Strategic Alliance Agreement",
+    "PAXMEDICA,INC_07_02_2020-EX-10.12-Master Service Agreement",
+    "HPILHOLDING_01_07_2015-EX-99.1-COOPERATION AGREEMENT",
+    "CENTRACKINTERNATIONALINC_10_29_1999-EX-10.3-WEB SITE HOSTING AGREEMENT",
+    "BizzingoInc_20120322_8-K_EX-10.17_7504499_EX-10.17_Endorsement Agreement",
+    "N2KINC_10_16_1997-EX-10.16-SPONSORSHIP AGREEMENT",
+    "ACCELERATEDTECHNOLOGIESHOLDINGCORP_04_24_2003-EX-10.13-JOINT VENTURE AGREEMENT"
+  ],
+  "coarse_mapping": {
+    "termination": [
+      "terminate",
+      "termination",
+      "expire",
+      "end of term"
+    ],
+    "liability": [
+      "liability",
+      "damages",
+      "limitation of liability",
+      "consequential"
+    ],
+    "intellectual_property": [
+      "intellectual property",
+      "ip",
+      "license",
+      "ownership",
+      "copyright",
+      "patent"
+    ],
+    "confidentiality": [
+      "confidential",
+      "confidentiality",
+      "non-disclosure",
+      "nda"
+    ],
+    "non_compete": [
+      "non compete",
+      "non-compete",
+      "solicit",
+      "non-solicit",
+      "restrictive covenant"
+    ],
+    "indemnification": [
+      "indemnify",
+      "indemnification",
+      "hold harmless"
+    ],
+    "governing_law": [
+      "governing law",
+      "jurisdiction",
+      "venue",
+      "law of"
+    ],
+    "assignment": [
+      "assign",
+      "assignment",
+      "transfer"
+    ],
+    "payment": [
+      "payment",
+      "fees",
+      "invoice",
+      "compensation",
+      "price"
+    ],
+    "audit_and_compliance": [
+      "audit",
+      "inspection",
+      "compliance",
+      "regulatory"
+    ]
+  },
+  "coarse_mapping_version": "v1",
+  "model_settings": {
+    "llm_provider": "chatgpt",
+    "backbone_model": "gpt-4o-mini",
+    "embedding_model": "all-MiniLM-L6-v2",
+    "selection_strategy": "random",
+    "max_policyllm_chars": 30000,
+    "chunk_overlap_chars": 1000
+  },
+  "metrics": {
+    "policyllm": {
+      "clause_type_precision": 0.755,
+      "clause_type_recall": 0.2666666666666667
+    },
+    "keyword_rules": {
+      "clause_type_precision": 0.2,
+      "clause_type_recall": 0.02222222222222222
+    },
+    "rag": {
+      "clause_type_precision": 0.3,
+      "clause_type_recall": 0.05555555555555556
+    }
+  },
+  "per_contract": [
+    {
+      "contract_id": "Quaker Chemical Corporation - NON COMPETITION AND NON SOLICITATION AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "confidentiality",
+        "non_compete"
+      ],
+      "pred_keyword_rules": [
+        "non_compete"
+      ],
+      "pred_rag": [
+        "non_compete",
+        "termination"
+      ],
+      "policyllm_precision": 1.0,
+      "policyllm_recall": 0.2222222222222222,
+      "keyword_precision": 1.0,
+      "keyword_recall": 0.1111111111111111,
+      "rag_precision": 1.0,
+      "rag_recall": 0.2222222222222222,
+      "cache_hit": false,
+      "chunked_policyllm": false,
+      "num_policyllm_chunks": 1,
+      "errors": []
+    },
+    {
+      "contract_id": "Monsanto Company - SECOND A_R EXCLUSIVE AGENCY AND MARKETING AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "assignment",
+        "audit_and_compliance",
+        "intellectual_property",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_keyword_rules": [],
+      "pred_rag": [
+        "audit_and_compliance",
+        "confidentiality"
+      ],
+      "policyllm_precision": 1.0,
+      "policyllm_recall": 0.6666666666666666,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 1.0,
+      "rag_recall": 0.2222222222222222,
+      "cache_hit": false,
+      "chunked_policyllm": true,
+      "num_policyllm_chunks": 8,
+      "errors": []
+    },
+    {
+      "contract_id": "HfEnterprisesInc_20191223_S-1_EX-10.22_11931299_EX-10.22_Development Agreement",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "confidentiality",
+        "intellectual_property",
+        "payment",
+        "termination"
+      ],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 1.0,
+      "policyllm_recall": 0.4444444444444444,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "chunked_policyllm": false,
+      "num_policyllm_chunks": 1,
+      "errors": []
+    },
+    {
+      "contract_id": "CHERRYHILLMORTGAGEINVESTMENTCORP_09_26_2013-EX-10.1-Strategic Alliance Agreement",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 0.0,
+      "policyllm_recall": 0.0,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "chunked_policyllm": false,
+      "num_policyllm_chunks": 1,
+      "errors": []
+    },
+    {
+      "contract_id": "PAXMEDICA,INC_07_02_2020-EX-10.12-Master Service Agreement",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "assignment",
+        "indemnification",
+        "intellectual_property",
+        "payment",
+        "termination"
+      ],
+      "pred_keyword_rules": [],
+      "pred_rag": [
+        "intellectual_property"
+      ],
+      "policyllm_precision": 0.8,
+      "policyllm_recall": 0.4444444444444444,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 1.0,
+      "rag_recall": 0.1111111111111111,
+      "cache_hit": false,
+      "chunked_policyllm": false,
+      "num_policyllm_chunks": 1,
+      "errors": []
+    },
+    {
+      "contract_id": "HPILHOLDING_01_07_2015-EX-99.1-COOPERATION AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "indemnification",
+        "termination"
+      ],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 0.5,
+      "policyllm_recall": 0.1111111111111111,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "chunked_policyllm": false,
+      "num_policyllm_chunks": 1,
+      "errors": []
+    },
+    {
+      "contract_id": "CENTRACKINTERNATIONALINC_10_29_1999-EX-10.3-WEB SITE HOSTING AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "payment"
+      ],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 1.0,
+      "policyllm_recall": 0.1111111111111111,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "chunked_policyllm": false,
+      "num_policyllm_chunks": 1,
+      "errors": []
+    },
+    {
+      "contract_id": "BizzingoInc_20120322_8-K_EX-10.17_7504499_EX-10.17_Endorsement Agreement",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "indemnification",
+        "payment"
+      ],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 0.5,
+      "policyllm_recall": 0.1111111111111111,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "chunked_policyllm": false,
+      "num_policyllm_chunks": 1,
+      "errors": []
+    },
+    {
+      "contract_id": "N2KINC_10_16_1997-EX-10.16-SPONSORSHIP AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "indemnification",
+        "intellectual_property",
+        "payment",
+        "termination"
+      ],
+      "pred_keyword_rules": [
+        "confidentiality"
+      ],
+      "pred_rag": [],
+      "policyllm_precision": 0.75,
+      "policyllm_recall": 0.3333333333333333,
+      "keyword_precision": 1.0,
+      "keyword_recall": 0.1111111111111111,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "chunked_policyllm": true,
+      "num_policyllm_chunks": 2,
+      "errors": []
+    },
+    {
+      "contract_id": "ACCELERATEDTECHNOLOGIESHOLDINGCORP_04_24_2003-EX-10.13-JOINT VENTURE AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "intellectual_property",
+        "termination"
+      ],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 1.0,
+      "policyllm_recall": 0.2222222222222222,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "chunked_policyllm": false,
+      "num_policyllm_chunks": 1,
+      "errors": []
+    }
+  ],
+  "runtime": {
+    "seconds": 778.0459163188934,
+    "completed_at_utc": "2026-03-26T07:57:20.560902+00:00"
+  },
+  "summary_row": {
+    "benchmark": "CUAD",
+    "method": "PolicyLLM",
+    "precision": 0.755,
+    "recall": 0.2666666666666667
+  }
+}

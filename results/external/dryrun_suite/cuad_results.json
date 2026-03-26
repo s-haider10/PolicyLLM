@@ -1,0 +1,185 @@
+{
+  "benchmark": "CUAD",
+  "split": "test",
+  "dataset_source": "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/eval/external_benchmarks/cuad/theatticusproject__cuad-qa",
+  "dataset_name": "theatticusproject/cuad-qa",
+  "seed": 42,
+  "num_contracts": 3,
+  "sample_ids": [
+    "BizzingoInc_20120322_8-K_EX-10.17_7504499_EX-10.17_Endorsement Agreement",
+    "TUNIUCORP_03_06_2014-EX-10-COOPERATION AGREEMENT",
+    "BOLIVARMININGCORP_05_23_2003-EX-2.1-VISP WEB SITE BUILDING AND HOSTING AGREEMENT"
+  ],
+  "coarse_mapping": {
+    "termination": [
+      "terminate",
+      "termination",
+      "expire",
+      "end of term"
+    ],
+    "liability": [
+      "liability",
+      "damages",
+      "limitation of liability",
+      "consequential"
+    ],
+    "intellectual_property": [
+      "intellectual property",
+      "ip",
+      "license",
+      "ownership",
+      "copyright",
+      "patent"
+    ],
+    "confidentiality": [
+      "confidential",
+      "confidentiality",
+      "non-disclosure",
+      "nda"
+    ],
+    "non_compete": [
+      "non compete",
+      "non-compete",
+      "solicit",
+      "non-solicit",
+      "restrictive covenant"
+    ],
+    "indemnification": [
+      "indemnify",
+      "indemnification",
+      "hold harmless"
+    ],
+    "governing_law": [
+      "governing law",
+      "jurisdiction",
+      "venue",
+      "law of"
+    ],
+    "assignment": [
+      "assign",
+      "assignment",
+      "transfer"
+    ],
+    "payment": [
+      "payment",
+      "fees",
+      "invoice",
+      "compensation",
+      "price"
+    ],
+    "audit_and_compliance": [
+      "audit",
+      "inspection",
+      "compliance",
+      "regulatory"
+    ]
+  },
+  "coarse_mapping_version": "v1",
+  "model_settings": {
+    "llm_provider": "stub",
+    "backbone_model": "stub",
+    "embedding_model": "all-MiniLM-L6-v2"
+  },
+  "metrics": {
+    "policyllm": {
+      "clause_type_precision": 0.3333333333333333,
+      "clause_type_recall": 0.037037037037037035
+    },
+    "keyword_rules": {
+      "clause_type_precision": 0.3333333333333333,
+      "clause_type_recall": 0.037037037037037035
+    },
+    "rag": {
+      "clause_type_precision": 0.0,
+      "clause_type_recall": 0.0
+    }
+  },
+  "per_contract": [
+    {
+      "contract_id": "BizzingoInc_20120322_8-K_EX-10.17_7504499_EX-10.17_Endorsement Agreement",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 0.0,
+      "policyllm_recall": 0.0,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": true
+    },
+    {
+      "contract_id": "TUNIUCORP_03_06_2014-EX-10-COOPERATION AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 0.0,
+      "policyllm_recall": 0.0,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": true
+    },
+    {
+      "contract_id": "BOLIVARMININGCORP_05_23_2003-EX-2.1-VISP WEB SITE BUILDING AND HOSTING AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "intellectual_property"
+      ],
+      "pred_keyword_rules": [
+        "intellectual_property"
+      ],
+      "pred_rag": [],
+      "policyllm_precision": 1.0,
+      "policyllm_recall": 0.1111111111111111,
+      "keyword_precision": 1.0,
+      "keyword_recall": 0.1111111111111111,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": true
+    }
+  ],
+  "runtime": {
+    "seconds": 6.96715784072876,
+    "completed_at_utc": "2026-03-25T23:19:34.636107+00:00"
+  },
+  "summary_row": {
+    "benchmark": "CUAD",
+    "method": "PolicyLLM",
+    "precision": 0.3333333333333333,
+    "recall": 0.037037037037037035
+  }
+}

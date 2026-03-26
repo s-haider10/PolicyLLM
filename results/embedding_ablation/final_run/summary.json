@@ -1,0 +1,66 @@
+{
+  "generated_at_utc": "2026-03-26T06:06:51.970316+00:00",
+  "models": [
+    "all-MiniLM-L6-v2",
+    "BAAI/bge-large-en-v1.5",
+    "text-embedding-3-small"
+  ],
+  "rows": [
+    {
+      "method": "RAG retrieval only",
+      "embedding_model": "all-MiniLM-L6-v2",
+      "policy_recall": "0.22",
+      "policy_precision": "0.38",
+      "condition_f1": "0.00",
+      "compliance_pct": "95.8"
+    },
+    {
+      "method": "RAG + Z3 hybrid",
+      "embedding_model": "all-MiniLM-L6-v2",
+      "policy_recall": "0.22",
+      "policy_precision": "0.37",
+      "condition_f1": "0.00",
+      "compliance_pct": "100.0"
+    },
+    {
+      "method": "RAG retrieval only",
+      "embedding_model": "BAAI/bge-large-en-v1.5",
+      "policy_recall": "0.09",
+      "policy_precision": "0.22",
+      "condition_f1": "0.00",
+      "compliance_pct": "95.8"
+    },
+    {
+      "method": "RAG + Z3 hybrid",
+      "embedding_model": "BAAI/bge-large-en-v1.5",
+      "policy_recall": "0.08",
+      "policy_precision": "0.22",
+      "condition_f1": "0.00",
+      "compliance_pct": "100.0"
+    },
+    {
+      "method": "RAG retrieval only",
+      "embedding_model": "text-embedding-3-small",
+      "policy_recall": "0.13",
+      "policy_precision": "0.30",
+      "condition_f1": "0.00",
+      "compliance_pct": "100.0"
+    },
+    {
+      "method": "RAG + Z3 hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "policy_recall": "0.14",
+      "policy_precision": "0.34",
+      "condition_f1": "0.00",
+      "compliance_pct": "95.8"
+    },
+    {
+      "method": "PolicyLLM (Ours)",
+      "embedding_model": "N/A",
+      "policy_recall": "0.00",
+      "policy_precision": "0.00",
+      "condition_f1": "0.00",
+      "compliance_pct": "0.0"
+    }
+  ]
+}

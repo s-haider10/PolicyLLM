@@ -1,0 +1,78 @@
+{
+  "benchmark": "LegalBench::privacy_policy_entailment",
+  "split": "test",
+  "dataset_source": "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/eval/external_benchmarks/legalbench/privacy_policy_entailment",
+  "seed": 42,
+  "dev_examples": 2,
+  "test_examples": 3,
+  "sample_ids": {
+    "dev": [
+      "privacy_policy_entailment-2280",
+      "privacy_policy_entailment-4103"
+    ],
+    "test": [
+      "privacy_policy_entailment-1117",
+      "privacy_policy_entailment-4189",
+      "privacy_policy_entailment-3352"
+    ]
+  },
+  "threshold": {
+    "threshold": 0.4,
+    "macro_f1": 0.3333333333333333
+  },
+  "model_settings": {
+    "llm_provider": "stub",
+    "backbone_model": "stub"
+  },
+  "metrics": {
+    "policyllm": {
+      "accuracy": 0.6666666666666666,
+      "macro_f1": 0.4,
+      "per_class_f1": {
+        "entailment": 0.8,
+        "non_entailment": 0.0
+      }
+    },
+    "vanilla": {
+      "accuracy": 0.3333333333333333,
+      "macro_f1": 0.25,
+      "per_class_f1": {
+        "entailment": 0.0,
+        "non_entailment": 0.5
+      }
+    }
+  },
+  "predictions": [
+    {
+      "id": "privacy_policy_entailment-1117",
+      "gold_label": "entailment",
+      "score": 1.0,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4189",
+      "gold_label": "non_entailment",
+      "score": 1.0,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3352",
+      "gold_label": "entailment",
+      "score": 1.0,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "non_entailment"
+    }
+  ],
+  "runtime": {
+    "seconds": 12.933888912200928,
+    "completed_at_utc": "2026-03-25T23:20:48.296268+00:00"
+  },
+  "summary_row": {
+    "benchmark": "LegalBench::privacy_policy_entailment",
+    "method": "PolicyLLM",
+    "accuracy": 0.6666666666666666,
+    "macro_f1": 0.4
+  }
+}

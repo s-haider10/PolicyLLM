@@ -1,0 +1,110 @@
+{
+  "generated_at_utc": "2026-03-25T23:19:35.402697+00:00",
+  "seed": 42,
+  "statuses": [
+    {
+      "name": "contract_nli",
+      "status": "failed",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/contract_nli_adapter.py",
+        "--seed",
+        "42",
+        "--max-examples",
+        "3",
+        "--llm-provider",
+        "stub",
+        "--model",
+        "stub",
+        "--config",
+        "Extractor/configs/config.stub.yaml",
+        "--output",
+        "results/external/dryrun_suite/contract_nli_results.json"
+      ],
+      "return_code": 1
+    },
+    {
+      "name": "legalbench_unfair_tos",
+      "status": "failed",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/legalbench_adapter.py",
+        "--task",
+        "unfair_tos",
+        "--seed",
+        "42",
+        "--max-examples",
+        "3",
+        "--llm-provider",
+        "stub",
+        "--model",
+        "stub",
+        "--config",
+        "Extractor/configs/config.stub.yaml",
+        "--output",
+        "results/external/dryrun_suite/legalbench_unfair_tos_results.json"
+      ],
+      "return_code": 1
+    },
+    {
+      "name": "legalbench_privacy_policy_entailment",
+      "status": "failed",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/legalbench_adapter.py",
+        "--task",
+        "privacy_policy_entailment",
+        "--seed",
+        "42",
+        "--max-examples",
+        "3",
+        "--llm-provider",
+        "stub",
+        "--model",
+        "stub",
+        "--config",
+        "Extractor/configs/config.stub.yaml",
+        "--output",
+        "results/external/dryrun_suite/legalbench_privacy_policy_entailment_results.json"
+      ],
+      "return_code": 1
+    },
+    {
+      "name": "cuad",
+      "status": "ok",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/cuad_adapter.py",
+        "--seed",
+        "42",
+        "--num-contracts",
+        "3",
+        "--llm-provider",
+        "stub",
+        "--model",
+        "stub",
+        "--config",
+        "Extractor/configs/config.stub.yaml",
+        "--embedding-model",
+        "all-MiniLM-L6-v2",
+        "--output",
+        "results/external/dryrun_suite/cuad_results.json"
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "benchmark": "CUAD",
+      "method": "PolicyLLM",
+      "metric_a": 0.3333333333333333,
+      "metric_b": 0.037037037037037035,
+      "notes": "precision/recall"
+    }
+  ],
+  "artifacts": {
+    "contract_nli": "results/external/dryrun_suite/contract_nli_results.json",
+    "legalbench_unfair_tos": "results/external/dryrun_suite/legalbench_unfair_tos_results.json",
+    "legalbench_privacy_policy_entailment": "results/external/dryrun_suite/legalbench_privacy_policy_entailment_results.json",
+    "cuad": "results/external/dryrun_suite/cuad_results.json"
+  }
+}

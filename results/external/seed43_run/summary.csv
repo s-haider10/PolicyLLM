@@ -1,0 +1,11 @@
+benchmark,method,metric_a,metric_b,notes
+ContractNLI,PolicyLLM,0.48,0.3890362511052166,accuracy/macro_f1
+ContractNLI,Vanilla LLM,0.84,0.8401663695781343,accuracy/macro_f1
+ContractNLI,System Prompt,0.92,0.9203802733214498,accuracy/macro_f1
+LegalBench::unfair_tos,PolicyLLM,0.46,0.45804897631473307,accuracy/macro_f1
+LegalBench::unfair_tos,Vanilla LLM,0.56,0.5098039215686274,accuracy/macro_f1
+LegalBench::privacy_policy_entailment,PolicyLLM,0.98,0.9799919967987194,accuracy/macro_f1
+LegalBench::privacy_policy_entailment,Vanilla LLM,0.88,0.8782467532467533,accuracy/macro_f1
+CUAD,PolicyLLM,0.7714285714285715,0.32222222222222224,precision/recall
+CUAD,Keyword + Rules,0.5,0.05555555555555556,precision/recall
+CUAD,RAG Extractor,0.5,0.07777777777777779,precision/recall

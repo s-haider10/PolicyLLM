@@ -1,0 +1,210 @@
+{
+  "generated_at_utc": "2026-03-26T17:23:35.721258+00:00",
+  "seed": 42,
+  "statuses": [
+    {
+      "name": "contract_nli",
+      "status": "ok",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/contract_nli_adapter.py",
+        "--seed",
+        "42",
+        "--max-examples",
+        "50",
+        "--dev-examples",
+        "10",
+        "--split-ids-path",
+        "results/external/seed42_run/contract_nli_split_ids.json",
+        "--cache-dir",
+        "results/external/seed42_run/cache",
+        "--llm-provider",
+        "chatgpt",
+        "--model",
+        "gpt-4o-mini",
+        "--config",
+        "Extractor/configs/config.chatgpt.yaml",
+        "--response-mode",
+        "asserted_probe",
+        "--baseline-max-chars",
+        "0",
+        "--output",
+        "results/external/seed42_run/contract_nli_results.json"
+      ]
+    },
+    {
+      "name": "legalbench_unfair_tos",
+      "status": "ok",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/legalbench_adapter.py",
+        "--task",
+        "unfair_tos",
+        "--seed",
+        "42",
+        "--max-examples",
+        "50",
+        "--dev-examples",
+        "10",
+        "--split-ids-path",
+        "results/external/seed42_run/legalbench_unfair_tos_split_ids.json",
+        "--cache-dir",
+        "results/external/seed42_run/cache",
+        "--llm-provider",
+        "chatgpt",
+        "--model",
+        "gpt-4o-mini",
+        "--config",
+        "Extractor/configs/config.chatgpt.yaml",
+        "--response-mode",
+        "asserted_probe",
+        "--baseline-max-chars",
+        "0",
+        "--unfair-tos-bundle-mode",
+        "extracted_reference",
+        "--output",
+        "results/external/seed42_run/legalbench_unfair_tos_results.json"
+      ]
+    },
+    {
+      "name": "legalbench_privacy_policy_entailment",
+      "status": "ok",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/legalbench_adapter.py",
+        "--task",
+        "privacy_policy_entailment",
+        "--seed",
+        "42",
+        "--max-examples",
+        "50",
+        "--dev-examples",
+        "10",
+        "--split-ids-path",
+        "results/external/seed42_run/legalbench_privacy_policy_entailment_split_ids.json",
+        "--cache-dir",
+        "results/external/seed42_run/cache",
+        "--llm-provider",
+        "chatgpt",
+        "--model",
+        "gpt-4o-mini",
+        "--config",
+        "Extractor/configs/config.chatgpt.yaml",
+        "--response-mode",
+        "asserted_probe",
+        "--baseline-max-chars",
+        "0",
+        "--output",
+        "results/external/seed42_run/legalbench_privacy_policy_entailment_results.json"
+      ]
+    },
+    {
+      "name": "cuad",
+      "status": "ok",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/cuad_adapter.py",
+        "--seed",
+        "42",
+        "--num-contracts",
+        "10",
+        "--cache-dir",
+        "results/external/seed42_run/cache",
+        "--llm-provider",
+        "chatgpt",
+        "--model",
+        "gpt-4o-mini",
+        "--config",
+        "Extractor/configs/config.chatgpt.yaml",
+        "--embedding-model",
+        "all-MiniLM-L6-v2",
+        "--selection-strategy",
+        "random",
+        "--max-policyllm-chars",
+        "30000",
+        "--chunk-overlap-chars",
+        "1000",
+        "--output",
+        "results/external/seed42_run/cuad_results.json"
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "benchmark": "ContractNLI",
+      "method": "PolicyLLM",
+      "metric_a": 0.48,
+      "metric_b": 0.3972413793103448,
+      "notes": "accuracy/macro_f1"
+    },
+    {
+      "benchmark": "ContractNLI",
+      "method": "Vanilla LLM",
+      "metric_a": 0.78,
+      "metric_b": 0.7776627433885498,
+      "notes": "accuracy/macro_f1"
+    },
+    {
+      "benchmark": "ContractNLI",
+      "method": "System Prompt",
+      "metric_a": 0.8,
+      "metric_b": 0.7994949494949495,
+      "notes": "accuracy/macro_f1"
+    },
+    {
+      "benchmark": "LegalBench::unfair_tos",
+      "method": "PolicyLLM",
+      "metric_a": 0.36,
+      "metric_b": 0.3055555555555556,
+      "notes": "accuracy/macro_f1"
+    },
+    {
+      "benchmark": "LegalBench::unfair_tos",
+      "method": "Vanilla LLM",
+      "metric_a": 0.58,
+      "metric_b": 0.5384615384615385,
+      "notes": "accuracy/macro_f1"
+    },
+    {
+      "benchmark": "LegalBench::privacy_policy_entailment",
+      "method": "PolicyLLM",
+      "metric_a": 0.96,
+      "metric_b": 0.9599358974358975,
+      "notes": "accuracy/macro_f1"
+    },
+    {
+      "benchmark": "LegalBench::privacy_policy_entailment",
+      "method": "Vanilla LLM",
+      "metric_a": 0.78,
+      "metric_b": 0.7688104245481295,
+      "notes": "accuracy/macro_f1"
+    },
+    {
+      "benchmark": "CUAD",
+      "method": "PolicyLLM",
+      "metric_a": 0.755,
+      "metric_b": 0.2666666666666667,
+      "notes": "precision/recall"
+    },
+    {
+      "benchmark": "CUAD",
+      "method": "Keyword + Rules",
+      "metric_a": 0.2,
+      "metric_b": 0.02222222222222222,
+      "notes": "precision/recall"
+    },
+    {
+      "benchmark": "CUAD",
+      "method": "RAG Extractor",
+      "metric_a": 0.3,
+      "metric_b": 0.05555555555555556,
+      "notes": "precision/recall"
+    }
+  ],
+  "artifacts": {
+    "contract_nli": "results/external/seed42_run/contract_nli_results.json",
+    "legalbench_unfair_tos": "results/external/seed42_run/legalbench_unfair_tos_results.json",
+    "legalbench_privacy_policy_entailment": "results/external/seed42_run/legalbench_privacy_policy_entailment_results.json",
+    "cuad": "results/external/seed42_run/cuad_results.json"
+  }
+}

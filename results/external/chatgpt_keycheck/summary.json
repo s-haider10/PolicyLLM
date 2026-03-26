@@ -1,0 +1,115 @@
+{
+  "generated_at_utc": "2026-03-25T23:33:35.182074+00:00",
+  "seed": 42,
+  "statuses": [
+    {
+      "name": "contract_nli",
+      "status": "failed",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/contract_nli_adapter.py",
+        "--seed",
+        "42",
+        "--max-examples",
+        "3",
+        "--dev-examples",
+        "2",
+        "--split-ids-path",
+        "results/external/chatgpt_keycheck/contract_nli_split_ids.json",
+        "--llm-provider",
+        "chatgpt",
+        "--model",
+        "gpt-4o-mini",
+        "--config",
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/Extractor/configs/config.chatgpt.yaml",
+        "--output",
+        "results/external/chatgpt_keycheck/contract_nli_results.json"
+      ],
+      "return_code": 1
+    },
+    {
+      "name": "legalbench_unfair_tos",
+      "status": "failed",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/legalbench_adapter.py",
+        "--task",
+        "unfair_tos",
+        "--seed",
+        "42",
+        "--max-examples",
+        "3",
+        "--dev-examples",
+        "2",
+        "--split-ids-path",
+        "results/external/chatgpt_keycheck/legalbench_unfair_tos_split_ids.json",
+        "--llm-provider",
+        "chatgpt",
+        "--model",
+        "gpt-4o-mini",
+        "--config",
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/Extractor/configs/config.chatgpt.yaml",
+        "--output",
+        "results/external/chatgpt_keycheck/legalbench_unfair_tos_results.json"
+      ],
+      "return_code": 1
+    },
+    {
+      "name": "legalbench_privacy_policy_entailment",
+      "status": "failed",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/legalbench_adapter.py",
+        "--task",
+        "privacy_policy_entailment",
+        "--seed",
+        "42",
+        "--max-examples",
+        "3",
+        "--dev-examples",
+        "2",
+        "--split-ids-path",
+        "results/external/chatgpt_keycheck/legalbench_privacy_policy_entailment_split_ids.json",
+        "--llm-provider",
+        "chatgpt",
+        "--model",
+        "gpt-4o-mini",
+        "--config",
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/Extractor/configs/config.chatgpt.yaml",
+        "--output",
+        "results/external/chatgpt_keycheck/legalbench_privacy_policy_entailment_results.json"
+      ],
+      "return_code": 1
+    },
+    {
+      "name": "cuad",
+      "status": "failed",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/cuad_adapter.py",
+        "--seed",
+        "42",
+        "--num-contracts",
+        "3",
+        "--llm-provider",
+        "chatgpt",
+        "--model",
+        "gpt-4o-mini",
+        "--config",
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/Extractor/configs/config.chatgpt.yaml",
+        "--embedding-model",
+        "all-MiniLM-L6-v2",
+        "--output",
+        "results/external/chatgpt_keycheck/cuad_results.json"
+      ],
+      "return_code": 1
+    }
+  ],
+  "rows": [],
+  "artifacts": {
+    "contract_nli": "results/external/chatgpt_keycheck/contract_nli_results.json",
+    "legalbench_unfair_tos": "results/external/chatgpt_keycheck/legalbench_unfair_tos_results.json",
+    "legalbench_privacy_policy_entailment": "results/external/chatgpt_keycheck/legalbench_privacy_policy_entailment_results.json",
+    "cuad": "results/external/chatgpt_keycheck/cuad_results.json"
+  }
+}

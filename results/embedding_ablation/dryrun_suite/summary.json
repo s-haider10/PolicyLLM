@@ -1,0 +1,49 @@
+{
+  "generated_at_utc": "2026-03-25T23:30:25.628213+00:00",
+  "models": [
+    "all-MiniLM-L6-v2",
+    "BAAI/bge-large-en-v1.5"
+  ],
+  "rows": [
+    {
+      "method": "RAG retrieval only",
+      "embedding_model": "all-MiniLM-L6-v2",
+      "policy_recall": "0.00",
+      "policy_precision": "0.00",
+      "condition_f1": "0.00",
+      "compliance_pct": "83.3"
+    },
+    {
+      "method": "RAG + Z3 hybrid",
+      "embedding_model": "all-MiniLM-L6-v2",
+      "policy_recall": "0.00",
+      "policy_precision": "0.00",
+      "condition_f1": "0.00",
+      "compliance_pct": "91.7"
+    },
+    {
+      "method": "RAG retrieval only",
+      "embedding_model": "BAAI/bge-large-en-v1.5",
+      "policy_recall": "0.00",
+      "policy_precision": "0.00",
+      "condition_f1": "0.00",
+      "compliance_pct": "83.3"
+    },
+    {
+      "method": "RAG + Z3 hybrid",
+      "embedding_model": "BAAI/bge-large-en-v1.5",
+      "policy_recall": "0.00",
+      "policy_precision": "0.00",
+      "condition_f1": "0.00",
+      "compliance_pct": "91.7"
+    },
+    {
+      "method": "PolicyLLM (Ours)",
+      "embedding_model": "N/A",
+      "policy_recall": "0.00",
+      "policy_precision": "0.00",
+      "condition_f1": "0.00",
+      "compliance_pct": "0.0"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "generated_at_utc": "2026-03-26T18:26:27.585347+00:00",
+  "protocol_note": "Matched 20-test-example slices with same split IDs and seed=42. Compare response_mode=asserted_probe vs generated_response.",
+  "asserted_files": {
+    "ContractNLI": "results/external/asserted_slice/contract_nli_results.json",
+    "LegalBench::unfair_tos": "results/external/asserted_slice/legalbench_unfair_tos_results.json",
+    "LegalBench::privacy_policy_entailment": "results/external/asserted_slice/legalbench_privacy_policy_entailment_results.json"
+  },
+  "generated_files": {
+    "ContractNLI": "results/external/generated_response_slice/contract_nli_results.json",
+    "LegalBench::unfair_tos": "results/external/generated_response_slice/legalbench_unfair_tos_results.json",
+    "LegalBench::privacy_policy_entailment": "results/external/generated_response_slice/legalbench_privacy_policy_entailment_results.json"
+  },
+  "rows": [
+    {
+      "benchmark": "ContractNLI",
+      "method_key": "policyllm",
+      "method": "PolicyLLM",
+      "asserted_accuracy": 0.4,
+      "generated_accuracy": 0.3,
+      "delta_accuracy_generated_minus_asserted": -0.10000000000000003,
+      "asserted_macro_f1": 0.3148148148148148,
+      "generated_macro_f1": 0.15384615384615385,
+      "delta_macro_f1_generated_minus_asserted": -0.16096866096866097
+    },
+    {
+      "benchmark": "ContractNLI",
+      "method_key": "system_prompt",
+      "method": "System Prompt",
+      "asserted_accuracy": 0.9,
+      "generated_accuracy": 0.85,
+      "delta_accuracy_generated_minus_asserted": -0.050000000000000044,
+      "asserted_macro_f1": 0.8968253968253969,
+      "generated_macro_f1": 0.8498168498168498,
+      "delta_macro_f1_generated_minus_asserted": -0.047008547008547064
+    },
+    {
+      "benchmark": "ContractNLI",
+      "method_key": "vanilla",
+      "method": "Vanilla LLM",
+      "asserted_accuracy": 0.85,
+      "generated_accuracy": 0.85,
+      "delta_accuracy_generated_minus_asserted": 0.0,
+      "asserted_macro_f1": 0.8472222222222223,
+      "generated_macro_f1": 0.8472222222222223,
+      "delta_macro_f1_generated_minus_asserted": 0.0
+    },
+    {
+      "benchmark": "LegalBench::privacy_policy_entailment",
+      "method_key": "policyllm",
+      "method": "PolicyLLM",
+      "asserted_accuracy": 0.95,
+      "generated_accuracy": 0.5,
+      "delta_accuracy_generated_minus_asserted": -0.44999999999999996,
+      "asserted_macro_f1": 0.949874686716792,
+      "generated_macro_f1": 0.45054945054945056,
+      "delta_macro_f1_generated_minus_asserted": -0.4993252361673414
+    },
+    {
+      "benchmark": "LegalBench::privacy_policy_entailment",
+      "method_key": "vanilla",
+      "method": "Vanilla LLM",
+      "asserted_accuracy": 0.8,
+      "generated_accuracy": 0.8,
+      "delta_accuracy_generated_minus_asserted": 0.0,
+      "asserted_macro_f1": 0.7916666666666667,
+      "generated_macro_f1": 0.7916666666666667,
+      "delta_macro_f1_generated_minus_asserted": 0.0
+    },
+    {
+      "benchmark": "LegalBench::unfair_tos",
+      "method_key": "policyllm",
+      "method": "PolicyLLM",
+      "asserted_accuracy": 0.4,
+      "generated_accuracy": 0.5,
+      "delta_accuracy_generated_minus_asserted": 0.09999999999999998,
+      "asserted_macro_f1": 0.2857142857142857,
+      "generated_macro_f1": 0.3333333333333333,
+      "delta_macro_f1_generated_minus_asserted": 0.047619047619047616
+    },
+    {
+      "benchmark": "LegalBench::unfair_tos",
+      "method_key": "vanilla",
+      "method": "Vanilla LLM",
+      "asserted_accuracy": 0.6,
+      "generated_accuracy": 0.6,
+      "delta_accuracy_generated_minus_asserted": 0.0,
+      "asserted_macro_f1": 0.5238095238095238,
+      "generated_macro_f1": 0.5238095238095238,
+      "delta_macro_f1_generated_minus_asserted": 0.0
+    }
+  ]
+}

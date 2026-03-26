@@ -1,0 +1,244 @@
+{
+  "benchmark": "LegalBench::unfair_tos",
+  "split": "test",
+  "dataset_source": "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/eval/external_benchmarks/legalbench/unfair_tos",
+  "seed": 42,
+  "dev_examples": 10,
+  "test_examples": 20,
+  "sample_ids": {
+    "dev": [
+      "unfair_tos-3672",
+      "unfair_tos-436",
+      "unfair_tos-854",
+      "unfair_tos-1552",
+      "unfair_tos-1714",
+      "unfair_tos-2474",
+      "unfair_tos-144",
+      "unfair_tos-2921",
+      "unfair_tos-3619",
+      "unfair_tos-1092"
+    ],
+    "test": [
+      "unfair_tos-1618",
+      "unfair_tos-1364",
+      "unfair_tos-2150",
+      "unfair_tos-729",
+      "unfair_tos-1959",
+      "unfair_tos-775",
+      "unfair_tos-2385",
+      "unfair_tos-541",
+      "unfair_tos-86",
+      "unfair_tos-2283",
+      "unfair_tos-2940",
+      "unfair_tos-764",
+      "unfair_tos-1733",
+      "unfair_tos-135",
+      "unfair_tos-2186",
+      "unfair_tos-2784",
+      "unfair_tos-1209",
+      "unfair_tos-1691",
+      "unfair_tos-3640",
+      "unfair_tos-2924"
+    ]
+  },
+  "label_distribution": {
+    "full": {
+      "not_unfair": 3454,
+      "unfair": 359
+    },
+    "dev": {
+      "not_unfair": 5,
+      "unfair": 5
+    },
+    "test": {
+      "not_unfair": 10,
+      "unfair": 10
+    }
+  },
+  "threshold": {
+    "threshold": 0.4,
+    "macro_f1": 0.3333333333333333
+  },
+  "model_settings": {
+    "llm_provider": "chatgpt",
+    "backbone_model": "gpt-4o-mini",
+    "response_mode": "generated_response",
+    "evaluation_protocol": "generation_plus_enforcement",
+    "baseline_max_chars": 0,
+    "unfair_tos_bundle": {
+      "mode": "extracted_reference",
+      "cache_hit": false,
+      "reference_text_sha256": "a26fb0a56001a3e756cf8fe682734e8c84a7d21d4ea98ede7813ea049c6b1679"
+    }
+  },
+  "metrics": {
+    "policyllm": {
+      "accuracy": 0.5,
+      "macro_f1": 0.3333333333333333,
+      "per_class_f1": {
+        "not_unfair": 0.6666666666666666,
+        "unfair": 0.0
+      }
+    },
+    "vanilla": {
+      "accuracy": 0.6,
+      "macro_f1": 0.5238095238095238,
+      "per_class_f1": {
+        "not_unfair": 0.7142857142857143,
+        "unfair": 0.3333333333333333
+      }
+    }
+  },
+  "predictions": [
+    {
+      "id": "unfair_tos-1618",
+      "gold_label": "not_unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1364",
+      "gold_label": "unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "unfair"
+    },
+    {
+      "id": "unfair_tos-2150",
+      "gold_label": "not_unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-729",
+      "gold_label": "unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1959",
+      "gold_label": "not_unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-775",
+      "gold_label": "unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2385",
+      "gold_label": "not_unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-541",
+      "gold_label": "unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-86",
+      "gold_label": "not_unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2283",
+      "gold_label": "unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2940",
+      "gold_label": "not_unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-764",
+      "gold_label": "unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "unfair"
+    },
+    {
+      "id": "unfair_tos-1733",
+      "gold_label": "not_unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-135",
+      "gold_label": "unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2186",
+      "gold_label": "not_unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2784",
+      "gold_label": "unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1209",
+      "gold_label": "not_unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-1691",
+      "gold_label": "unfair",
+      "score": 0.85,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-3640",
+      "gold_label": "not_unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    },
+    {
+      "id": "unfair_tos-2924",
+      "gold_label": "unfair",
+      "score": 0.88,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "not_unfair"
+    }
+  ],
+  "runtime": {
+    "seconds": 183.6248152256012,
+    "completed_at_utc": "2026-03-26T18:09:58.574589+00:00"
+  },
+  "summary_row": {
+    "benchmark": "LegalBench::unfair_tos",
+    "method": "PolicyLLM",
+    "accuracy": 0.5,
+    "macro_f1": 0.3333333333333333
+  }
+}

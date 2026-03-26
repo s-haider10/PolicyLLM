@@ -1,0 +1,455 @@
+{
+  "benchmark": "CUAD",
+  "split": "test",
+  "dataset_source": "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/eval/external_benchmarks/cuad/theatticusproject__cuad-qa",
+  "dataset_name": "theatticusproject/cuad-qa",
+  "seed": 43,
+  "num_contracts": 10,
+  "sample_ids": [
+    "PRIMEENERGYRESOURCESCORP_04_02_2007-EX-10.28-COMPLETION AND LIQUIDITY MAINTENANCE AGREEMENT",
+    "AFSALABANCORPINC_08_01_1996-EX-1.1-AGENCY AGREEMENT",
+    "Columbia Laboratories, (Bermuda) Ltd. - AMEND NO. 2 TO MANUFACTURING AND SUPPLY AGREEMENT",
+    "Monsanto Company - SECOND A_R EXCLUSIVE AGENCY AND MARKETING AGREEMENT",
+    "IMPCOTECHNOLOGIESINC_04_15_2003-EX-10.65-JOINT VENTURE AGREEMENT",
+    "USASYNTHETICFUELCORP_10_21_2010-EX-10.10-STRATEGIC ALLIANCE AGREEMENT",
+    "LohaCompanyltd_20191209_F-1_EX-10.16_11917878_EX-10.16_Supply Agreement",
+    "ScansourceInc_20190509_10-Q_EX-10.2_11661422_EX-10.2_Distributor Agreement",
+    "XinhuaSportsEntertainmentLtd_20070221_F-1_EX-99.4_645553_EX-99.4_Content License Agreement",
+    "DRIVENDELIVERIES,INC_05_22_2020-EX-10.4-CONSULTING AGREEMENT"
+  ],
+  "coarse_mapping": {
+    "termination": [
+      "terminate",
+      "termination",
+      "expire",
+      "end of term"
+    ],
+    "liability": [
+      "liability",
+      "damages",
+      "limitation of liability",
+      "consequential"
+    ],
+    "intellectual_property": [
+      "intellectual property",
+      "ip",
+      "license",
+      "ownership",
+      "copyright",
+      "patent"
+    ],
+    "confidentiality": [
+      "confidential",
+      "confidentiality",
+      "non-disclosure",
+      "nda"
+    ],
+    "non_compete": [
+      "non compete",
+      "non-compete",
+      "solicit",
+      "non-solicit",
+      "restrictive covenant"
+    ],
+    "indemnification": [
+      "indemnify",
+      "indemnification",
+      "hold harmless"
+    ],
+    "governing_law": [
+      "governing law",
+      "jurisdiction",
+      "venue",
+      "law of"
+    ],
+    "assignment": [
+      "assign",
+      "assignment",
+      "transfer"
+    ],
+    "payment": [
+      "payment",
+      "fees",
+      "invoice",
+      "compensation",
+      "price"
+    ],
+    "audit_and_compliance": [
+      "audit",
+      "inspection",
+      "compliance",
+      "regulatory"
+    ]
+  },
+  "coarse_mapping_version": "v1",
+  "model_settings": {
+    "llm_provider": "chatgpt",
+    "backbone_model": "gpt-4o-mini",
+    "embedding_model": "all-MiniLM-L6-v2",
+    "selection_strategy": "random",
+    "max_policyllm_chars": 30000,
+    "chunk_overlap_chars": 1000
+  },
+  "metrics": {
+    "policyllm": {
+      "clause_type_precision": 0.7714285714285715,
+      "clause_type_recall": 0.32222222222222224
+    },
+    "keyword_rules": {
+      "clause_type_precision": 0.5,
+      "clause_type_recall": 0.05555555555555556
+    },
+    "rag": {
+      "clause_type_precision": 0.5,
+      "clause_type_recall": 0.07777777777777779
+    }
+  },
+  "per_contract": [
+    {
+      "contract_id": "PRIMEENERGYRESOURCESCORP_04_02_2007-EX-10.28-COMPLETION AND LIQUIDITY MAINTENANCE AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "payment"
+      ],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 1.0,
+      "policyllm_recall": 0.1111111111111111,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "chunked_policyllm": false,
+      "num_policyllm_chunks": 1,
+      "errors": []
+    },
+    {
+      "contract_id": "AFSALABANCORPINC_08_01_1996-EX-1.1-AGENCY AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "indemnification",
+        "termination"
+      ],
+      "pred_keyword_rules": [
+        "intellectual_property"
+      ],
+      "pred_rag": [
+        "intellectual_property",
+        "payment"
+      ],
+      "policyllm_precision": 0.5,
+      "policyllm_recall": 0.1111111111111111,
+      "keyword_precision": 1.0,
+      "keyword_recall": 0.1111111111111111,
+      "rag_precision": 1.0,
+      "rag_recall": 0.2222222222222222,
+      "cache_hit": false,
+      "chunked_policyllm": true,
+      "num_policyllm_chunks": 5,
+      "errors": []
+    },
+    {
+      "contract_id": "Columbia Laboratories, (Bermuda) Ltd. - AMEND NO. 2 TO MANUFACTURING AND SUPPLY AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "indemnification",
+        "intellectual_property",
+        "liability",
+        "termination"
+      ],
+      "pred_keyword_rules": [
+        "confidentiality"
+      ],
+      "pred_rag": [
+        "confidentiality"
+      ],
+      "policyllm_precision": 0.8571428571428571,
+      "policyllm_recall": 0.6666666666666666,
+      "keyword_precision": 1.0,
+      "keyword_recall": 0.1111111111111111,
+      "rag_precision": 1.0,
+      "rag_recall": 0.1111111111111111,
+      "cache_hit": false,
+      "chunked_policyllm": true,
+      "num_policyllm_chunks": 2,
+      "errors": []
+    },
+    {
+      "contract_id": "Monsanto Company - SECOND A_R EXCLUSIVE AGENCY AND MARKETING AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "assignment",
+        "audit_and_compliance",
+        "governing_law",
+        "intellectual_property",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_keyword_rules": [],
+      "pred_rag": [
+        "audit_and_compliance",
+        "confidentiality"
+      ],
+      "policyllm_precision": 1.0,
+      "policyllm_recall": 0.7777777777777778,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 1.0,
+      "rag_recall": 0.2222222222222222,
+      "cache_hit": false,
+      "chunked_policyllm": true,
+      "num_policyllm_chunks": 8,
+      "errors": []
+    },
+    {
+      "contract_id": "IMPCOTECHNOLOGIESINC_04_15_2003-EX-10.65-JOINT VENTURE AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "indemnification",
+        "intellectual_property",
+        "payment",
+        "termination"
+      ],
+      "pred_keyword_rules": [
+        "confidentiality"
+      ],
+      "pred_rag": [
+        "confidentiality"
+      ],
+      "policyllm_precision": 0.8571428571428571,
+      "policyllm_recall": 0.6666666666666666,
+      "keyword_precision": 1.0,
+      "keyword_recall": 0.1111111111111111,
+      "rag_precision": 1.0,
+      "rag_recall": 0.1111111111111111,
+      "cache_hit": false,
+      "chunked_policyllm": true,
+      "num_policyllm_chunks": 3,
+      "errors": [
+        "policyllm_chunk_0_error: '<' not supported between instances of 'int' and 'NoneType'"
+      ]
+    },
+    {
+      "contract_id": "USASYNTHETICFUELCORP_10_21_2010-EX-10.10-STRATEGIC ALLIANCE AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "confidentiality"
+      ],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 1.0,
+      "policyllm_recall": 0.1111111111111111,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "chunked_policyllm": true,
+      "num_policyllm_chunks": 2,
+      "errors": []
+    },
+    {
+      "contract_id": "LohaCompanyltd_20191209_F-1_EX-10.16_11917878_EX-10.16_Supply Agreement",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "intellectual_property",
+        "payment"
+      ],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 1.0,
+      "policyllm_recall": 0.2222222222222222,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "chunked_policyllm": false,
+      "num_policyllm_chunks": 1,
+      "errors": []
+    },
+    {
+      "contract_id": "ScansourceInc_20190509_10-Q_EX-10.2_11661422_EX-10.2_Distributor Agreement",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [],
+      "pred_keyword_rules": [
+        "confidentiality"
+      ],
+      "pred_rag": [
+        "confidentiality"
+      ],
+      "policyllm_precision": 0.0,
+      "policyllm_recall": 0.0,
+      "keyword_precision": 1.0,
+      "keyword_recall": 0.1111111111111111,
+      "rag_precision": 1.0,
+      "rag_recall": 0.1111111111111111,
+      "cache_hit": false,
+      "chunked_policyllm": false,
+      "num_policyllm_chunks": 1,
+      "errors": []
+    },
+    {
+      "contract_id": "XinhuaSportsEntertainmentLtd_20070221_F-1_EX-99.4_645553_EX-99.4_Content License Agreement",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "indemnification",
+        "termination"
+      ],
+      "pred_keyword_rules": [
+        "intellectual_property"
+      ],
+      "pred_rag": [],
+      "policyllm_precision": 0.5,
+      "policyllm_recall": 0.1111111111111111,
+      "keyword_precision": 1.0,
+      "keyword_recall": 0.1111111111111111,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "chunked_policyllm": false,
+      "num_policyllm_chunks": 1,
+      "errors": []
+    },
+    {
+      "contract_id": "DRIVENDELIVERIES,INC_05_22_2020-EX-10.4-CONSULTING AGREEMENT",
+      "gold_categories": [
+        "assignment",
+        "audit_and_compliance",
+        "confidentiality",
+        "governing_law",
+        "intellectual_property",
+        "liability",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_policyllm": [
+        "confidentiality",
+        "non_compete",
+        "payment",
+        "termination"
+      ],
+      "pred_keyword_rules": [],
+      "pred_rag": [],
+      "policyllm_precision": 1.0,
+      "policyllm_recall": 0.4444444444444444,
+      "keyword_precision": 0.0,
+      "keyword_recall": 0.0,
+      "rag_precision": 0.0,
+      "rag_recall": 0.0,
+      "cache_hit": false,
+      "chunked_policyllm": false,
+      "num_policyllm_chunks": 1,
+      "errors": []
+    }
+  ],
+  "runtime": {
+    "seconds": 1020.012580871582,
+    "completed_at_utc": "2026-03-26T18:00:42.850972+00:00"
+  },
+  "summary_row": {
+    "benchmark": "CUAD",
+    "method": "PolicyLLM",
+    "precision": 0.7714285714285715,
+    "recall": 0.32222222222222224
+  }
+}

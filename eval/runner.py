@@ -12,6 +12,7 @@ import logging
 import os
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -33,6 +34,8 @@ from eval.baselines import (
     BaselineExtractor,
     get_all_baselines,
     get_non_api_baselines,
+    infer_embedding_backend_type,
+    RAG_DEFAULT_EMBEDDING_MODEL,
 )
 
 logger = logging.getLogger(__name__)
@@ -353,6 +356,7 @@ def run_full_evaluation(
     config_path: Path,
     use_api: bool = True,
     llm_client: Optional[Any] = None,
+    embedding_model: str = RAG_DEFAULT_EMBEDDING_MODEL,
 ) -> List[List[str]]:
     """Run the complete evaluation and return comparison table rows.
 
@@ -377,7 +381,7 @@ def run_full_evaluation(
 
     # Select baselines
     if use_api and llm_client:
-        baselines = get_all_baselines(llm_client)
+        baselines = get_all_baselines(llm_client, embedding_model=embedding_model)
     else:
         baselines = get_non_api_baselines()
         logger.info("Running non-API baselines only (no LLM client)")
@@ -490,6 +494,18 @@ def main():
     parser.add_argument("--tests-dir", default=str(ROOT / "tests"), help="Path to test PDFs")
     parser.add_argument("--config", default=str(ROOT / "Extractor" / "configs" / "config.chatgpt.yaml"))
     parser.add_argument("--no-api", action="store_true", help="Skip LLM-dependent baselines")
+    parser.add_argument("--llm-provider", default="chatgpt", help="LLM provider for API baselines (chatgpt|stub|ollama|bedrock_claude|anthropic)")
+    parser.add_argument("--llm-model", default="gpt-4o-mini", help="LLM model id for API baselines")
+    parser.add_argument(
+        "--require-api",
+        action="store_true",
+        help="Fail instead of silently falling back to non-API baselines when API client cannot initialize",
+    )
+    parser.add_argument(
+        "--embedding-model",
+        default=RAG_DEFAULT_EMBEDDING_MODEL,
+        help="Embedding model for RAG baselines (e.g., all-MiniLM-L6-v2, BAAI/bge-large-en-v1.5, text-embedding-3-small)",
+    )
     parser.add_argument("--output", default=str(ROOT / "results" / "computed_metrics.json"), help="Output JSON path")
     args = parser.parse_args()
 
@@ -497,9 +513,11 @@ def main():
     if not args.no_api:
         try:
             from Extractor.src.llm.client import LLMClient
-            llm_client = LLMClient(provider="chatgpt", model_id="gpt-4o-mini", temperature=0.0, max_tokens=2048)
-            logger.info("LLM client initialized (chatgpt / gpt-4o-mini)")
+            llm_client = LLMClient(provider=args.llm_provider, model_id=args.llm_model, temperature=0.0, max_tokens=2048)
+            logger.info("LLM client initialized (%s / %s)", args.llm_provider, args.llm_model)
         except Exception as e:
+            if args.require_api:
+                raise RuntimeError(f"Failed to initialize API LLM client ({args.llm_provider}/{args.llm_model}): {e}") from e
             logger.warning("LLM client unavailable: %s — running non-API baselines only", e)
 
     rows = run_full_evaluation(
@@ -508,12 +526,24 @@ def main():
         config_path=Path(args.config),
         use_api=not args.no_api,
         llm_client=llm_client,
+        embedding_model=args.embedding_model,
     )
 
     # Save computed metrics
     header = ["Method", "Policy Recall", "Policy Precision", "Condition F1",
               "Conflict F1", "Compliance %", "FP %", "Latency (s)"]
-    output = {"header": header, "rows": rows}
+    output = {
+        "header": header,
+        "rows": rows,
+        "run_metadata": {
+            "embedding_model_requested": args.embedding_model,
+            "embedding_backend_type": infer_embedding_backend_type(args.embedding_model),
+            "llm_provider": args.llm_provider,
+            "llm_model": args.llm_model,
+            "api_baselines_enabled": bool(llm_client) and (not args.no_api),
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        },
+    }
     os.makedirs(os.path.dirname(args.output) or ".", exist_ok=True)
     with open(args.output, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2)

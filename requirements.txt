@@ -10,6 +10,7 @@ charset-normalizer==3.4.4
 click==8.3.1
 cryptography==46.0.5
 distro==1.9.0
+datasets==2.21.0
 filelock==3.21.2
 fsspec==2026.2.0
 google-api-core==2.29.0
@@ -79,4 +80,4 @@ typer-slim==0.23.1
 typing-extensions==4.15.0
 typing-inspection==0.4.2
 urllib3==2.6.3
-z3-solver==4.15.8.0
+z3-solver==4.12.2.0

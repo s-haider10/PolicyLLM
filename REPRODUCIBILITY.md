@@ -6,11 +6,11 @@ This document describes the exact configuration, commands, and environment used 
 
 | Component | Version |
 |-----------|---------|
-| Python | 3.12 |
+| Python | 3.11 / 3.12 |
 | OS | macOS (Darwin) / Linux |
 | LLM Provider | OpenAI (ChatGPT API) |
 | LLM Model | `gpt-4o-mini` |
-| Z3 Solver | 4.15.8.0 |
+| Z3 Solver | 4.12.2.0 |
 | sentence-transformers | 5.2.2 |
 | pydantic | 2.12.5 |
 
@@ -30,6 +30,9 @@ uv pip install -r requirements.txt
 
 # 4. Set OpenAI API key
 echo "OPENAI_API_KEY=your-key-here" > .env
+
+# 5. (macOS x86_64 only) ensure Z3 binary architecture matches Python
+uv pip install "z3-solver==4.12.2.0"
 ```
 
 ## Extraction Configuration
@@ -104,6 +107,108 @@ python run_extract_tests_pdfs.py --eval-only
 python run_extract_tests_pdfs.py --eval-only --no-api
 ```
 
+### Step 2b: Embedding Ablation (RAG baselines)
+
+```bash
+# Single run for each embedding model + merged summary artifacts
+python eval/external_benchmarks/run_embedding_ablation.py \
+  --llm-provider chatgpt --llm-model gpt-4o-mini \
+  --output-dir results/embedding_ablation
+
+# Direct single-run variant (if needed)
+python -m eval.runner --embedding-model all-MiniLM-L6-v2 \
+  --llm-provider chatgpt --llm-model gpt-4o-mini --require-api \
+  --output results/embedding_ablation/all_MiniLM_L6_v2.json
+python -m eval.runner --embedding-model BAAI/bge-large-en-v1.5 \
+  --llm-provider chatgpt --llm-model gpt-4o-mini --require-api \
+  --output results/embedding_ablation/BAAI_bge_large_en_v1.5.json
+python -m eval.runner --embedding-model text-embedding-3-small \
+  --llm-provider chatgpt --llm-model gpt-4o-mini --require-api \
+  --output results/embedding_ablation/text_embedding_3_small.json
+```
+
+### Step 2c: External Benchmark Pilot Runs
+
+All external benchmark scripts default to fixed seed `42` and persist sampled IDs.
+External adapters support two explicit protocols:
+- `--response-mode asserted_probe`: fixed assertion response, used as a bundle-consistency probe.
+- `--response-mode generated_response`: model-generated response followed by enforcement.
+
+```bash
+# ContractNLI (10 dev + 50 test; calibrated frozen thresholds)
+python eval/external_benchmarks/contract_nli_adapter.py \
+  --dataset-config contractnli_a \
+  --seed 42 --dev-examples 10 --max-examples 50 \
+  --response-mode asserted_probe \
+  --baseline-max-chars 0 \
+  --llm-provider chatgpt --model gpt-4o-mini \
+  --config Extractor/configs/config.chatgpt.yaml \
+  --output results/external/contract_nli_results.json
+
+# LegalBench: unfair_tos (category->binary mapping: Other=>not_unfair, all specific categories=>unfair)
+python eval/external_benchmarks/legalbench_adapter.py \
+  --task unfair_tos --seed 42 --dev-examples 10 --max-examples 50 \
+  --response-mode asserted_probe \
+  --baseline-max-chars 0 \
+  --unfair-tos-bundle-mode extracted_reference \
+  --llm-provider chatgpt --model gpt-4o-mini \
+  --config Extractor/configs/config.chatgpt.yaml \
+  --output results/external/legalbench_unfair_tos_results.json
+
+# LegalBench: privacy_policy_entailment
+python eval/external_benchmarks/legalbench_adapter.py \
+  --task privacy_policy_entailment --seed 42 --dev-examples 10 --max-examples 50 \
+  --response-mode asserted_probe \
+  --baseline-max-chars 0 \
+  --llm-provider chatgpt --model gpt-4o-mini \
+  --config Extractor/configs/config.chatgpt.yaml \
+  --output results/external/legalbench_privacy_policy_entailment_results.json
+
+# CUAD (10 contracts, deterministic random selection)
+python eval/external_benchmarks/cuad_adapter.py \
+  --dataset-name theatticusproject/cuad-qa \
+  --seed 42 --num-contracts 10 \
+  --selection-strategy random \
+  --max-policyllm-chars 30000 --chunk-overlap-chars 1000 \
+  --llm-provider chatgpt --model gpt-4o-mini \
+  --config Extractor/configs/config.chatgpt.yaml \
+  --output results/external/cuad_results.json
+
+# Orchestrated run across all external adapters + summary artifacts
+python eval/external_benchmarks/run_all.py \
+  --seed 42 --dev-examples 10 --max-examples 50 --num-contracts 10 \
+  --response-mode asserted_probe \
+  --baseline-max-chars 0 \
+  --unfair-tos-bundle-mode extracted_reference \
+  --cuad-selection-strategy random \
+  --max-policyllm-chars 30000 --cuad-chunk-overlap-chars 1000 \
+  --llm-provider chatgpt --model gpt-4o-mini \
+  --config Extractor/configs/config.chatgpt.yaml \
+  --output-dir results/external
+```
+
+### Optional Offline Smoke Runs (No API Spend)
+
+```bash
+# External benchmark smoke suite with deterministic tiny samples
+python eval/external_benchmarks/run_all.py \
+  --seed 42 --dev-examples 2 --max-examples 3 --num-contracts 3 \
+  --response-mode asserted_probe \
+  --baseline-max-chars 0 \
+  --unfair-tos-bundle-mode extracted_reference \
+  --cuad-selection-strategy random \
+  --max-policyllm-chars 12000 --cuad-chunk-overlap-chars 500 \
+  --llm-provider stub --model stub \
+  --config Extractor/configs/config.stub.yaml \
+  --output-dir results/external/dryrun_suite
+
+# Embedding ablation smoke for sentence-transformer models only
+python eval/external_benchmarks/run_embedding_ablation.py \
+  --embedding-models all-MiniLM-L6-v2 BAAI/bge-large-en-v1.5 \
+  --llm-provider stub --llm-model stub \
+  --output-dir results/embedding_ablation/dryrun_suite
+```
+
 ### Step 3: Generate Tables Only (from cached results)
 
 ```bash
@@ -119,6 +224,9 @@ python run_extract_tests_pdfs.py --tables-only
 | `results/ACL_metrics_comparison.md` | Full comparison table (Markdown) |
 | `results/computed_metrics.json` | Raw computed metrics (JSON, machine-readable) |
 | `results/<dataset>/compiled_policy_bundle.json` | Compiled bundle per document |
+| `results/embedding_ablation/summary.{json,csv,md}` | Embedding ablation summaries |
+| `results/external/summary.{json,csv,md}` | Aggregated external benchmark summaries |
+| `results/external/*_split_ids.json` | Persisted dev/test sampled IDs (seeded) |
 
 ## Evaluation Framework
 

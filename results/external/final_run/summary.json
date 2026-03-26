@@ -1,0 +1,148 @@
+{
+  "generated_at_utc": "2026-03-26T06:54:55.684288+00:00",
+  "seed": 42,
+  "statuses": [
+    {
+      "name": "contract_nli",
+      "status": "ok",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/contract_nli_adapter.py",
+        "--seed",
+        "42",
+        "--max-examples",
+        "50",
+        "--dev-examples",
+        "10",
+        "--split-ids-path",
+        "results/external/final_run/contract_nli_split_ids.json",
+        "--cache-dir",
+        "results/external/final_run/cache",
+        "--llm-provider",
+        "chatgpt",
+        "--model",
+        "gpt-4o-mini",
+        "--config",
+        "Extractor/configs/config.chatgpt.yaml",
+        "--output",
+        "results/external/final_run/contract_nli_results.json"
+      ]
+    },
+    {
+      "name": "legalbench_unfair_tos",
+      "status": "ok",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/legalbench_adapter.py",
+        "--task",
+        "unfair_tos",
+        "--seed",
+        "42",
+        "--max-examples",
+        "50",
+        "--dev-examples",
+        "10",
+        "--split-ids-path",
+        "results/external/final_run/legalbench_unfair_tos_split_ids.json",
+        "--cache-dir",
+        "results/external/final_run/cache",
+        "--llm-provider",
+        "chatgpt",
+        "--model",
+        "gpt-4o-mini",
+        "--config",
+        "Extractor/configs/config.chatgpt.yaml",
+        "--output",
+        "results/external/final_run/legalbench_unfair_tos_results.json"
+      ]
+    },
+    {
+      "name": "legalbench_privacy_policy_entailment",
+      "status": "ok",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/legalbench_adapter.py",
+        "--task",
+        "privacy_policy_entailment",
+        "--seed",
+        "42",
+        "--max-examples",
+        "50",
+        "--dev-examples",
+        "10",
+        "--split-ids-path",
+        "results/external/final_run/legalbench_privacy_policy_entailment_split_ids.json",
+        "--cache-dir",
+        "results/external/final_run/cache",
+        "--llm-provider",
+        "chatgpt",
+        "--model",
+        "gpt-4o-mini",
+        "--config",
+        "Extractor/configs/config.chatgpt.yaml",
+        "--output",
+        "results/external/final_run/legalbench_privacy_policy_entailment_results.json"
+      ]
+    },
+    {
+      "name": "cuad",
+      "status": "ok",
+      "command": [
+        "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/.venv311/bin/python",
+        "eval/external_benchmarks/cuad_adapter.py",
+        "--seed",
+        "42",
+        "--num-contracts",
+        "10",
+        "--cache-dir",
+        "results/external/final_run/cache",
+        "--llm-provider",
+        "chatgpt",
+        "--model",
+        "gpt-4o-mini",
+        "--config",
+        "Extractor/configs/config.chatgpt.yaml",
+        "--embedding-model",
+        "all-MiniLM-L6-v2",
+        "--output",
+        "results/external/final_run/cuad_results.json"
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "benchmark": "ContractNLI",
+      "method": "PolicyLLM",
+      "metric_a": 0.42,
+      "metric_b": 0.31979092421002614,
+      "notes": "accuracy/macro_f1"
+    },
+    {
+      "benchmark": "LegalBench::unfair_tos",
+      "method": "PolicyLLM",
+      "metric_a": 0.98,
+      "metric_b": 0.494949494949495,
+      "notes": "accuracy/macro_f1"
+    },
+    {
+      "benchmark": "LegalBench::privacy_policy_entailment",
+      "method": "PolicyLLM",
+      "metric_a": 0.5,
+      "metric_b": 0.3333333333333333,
+      "notes": "accuracy/macro_f1"
+    },
+    {
+      "benchmark": "CUAD",
+      "method": "PolicyLLM",
+      "metric_a": 0.3,
+      "metric_b": 0.06666666666666668,
+      "notes": "precision/recall"
+    }
+  ],
+  "artifacts": {
+    "contract_nli": "results/external/final_run/contract_nli_results.json",
+    "legalbench_unfair_tos": "results/external/final_run/legalbench_unfair_tos_results.json",
+    "legalbench_privacy_policy_entailment": "results/external/final_run/legalbench_privacy_policy_entailment_results.json",
+    "cuad": "results/external/final_run/cuad_results.json"
+  }
+}

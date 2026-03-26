@@ -1,0 +1,8 @@
+benchmark,method,asserted_accuracy,generated_accuracy,delta_accuracy_generated_minus_asserted,asserted_macro_f1,generated_macro_f1,delta_macro_f1_generated_minus_asserted
+ContractNLI,PolicyLLM,0.400000,0.300000,-0.100000,0.314815,0.153846,-0.160969
+ContractNLI,System Prompt,0.900000,0.850000,-0.050000,0.896825,0.849817,-0.047009
+ContractNLI,Vanilla LLM,0.850000,0.850000,0.000000,0.847222,0.847222,0.000000
+LegalBench::privacy_policy_entailment,PolicyLLM,0.950000,0.500000,-0.450000,0.949875,0.450549,-0.499325
+LegalBench::privacy_policy_entailment,Vanilla LLM,0.800000,0.800000,0.000000,0.791667,0.791667,0.000000
+LegalBench::unfair_tos,PolicyLLM,0.400000,0.500000,0.100000,0.285714,0.333333,0.047619
+LegalBench::unfair_tos,Vanilla LLM,0.600000,0.600000,0.000000,0.523810,0.523810,0.000000

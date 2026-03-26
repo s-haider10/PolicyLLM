@@ -11,9 +11,11 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 import time
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
@@ -179,6 +181,153 @@ def _get_semantic_model():
             logger.warning("sentence-transformers unavailable (%s); semantic baseline will use keyword fallback", type(e).__name__)
             return None
     return _SEMANTIC_MODEL
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RAG-only embedding backend (used only by RAG baselines, not SemanticRules*)
+# ─────────────────────────────────────────────────────────────────────────────
+
+RAG_DEFAULT_EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+_RAG_EMBEDDERS: Dict[str, "_RAGEmbeddingBackend"] = {}
+
+
+def _is_openai_embedding_model(model_name: str) -> bool:
+    return model_name.startswith("text-embedding-")
+
+
+def infer_embedding_backend_type(model_name: str) -> str:
+    if _is_openai_embedding_model(model_name):
+        return "openai"
+    return "sentence-transformers"
+
+
+def _openai_timeout_seconds() -> float:
+    raw = os.getenv("POLICYLLM_OPENAI_TIMEOUT_SEC", "120")
+    try:
+        value = float(raw)
+    except (TypeError, ValueError):
+        return 120.0
+    return max(1.0, value)
+
+
+@dataclass
+class _RAGEmbeddingBackend:
+    model_name: str
+    backend_type: str
+
+    def encode(self, texts: List[str]) -> "np.ndarray":
+        raise NotImplementedError
+
+
+class _SentenceTransformerBackend(_RAGEmbeddingBackend):
+    def __init__(self, model_name: str):
+        super().__init__(model_name=model_name, backend_type="sentence-transformers")
+        from sentence_transformers import SentenceTransformer
+        self._model = SentenceTransformer(model_name)
+
+    def encode(self, texts: List[str]) -> "np.ndarray":
+        import numpy as np
+        if not texts:
+            return np.zeros((0, 0), dtype=float)
+        return self._model.encode(texts, convert_to_numpy=True)
+
+
+class _OpenAIEmbeddingBackend(_RAGEmbeddingBackend):
+    def __init__(self, model_name: str, batch_size: int = 96):
+        super().__init__(model_name=model_name, backend_type="openai")
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise RuntimeError(
+                f"Embedding model '{model_name}' requires OPENAI_API_KEY. "
+                "Set the environment variable and retry."
+            )
+        try:
+            from openai import OpenAI
+        except Exception as e:
+            raise RuntimeError(
+                f"Embedding model '{model_name}' requires the OpenAI Python client."
+            ) from e
+        self._client = OpenAI(api_key=api_key, timeout=_openai_timeout_seconds())
+        self._batch_size = batch_size
+
+    def encode(self, texts: List[str]) -> "np.ndarray":
+        import numpy as np
+
+        if not texts:
+            return np.zeros((0, 0), dtype=float)
+
+        vectors: List[List[float]] = []
+        for i in range(0, len(texts), self._batch_size):
+            batch = texts[i : i + self._batch_size]
+            resp = self._client.embeddings.create(model=self.model_name, input=batch)
+            usage = getattr(resp, "usage", None)
+            if usage is not None:
+                try:
+                    from Extractor.src.llm.client import record_openai_usage
+                    if isinstance(usage, dict):
+                        prompt_tokens = int(usage.get("prompt_tokens", 0) or usage.get("total_tokens", 0) or 0)
+                    else:
+                        prompt_tokens = int(getattr(usage, "prompt_tokens", 0) or getattr(usage, "total_tokens", 0) or 0)
+
+                    record_openai_usage(
+                        kind="embedding",
+                        model_id=self.model_name,
+                        input_tokens=prompt_tokens,
+                        output_tokens=0,
+                    )
+                except Exception:
+                    pass
+            # Keep deterministic ordering by index.
+            items = sorted(resp.data, key=lambda x: x.index)
+            vectors.extend(item.embedding for item in items)
+        return np.asarray(vectors, dtype=float)
+
+
+def _l2_normalize_rows(matrix: "np.ndarray") -> "np.ndarray":
+    import numpy as np
+
+    if matrix.size == 0:
+        return matrix
+    norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+    norms = np.where(norms == 0.0, 1.0, norms)
+    return matrix / norms
+
+
+def _cosine_similarities(query_embedding: "np.ndarray", text_embeddings: "np.ndarray") -> "np.ndarray":
+    import numpy as np
+
+    q = query_embedding.reshape(1, -1)
+    qn = _l2_normalize_rows(q)
+    tn = _l2_normalize_rows(text_embeddings)
+    return np.dot(qn, tn.T).flatten()
+
+
+def _resolve_rag_embedder(model_name: str) -> Optional[_RAGEmbeddingBackend]:
+    """Return a reusable embedding backend for RAG baselines.
+
+    For OpenAI embedding models, failures are explicit (fail fast).
+    For sentence-transformers models, failures return None so callers can
+    preserve historical fallback behavior where applicable.
+    """
+    if model_name in _RAG_EMBEDDERS:
+        return _RAG_EMBEDDERS[model_name]
+
+    if _is_openai_embedding_model(model_name):
+        backend = _OpenAIEmbeddingBackend(model_name)
+        _RAG_EMBEDDERS[model_name] = backend
+        return backend
+
+    try:
+        backend = _SentenceTransformerBackend(model_name)
+    except Exception as e:
+        logger.warning(
+            "RAG embedding backend unavailable for '%s' (%s); RAG will fall back to prompt-only retrieval",
+            model_name,
+            type(e).__name__,
+        )
+        return None
+    _RAG_EMBEDDERS[model_name] = backend
+    return backend
 
 
 _POLICY_TEMPLATES = [
@@ -541,20 +690,22 @@ class RAGOnlyExtractor(BaselineExtractor):
     """Chunk document, embed, retrieve policy-like chunks, LLM extracts from retrieved."""
     name = "RAG retrieval only"
 
-    def __init__(self, llm_client: Any = None):
+    def __init__(self, llm_client: Any = None, embedding_model: str = RAG_DEFAULT_EMBEDDING_MODEL):
         self._llm = llm_client
+        self._embedding_model = embedding_model
 
     def extract(self, sections: List[Dict[str, Any]], full_text: str) -> List[Dict[str, Any]]:
         if self._llm is None:
             return []
-        model = _get_semantic_model()
-        if model is None:
+        embedder = _resolve_rag_embedder(self._embedding_model)
+        if embedder is None:
             # Fallback: use system prompt extraction when embeddings unavailable
-            logger.info("RAG extractor falling back to system-prompt extraction (no embeddings)")
+            logger.info(
+                "RAG extractor falling back to system-prompt extraction (embedding backend unavailable: %s)",
+                self._embedding_model,
+            )
             sp = SystemPromptExtractor(self._llm)
             return sp.extract(sections, full_text)
-
-        import numpy as np
 
         # Chunk into sections
         chunks = []
@@ -567,9 +718,10 @@ class RAGOnlyExtractor(BaselineExtractor):
             return []
 
         # Retrieve top-k policy-relevant chunks
-        query_emb = model.encode(["organizational policy rule obligation requirement"], convert_to_numpy=True)
-        chunk_embs = model.encode(chunks, convert_to_numpy=True)
-        sims = np.dot(query_emb, chunk_embs.T).flatten()
+        query_emb = embedder.encode(["organizational policy rule obligation requirement"])[0]
+        chunk_embs = embedder.encode(chunks)
+        sims = _cosine_similarities(query_emb, chunk_embs)
+        import numpy as np
         top_k = min(10, len(chunks))
         top_indices = np.argsort(sims)[-top_k:][::-1]
         retrieved = "\n\n---\n\n".join(chunks[i][:500] for i in top_indices)
@@ -598,24 +750,24 @@ class RAGOnlyEnforcer(BaselineEnforcer):
     """Retrieve relevant policy chunks, include in prompt, LLM judges — no formal checks."""
     name = "RAG retrieval only"
 
+    def __init__(self, embedding_model: str = RAG_DEFAULT_EMBEDDING_MODEL):
+        self._embedding_model = embedding_model
+
     def enforce(self, query: str, response: str, bundle=None, llm_client=None) -> Dict[str, Any]:
         t0 = time.time()
         if llm_client is None:
             return {"action": "pass", "violations": [], "score": 1.0, "latency_s": time.time() - t0}
-        try:
-            model = _get_semantic_model()
-        except Exception:
-            model = None
+        embedder = _resolve_rag_embedder(self._embedding_model)
         # Retrieve relevant rules by embedding similarity (or fall back to all rules)
         context_text = ""
         if bundle:
             rules = bundle.get("conditional_rules", [])
-            if rules and model is not None:
-                import numpy as np
+            if rules and embedder is not None:
                 rule_texts = [f"{r['policy_id']}: {r['action']['type']}:{r['action']['value']}" for r in rules]
-                query_emb = model.encode([query], convert_to_numpy=True)
-                rule_embs = model.encode(rule_texts, convert_to_numpy=True)
-                sims = np.dot(query_emb, rule_embs.T).flatten()
+                query_emb = embedder.encode([query])[0]
+                rule_embs = embedder.encode(rule_texts)
+                sims = _cosine_similarities(query_emb, rule_embs)
+                import numpy as np
                 top_k = min(5, len(rules))
                 top_indices = np.argsort(sims)[-top_k:][::-1]
                 context_text = "\n".join(rule_texts[i] for i in top_indices)
@@ -697,18 +849,22 @@ class RAGZ3HybridExtractor(BaselineExtractor):
     """RAG retrieval extraction + Z3 conflict detection."""
     name = "RAG + Z3 hybrid"
 
-    def __init__(self, llm_client: Any = None):
+    def __init__(self, llm_client: Any = None, embedding_model: str = RAG_DEFAULT_EMBEDDING_MODEL):
         self._llm = llm_client
+        self._embedding_model = embedding_model
 
     def extract(self, sections: List[Dict[str, Any]], full_text: str) -> List[Dict[str, Any]]:
         # Uses RAG extractor which falls back to system-prompt when no embeddings
-        rag = RAGOnlyExtractor(self._llm)
+        rag = RAGOnlyExtractor(self._llm, embedding_model=self._embedding_model)
         return rag.extract(sections, full_text)
 
 
 class RAGZ3HybridEnforcer(BaselineEnforcer):
     """Combines RAG retrieval with Z3 verification — no scaffold injection, no judge LLM."""
     name = "RAG + Z3 hybrid"
+
+    def __init__(self, embedding_model: str = RAG_DEFAULT_EMBEDDING_MODEL):
+        self._embedding_model = embedding_model
 
     def enforce(self, query: str, response: str, bundle=None, llm_client=None) -> Dict[str, Any]:
         t0 = time.time()
@@ -724,7 +880,7 @@ class RAGZ3HybridEnforcer(BaselineEnforcer):
         smt_enforcer = SMTOnlyEnforcer()
         smt_result = smt_enforcer.enforce(query, response, bundle, llm_client=None)
         # RAG-based LLM check
-        rag_enforcer = RAGOnlyEnforcer()
+        rag_enforcer = RAGOnlyEnforcer(embedding_model=self._embedding_model)
         rag_result = rag_enforcer.enforce(query, response, bundle, llm_client)
         # Combine: stricter of the two
         combined_violations = smt_result["violations"] + rag_result["violations"]
@@ -742,18 +898,21 @@ class RAGZ3HybridEnforcer(BaselineEnforcer):
 # Registry: all baselines in evaluation order
 # ─────────────────────────────────────────────────────────────────────────────
 
-def get_all_baselines(llm_client: Optional[Any] = None) -> List[Tuple[BaselineExtractor, BaselineEnforcer]]:
+def get_all_baselines(
+    llm_client: Optional[Any] = None,
+    embedding_model: str = RAG_DEFAULT_EMBEDDING_MODEL,
+) -> List[Tuple[BaselineExtractor, BaselineEnforcer]]:
     """Return all (extractor, enforcer) pairs in comparison table order."""
     return [
         (VanillaLLMExtractor(llm_client), VanillaLLMEnforcer()),
         (SystemPromptExtractor(llm_client), SystemPromptEnforcer()),
         (FewShotExtractor(llm_client), FewShotEnforcer()),
-        (RAGOnlyExtractor(llm_client), RAGOnlyEnforcer()),
+        (RAGOnlyExtractor(llm_client, embedding_model=embedding_model), RAGOnlyEnforcer(embedding_model=embedding_model)),
         (KeywordRulesExtractor(), KeywordRulesEnforcer()),
         (SemanticRulesExtractor(), SemanticRulesEnforcer()),
         (SMTOnlyExtractor(), SMTOnlyEnforcer()),
         (LLMZeroShotExtractor(llm_client), LLMZeroShotEnforcer()),
-        (RAGZ3HybridExtractor(llm_client), RAGZ3HybridEnforcer()),
+        (RAGZ3HybridExtractor(llm_client, embedding_model=embedding_model), RAGZ3HybridEnforcer(embedding_model=embedding_model)),
     ]
 
 

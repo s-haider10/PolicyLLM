@@ -1,0 +1,482 @@
+{
+  "benchmark": "LegalBench::privacy_policy_entailment",
+  "split": "test",
+  "dataset_source": "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/eval/external_benchmarks/legalbench/privacy_policy_entailment",
+  "seed": 43,
+  "dev_examples": 10,
+  "test_examples": 50,
+  "sample_ids": {
+    "dev": [
+      "privacy_policy_entailment-2720",
+      "privacy_policy_entailment-4054",
+      "privacy_policy_entailment-3615",
+      "privacy_policy_entailment-3904",
+      "privacy_policy_entailment-485",
+      "privacy_policy_entailment-4282",
+      "privacy_policy_entailment-3007",
+      "privacy_policy_entailment-4007",
+      "privacy_policy_entailment-1499",
+      "privacy_policy_entailment-4088"
+    ],
+    "test": [
+      "privacy_policy_entailment-3048",
+      "privacy_policy_entailment-4051",
+      "privacy_policy_entailment-2883",
+      "privacy_policy_entailment-3938",
+      "privacy_policy_entailment-712",
+      "privacy_policy_entailment-4175",
+      "privacy_policy_entailment-3552",
+      "privacy_policy_entailment-4259",
+      "privacy_policy_entailment-1475",
+      "privacy_policy_entailment-4110",
+      "privacy_policy_entailment-3230",
+      "privacy_policy_entailment-3889",
+      "privacy_policy_entailment-3023",
+      "privacy_policy_entailment-4255",
+      "privacy_policy_entailment-2064",
+      "privacy_policy_entailment-3893",
+      "privacy_policy_entailment-2987",
+      "privacy_policy_entailment-4262",
+      "privacy_policy_entailment-2838",
+      "privacy_policy_entailment-4228",
+      "privacy_policy_entailment-2021",
+      "privacy_policy_entailment-4100",
+      "privacy_policy_entailment-1198",
+      "privacy_policy_entailment-3902",
+      "privacy_policy_entailment-1307",
+      "privacy_policy_entailment-4334",
+      "privacy_policy_entailment-784",
+      "privacy_policy_entailment-4151",
+      "privacy_policy_entailment-1734",
+      "privacy_policy_entailment-3836",
+      "privacy_policy_entailment-1299",
+      "privacy_policy_entailment-3993",
+      "privacy_policy_entailment-2133",
+      "privacy_policy_entailment-3979",
+      "privacy_policy_entailment-2249",
+      "privacy_policy_entailment-4225",
+      "privacy_policy_entailment-432",
+      "privacy_policy_entailment-3980",
+      "privacy_policy_entailment-1975",
+      "privacy_policy_entailment-3943",
+      "privacy_policy_entailment-2451",
+      "privacy_policy_entailment-3780",
+      "privacy_policy_entailment-1857",
+      "privacy_policy_entailment-4230",
+      "privacy_policy_entailment-3055",
+      "privacy_policy_entailment-4212",
+      "privacy_policy_entailment-282",
+      "privacy_policy_entailment-3795",
+      "privacy_policy_entailment-984",
+      "privacy_policy_entailment-4280"
+    ]
+  },
+  "label_distribution": {
+    "full": {
+      "entailment": 3741,
+      "non_entailment": 594
+    },
+    "dev": {
+      "entailment": 5,
+      "non_entailment": 5
+    },
+    "test": {
+      "entailment": 25,
+      "non_entailment": 25
+    }
+  },
+  "threshold": {
+    "threshold": 0.59,
+    "macro_f1": 1.0
+  },
+  "model_settings": {
+    "llm_provider": "chatgpt",
+    "backbone_model": "gpt-4o-mini",
+    "response_mode": "asserted_probe",
+    "evaluation_protocol": "bundle_consistency_probe",
+    "baseline_max_chars": 0,
+    "unfair_tos_bundle": {
+      "mode": "policy_extracted_per_example"
+    }
+  },
+  "metrics": {
+    "policyllm": {
+      "accuracy": 0.98,
+      "macro_f1": 0.9799919967987194,
+      "per_class_f1": {
+        "entailment": 0.9795918367346939,
+        "non_entailment": 0.9803921568627451
+      }
+    },
+    "vanilla": {
+      "accuracy": 0.88,
+      "macro_f1": 0.8782467532467533,
+      "per_class_f1": {
+        "entailment": 0.8636363636363636,
+        "non_entailment": 0.8928571428571429
+      }
+    }
+  },
+  "predictions": [
+    {
+      "id": "privacy_policy_entailment-3048",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4051",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-2883",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3938",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-712",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4175",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3552",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4259",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-1475",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4110",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3230",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3889",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3023",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4255",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-2064",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3893",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-2987",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4262",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-2838",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4228",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-2021",
+      "gold_label": "entailment",
+      "score": 0.82,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4100",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-1198",
+      "gold_label": "entailment",
+      "score": 0.48,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3902",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-1307",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4334",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-784",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4151",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-1734",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3836",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-1299",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3993",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-2133",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3979",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-2249",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4225",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-432",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3980",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-1975",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3943",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-2451",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3780",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-1857",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4230",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3055",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4212",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-282",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-3795",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-984",
+      "gold_label": "entailment",
+      "score": 0.88,
+      "pred_policyllm": "entailment",
+      "pred_vanilla": "entailment"
+    },
+    {
+      "id": "privacy_policy_entailment-4280",
+      "gold_label": "non_entailment",
+      "score": 0.58,
+      "pred_policyllm": "non_entailment",
+      "pred_vanilla": "non_entailment"
+    }
+  ],
+  "runtime": {
+    "seconds": 352.92279386520386,
+    "completed_at_utc": "2026-03-26T17:43:37.247741+00:00"
+  },
+  "summary_row": {
+    "benchmark": "LegalBench::privacy_policy_entailment",
+    "method": "PolicyLLM",
+    "accuracy": 0.98,
+    "macro_f1": 0.9799919967987194
+  }
+}

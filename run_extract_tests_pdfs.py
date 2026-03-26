@@ -18,6 +18,7 @@ import logging
 import subprocess
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -243,24 +244,35 @@ def _run_pipeline(pdfs: list[Path]) -> None:
 # Evaluation runner (calls eval/ framework)
 # ---------------------------------------------------------------------------
 
-def _run_evaluation(no_api: bool = False) -> list[list[str]]:
+def _run_evaluation(
+    no_api: bool = False,
+    embedding_model: str = "all-MiniLM-L6-v2",
+    llm_provider: str = "chatgpt",
+    llm_model: str = "gpt-4o-mini",
+    require_api: bool = False,
+) -> list[list[str]]:
     """Run the full evaluation framework and return comparison table rows."""
     # Import eval framework
     sys.path.insert(0, str(ROOT))
     from eval.runner import run_full_evaluation
+    from eval.baselines import infer_embedding_backend_type
 
     llm_client = None
     if not no_api:
         try:
             from Extractor.src.llm.client import LLMClient
             llm_client = LLMClient(
-                provider="chatgpt",
-                model_id="gpt-4o-mini",
+                provider=llm_provider,
+                model_id=llm_model,
                 temperature=0.0,
                 max_tokens=2048,
             )
-            logger.info("LLM client initialized for evaluation (chatgpt / gpt-4o-mini)")
+            logger.info("LLM client initialized for evaluation (%s / %s)", llm_provider, llm_model)
         except Exception as e:
+            if require_api:
+                raise RuntimeError(
+                    f"Failed to initialize API LLM client ({llm_provider}/{llm_model}): {e}"
+                ) from e
             logger.warning("LLM client unavailable (%s) — running non-API baselines only", e)
 
     rows = run_full_evaluation(
@@ -269,12 +281,25 @@ def _run_evaluation(no_api: bool = False) -> list[list[str]]:
         config_path=CONFIG,
         use_api=not no_api,
         llm_client=llm_client,
+        embedding_model=embedding_model,
     )
 
     # Save computed metrics
     header = ["Method", "Policy Recall", "Policy Precision", "Condition F1",
               "Conflict F1", "Compliance %", "FP %", "Latency (s)"]
-    output = {"header": header, "rows": rows, "computed": True}
+    output = {
+        "header": header,
+        "rows": rows,
+        "computed": True,
+        "run_metadata": {
+            "embedding_model_requested": embedding_model,
+            "embedding_backend_type": infer_embedding_backend_type(embedding_model),
+            "llm_provider": llm_provider,
+            "llm_model": llm_model,
+            "api_baselines_enabled": bool(llm_client) and (not no_api),
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        },
+    }
     metrics_path = RESULTS_DIR / "computed_metrics.json"
     with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2)
@@ -299,6 +324,14 @@ def main() -> int:
                     help="Skip extraction; run evaluation on existing results")
     ap.add_argument("--no-api", action="store_true",
                     help="Skip LLM-dependent baselines (Keyword, Semantic, SMT-only only)")
+    ap.add_argument("--llm-provider", default="chatgpt",
+                    help="LLM provider for API baselines (chatgpt|stub|ollama|bedrock_claude|anthropic)")
+    ap.add_argument("--llm-model", default="gpt-4o-mini",
+                    help="LLM model id for API baselines")
+    ap.add_argument("--require-api", action="store_true",
+                    help="Fail instead of silently falling back to non-API baselines when API client cannot initialize")
+    ap.add_argument("--embedding-model", default="all-MiniLM-L6-v2",
+                    help="Embedding model used by RAG baselines during evaluation")
     args = ap.parse_args()
 
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -320,7 +353,13 @@ def main() -> int:
     if not args.tables_only:
         print("\n" + "=" * 60)
         print("Running evaluation framework...")
-        comparison_rows = _run_evaluation(no_api=args.no_api)
+        comparison_rows = _run_evaluation(
+            no_api=args.no_api,
+            embedding_model=args.embedding_model,
+            llm_provider=args.llm_provider,
+            llm_model=args.llm_model,
+            require_api=args.require_api,
+        )
     else:
         # Load from cached computed_metrics.json
         metrics_path = RESULTS_DIR / "computed_metrics.json"

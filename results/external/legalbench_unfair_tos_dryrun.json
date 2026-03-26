@@ -1,0 +1,78 @@
+{
+  "benchmark": "LegalBench::unfair_tos",
+  "split": "test",
+  "dataset_source": "/Users/benjaminhuh/Documents/Dartmouth/Research/Finished/ACL Industry Paper/PolicyLLM/eval/external_benchmarks/legalbench/unfair_tos",
+  "seed": 42,
+  "dev_examples": 2,
+  "test_examples": 3,
+  "sample_ids": {
+    "dev": [
+      "unfair_tos-2405",
+      "unfair_tos-1731"
+    ],
+    "test": [
+      "unfair_tos-2054",
+      "unfair_tos-2360",
+      "unfair_tos-1237"
+    ]
+  },
+  "threshold": {
+    "threshold": 0.4,
+    "macro_f1": 0.0
+  },
+  "model_settings": {
+    "llm_provider": "stub",
+    "backbone_model": "stub"
+  },
+  "metrics": {
+    "policyllm": {
+      "accuracy": 0.0,
+      "macro_f1": 0.0,
+      "per_class_f1": {
+        "not_unfair": 0.0,
+        "unfair": 0.0
+      }
+    },
+    "vanilla": {
+      "accuracy": 1.0,
+      "macro_f1": 0.5,
+      "per_class_f1": {
+        "not_unfair": 0.0,
+        "unfair": 1.0
+      }
+    }
+  },
+  "predictions": [
+    {
+      "id": "unfair_tos-2054",
+      "gold_label": "unfair",
+      "score": 1.0,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "unfair"
+    },
+    {
+      "id": "unfair_tos-2360",
+      "gold_label": "unfair",
+      "score": 1.0,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "unfair"
+    },
+    {
+      "id": "unfair_tos-1237",
+      "gold_label": "unfair",
+      "score": 1.0,
+      "pred_policyllm": "not_unfair",
+      "pred_vanilla": "unfair"
+    }
+  ],
+  "runtime": {
+    "seconds": 12.868156909942627,
+    "completed_at_utc": "2026-03-25T23:15:42.992561+00:00"
+  },
+  "summary_row": {
+    "benchmark": "LegalBench::unfair_tos",
+    "method": "PolicyLLM",
+    "accuracy": 0.0,
+    "macro_f1": 0.0
+  }
+}
