@@ -8,7 +8,7 @@ def main():
     parser = argparse.ArgumentParser(description="Run policy enforcement pipeline")
     parser.add_argument("--bundle", required=True, help="Path to compiled_policy_bundle.json")
     parser.add_argument("--query", required=True, help="User query to enforce")
-    parser.add_argument("--provider", default="stub", help="LLM provider (stub|ollama|bedrock_claude|chatgpt|anthropic)")
+    parser.add_argument("--provider", default="stub", help="LLM provider (stub|ollama|bedrock_claude|chatgpt|anthropic|huggingface)")
     parser.add_argument("--model", default="mistral:latest", help="LLM model ID")
     parser.add_argument("--judge-model", default=None, help="Judge LLM model ID (defaults to --model)")
     parser.add_argument("--response", default=None, help="Pre-generated response to verify (skip generation)")

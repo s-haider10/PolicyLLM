@@ -16,7 +16,7 @@ def main(argv=None):
         description="Run PolicyLLM enforcement evaluations.",
     )
     parser.add_argument("--suite", required=True, help="Path to eval suite JSON file")
-    parser.add_argument("--provider", default="stub", help="LLM provider (stub|ollama|chatgpt|bedrock_claude|anthropic)")
+    parser.add_argument("--provider", default="stub", help="LLM provider (stub|ollama|chatgpt|bedrock_claude|anthropic|huggingface)")
     parser.add_argument("--model", default="mistral:latest", help="LLM model ID")
     parser.add_argument("--judge-model", default=None, help="Judge LLM model ID (defaults to --model)")
     parser.add_argument("--tags", nargs="*", default=None, help="Filter scenarios by tags")
@@ -48,7 +48,12 @@ def main(argv=None):
         max_tokens=2048,
     )
 
-    judge_llm = llm
+    judge_llm = LLMClient(
+        provider="ollama",
+        model_id="Qwen3-30B-A3B",
+        temperature=0.0,
+        max_tokens=1024,
+    )
     if args.judge_model:
         judge_llm = LLMClient(
             provider=args.provider,

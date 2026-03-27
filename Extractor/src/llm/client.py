@@ -1,8 +1,12 @@
-"""LLM client wrapper for local (Ollama) and cloud providers with JSON schema enforcement."""
+"""LLM client wrapper for local (Ollama), local GPU (HuggingFace), and cloud providers with JSON schema enforcement."""
 import json
 import re
 import time
 from typing import Any, Dict, Optional, Type
+
+# Cache for locally loaded HuggingFace models — avoids reloading the model
+# on every section when the pipeline creates new LLMClient instances per section.
+_HF_MODEL_CACHE: Dict[str, Any] = {}
 
 try:
     from dotenv import load_dotenv
@@ -52,6 +56,8 @@ class LLMClient:
         self._openai = None
         self._anthropic = None
         self._stub = provider == "stub"
+        self._hf_model = None
+        self._hf_tokenizer = None
 
         if provider in ("chatgpt", "ollama"):
             try:
@@ -66,6 +72,26 @@ class LLMClient:
                     self._openai = OpenAI()
             except Exception as exc:  # noqa: BLE001
                 raise RuntimeError("OpenAI client not available; install openai>=1.10.0") from exc
+        elif provider == "huggingface":
+            try:
+                import torch
+                from transformers import AutoModelForCausalLM, AutoTokenizer
+
+                if model_id not in _HF_MODEL_CACHE:
+                    tokenizer = AutoTokenizer.from_pretrained(model_id)
+                    model = AutoModelForCausalLM.from_pretrained(
+                        model_id,
+                        torch_dtype=torch.bfloat16,
+                        device_map="auto",  # automatically spreads across all available GPUs
+                    )
+                    model.eval()
+                    _HF_MODEL_CACHE[model_id] = (model, tokenizer)
+                self._hf_model, self._hf_tokenizer = _HF_MODEL_CACHE[model_id]
+            except Exception as exc:  # noqa: BLE001
+                raise RuntimeError(
+                    f"Failed to load HuggingFace model '{model_id}'. "
+                    "Ensure transformers, torch, and accelerate are installed."
+                ) from exc
         elif provider == "anthropic":
             try:
                 import anthropic
@@ -83,6 +109,8 @@ class LLMClient:
                     raw_text = self._invoke_bedrock(prompt)
                 elif self.provider in ("chatgpt", "ollama"):
                     raw_text = self._invoke_openai(prompt)
+                elif self.provider == "huggingface":
+                    raw_text = self._invoke_huggingface(prompt)
                 elif self.provider == "anthropic":
                     raw_text = self._invoke_anthropic(prompt)
                 elif self._stub:
@@ -143,6 +171,33 @@ class LLMClient:
         content = resp.choices[0].message.content
         if not content:
             raise ValueError("Empty response content from OpenAI")
+        return content
+
+    def _invoke_huggingface(self, prompt: str) -> str:
+        """Invoke a locally loaded HuggingFace model on GPU and return generated text."""
+        import torch
+
+        if self._hf_model is None or self._hf_tokenizer is None:
+            raise RuntimeError("HuggingFace model not initialized")
+        messages = [{"role": "user", "content": prompt}]
+        formatted = self._hf_tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True
+        )
+        inputs = self._hf_tokenizer(formatted, return_tensors="pt").to(
+            next(self._hf_model.parameters()).device
+        )
+        with torch.no_grad():
+            output_ids = self._hf_model.generate(
+                **inputs,
+                max_new_tokens=self.max_tokens,
+                temperature=max(self.temperature, 1e-4),
+                do_sample=(self.temperature > 0),
+                pad_token_id=self._hf_tokenizer.eos_token_id,
+            )
+        new_tokens = output_ids[0][inputs["input_ids"].shape[1]:]
+        content = self._hf_tokenizer.decode(new_tokens, skip_special_tokens=True)
+        if not content:
+            raise ValueError("Empty response from HuggingFace model")
         return content
 
     def _invoke_anthropic(self, prompt: str) -> str:
