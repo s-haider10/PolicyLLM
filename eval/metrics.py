@@ -137,8 +137,8 @@ def _cond_key(c: Any) -> str:
         return str(c)
     ctype = c.get('type', '')
     op = c.get('operator', c.get('op', ''))
-    # Normalize null/missing operators based on condition type
-    if op is None or op == '':
+    # Normalize null/missing/unknown operators based on condition type
+    if op is None or op == '' or op == 'unknown':
         if ctype == 'boolean_flag':
             op = '=='
         elif ctype in ('time_window', 'amount_threshold'):
