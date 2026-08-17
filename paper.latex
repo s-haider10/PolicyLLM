@@ -1,0 +1,138 @@
+\subsection{Enforcement}
+\label{sec:enforcement}
+
+Given a compiled policy bundle $\mathcal{B}$ produced by the upstream validation stage and an incoming user query $q$, the Enforcement module determines whether the LLM-generated response $r$ complies with all applicable organizational policies.
+Formally, the module computes a compliance decision $d = (\hat{s}, \alpha, V)$, where $\hat{s} \in [0,1]$ is a composite compliance score, $\alpha \in \{\textsc{pass}, \textsc{auto\_correct}, \textsc{regenerate}, \textsc{escalate}\}$ is a routing action, and $V$ is a set of identified violations.
+The enforcement pipeline is organized into four temporally distinct phases---\textit{pre-generation}, \textit{during-generation}, \textit{generation}, and \textit{post-generation}---followed by action routing and audit logging.
+
+\paragraph{Pre-Generation: Query Classification, Rule Retrieval, and Dominance Resolution.}
+
+The pre-generation phase constructs an \emph{enforcement context} $\mathcal{C}$ that narrows the policy search space from the full bundle $\mathcal{B}$ to a relevant subset.
+First, the user query $q$ is classified into a domain $\delta$ and intent $\iota$ with confidence $\gamma \in [0,1]$ via an LLM-based semantic classifier.
+We deliberately eschew keyword-based classification in favor of neural classification to ensure robustness to paraphrasing and synonymy.
+If no LLM client is available, the system defaults to $(\delta, \iota, \gamma) = (\texttt{unknown}, \texttt{unknown}, 0.0)$, effectively bypassing enforcement.
+
+Given the classified domain $\delta$, applicable rules $\mathcal{R}_\delta$, compiled decision-graph paths $\mathcal{P}_\delta$, and constraints $\mathcal{K}_\delta$ are retrieved from a pre-built index over $\mathcal{B}$ in $O(1)$ via hash lookup.
+Temporal filtering excludes any rule whose effective date $t_{\text{eff}}$ exceeds the current date.
+Constraints are retrieved by scope: those annotated \texttt{always} are unconditionally included, while domain-scoped constraints are appended for the matched domain.
+
+When multiple retrieved rules conflict, the system applies a two-tier \emph{dominance resolution} procedure.
+Let $\mathcal{R}_\delta = \{r_1, \ldots, r_n\}$ be the retrieved rules.
+For each pair $(r_i, r_j)$, the system first consults an explicit dominance table $\mathcal{D} \subseteq 2^{\mathcal{R}} \to \{(\text{mode}, \text{enforce})\}$ for a matching entry.
+If an explicit override rule exists, the subordinate policy is removed from $\mathcal{R}_\delta$.
+In the absence of an explicit rule, the system falls back to a \emph{priority lattice} $\pi: \texttt{priority\_class} \to \mathbb{Z}^{+}$ with default ordering $\texttt{regulatory}(1) \succ \texttt{core\_values}(2) \succ \texttt{company}(3) \succ \texttt{department}(4) \succ \texttt{situational}(5)$, where a lower rank denotes higher authority.
+The output of this phase is an enforcement context $\mathcal{C} = (\delta, \iota, \gamma, \tilde{\mathcal{R}}, \tilde{\mathcal{P}}, \mathcal{K}, E)$, containing the filtered rules $\tilde{\mathcal{R}} \subseteq \mathcal{R}_\delta$, filtered paths $\tilde{\mathcal{P}} \subseteq \mathcal{P}_\delta$, applicable constraints $\mathcal{K}$, and escalation contacts $E$.
+
+\paragraph{During-Generation: Scaffold Injection.}
+
+Rather than relying solely on post-hoc verification, we inject policy-aware structure directly into the LLM prompt.
+This \emph{during-generation} phase serializes two components into the generation prompt: an \emph{invariant block} and a \emph{reasoning scaffold}.
+
+The invariant block translates each constraint $k \in \mathcal{K}$ into a natural-language directive.
+Negation constraints of the form $\texttt{NOT}(a)$ are rendered as ``\texttt{NEVER} $a$''; affirmative constraints are rendered as ``\texttt{ALWAYS} comply with $k$''.
+These are injected into the system prompt enclosed in explicit delimiters.
+
+The reasoning scaffold converts the compiled decision-graph paths $\tilde{\mathcal{P}}$ into a sequence of mandatory reasoning steps.
+For each variable $v$ appearing in $\tilde{\mathcal{P}}$, ordered according to the topological sort encoded in the bundle's \texttt{decision\_nodes}, the scaffold emits a typed instruction: boolean variables require explicit verification (``if unknown, ask the user; do not assume''), enum variables enumerate the permissible values, and numeric variables require a value check.
+For each variable, conditional branches extracted from the paths are appended in the form ``If $v \; \mathit{op} \; c$ then action $\Rightarrow$ \texttt{policy\_id}'', with provenance metadata (source document, effective date).
+If dominance rules were applied in the pre-generation phase, notes describing the resolution are appended.
+The scaffold concludes with an instruction to state the selected action and cite its policy source.
+This structured prompt injection enforces chain-of-thought reasoning aligned with the policy decision graph.
+
+\paragraph{Post-Generation: Multi-Signal Verification.}
+
+After the LLM produces a candidate response $r$, four verification signals are computed: a regex safety gate, an SMT-based formal check, a coverage analysis, and a judge LLM evaluation.
+
+\textit{Regex Safety Gate.}
+A set of forbidden patterns---including regular expressions for social security numbers, email addresses, credit card numbers, password disclosures, and unconditional commitment language (e.g., ``I guarantee you'', ``we will definitely'')---is applied to $r$.
+Additional patterns are derived from the constraints $\mathcal{K}$: each $\texttt{NOT}(a)$ constraint is compiled into a case-insensitive regular expression matching the forbidden action.
+The regex check produces a binary result $\phi_{\textsc{rx}} \in \{0, 1\}$, where $\phi_{\textsc{rx}} = 0$ indicates a match against any forbidden pattern.
+Crucially, the regex gate operates as a \emph{hard gate}: a failure triggers immediate escalation regardless of all other scores, encoding the design principle that safety constraints are inviolable.
+
+\textit{SMT Verification.}
+The SMT check implements a neuro-symbolic verification procedure.
+First, factual assertions are extracted from $r$ using a hybrid strategy.
+The primary extraction pass is \emph{symbolic}: type-specific regular expressions identify boolean assertions (matching affirmative or negative indicator words adjacent to variable names), integer values (numeric tokens proximate to variable mentions), float values (including dollar amounts), and enum values (membership tests against the schema's value set).
+If the symbolic pass achieves coverage below 50\% of the schema variables---i.e., $|\mathcal{F}_{\text{sym}}| < 0.5 \cdot |\text{Vars}(\mathcal{B})|$---a \emph{neural fallback} invokes the LLM to extract remaining facts, merging the results while giving precedence to symbolically extracted values.
+This maintains the neuro-symbolic separation principle: deterministic symbolic extraction is preferred for speed and reproducibility, with neural extraction as a coverage backstop.
+
+Let $\mathcal{F}$ denote the extracted fact set, mapping variable names to values.
+For each rule $r_i \in \tilde{\mathcal{R}}$ with conditions $\{(v_j, \mathit{op}_j, c_j)\}_{j=1}^{m}$, a Z3 solver instance is constructed.
+The extracted facts are asserted as equalities ($v = \mathcal{F}(v)$ for each $v \in \text{dom}(\mathcal{F}) \cap \text{Vars}(r_i)$), and the rule's conditions are encoded as Z3 constraints.
+If the resulting formula is satisfiable, the rule is deemed consistent with the response.
+Constraint violations are detected by checking whether any fact value matches a $\texttt{NOT}(a)$ prohibition.
+Path traversal verification checks whether $\mathcal{F}$ satisfies all steps of at least one compiled path in $\tilde{\mathcal{P}}$: for each path, every step variable must be present in $\mathcal{F}$ and all associated tests must be satisfiable.
+If no path is fully satisfied, an \texttt{uncovered\_case} violation is recorded.
+The SMT score $s_Z$ is $1.0$ if no violations are found, $0.5$ for uncovered-case-only violations, and $0.0$ for constraint breaches.
+
+\textit{Coverage Analysis.}
+Let $N_{\text{req}} = \{v \mid \exists\, p \in \tilde{\mathcal{P}},\; \text{step} \in p : \text{step.var} = v\}$ be the set of decision variables required by the applicable paths.
+The coverage score measures the fraction of these variables explicitly mentioned in $r$, with a 20\% penalty for incomplete coverage:
+\begin{equation}
+s_C =
+\begin{cases}
+\frac{|N_{\text{cov}}|}{|N_{\text{req}}|} & \text{if } N_{\text{cov}} = N_{\text{req}}, \\[4pt]
+0.8 \cdot \frac{|N_{\text{cov}}|}{|N_{\text{req}}|} & \text{otherwise},
+\end{cases}
+\label{eq:coverage}
+\end{equation}
+where $N_{\text{cov}} \subseteq N_{\text{req}}$ is the subset of variables whose names (or their underscore-to-space equivalents) appear in $r$.
+
+\textit{Judge LLM.}
+A separate LLM evaluates $r$ for semantic compliance along five axes: factual accuracy with respect to the policy rules, action compliance (whether the recommended action is among those permitted), constraint adherence, tone and implication (whether the response implies unauthorized actions), and completeness of decision-step coverage.
+The judge receives the applicable rules formatted as \texttt{IF}--\texttt{THEN} statements, the constraints, the original query, and the candidate response.
+It returns a score $s_L \in [0,1]$, a list of identified issues, and an explanation.
+Temperature is set to $0.0$ for deterministic evaluation.
+If the judge LLM is unavailable, the system defaults to a neutral score of $s_L = 0.5$.
+
+\paragraph{Scoring and Action Routing.}
+
+The four verification signals are aggregated into a composite compliance score:
+\begin{equation}
+\hat{s} = w_Z \cdot s_Z + w_L \cdot s_L + w_C \cdot s_C,
+\label{eq:compliance-score}
+\end{equation}
+with weights $w_Z = 0.60$, $w_L = 0.30$, $w_C = 0.10$.
+The regex gate $\phi_{\textsc{rx}}$ is deliberately excluded from the weighted sum and instead functions as a hard gate: if $\phi_{\textsc{rx}} = 0$, the action is unconditionally set to \textsc{escalate}, ensuring that safety-critical pattern violations (e.g., PII leakage) cannot be overridden by high scores on other dimensions.
+
+For $\phi_{\textsc{rx}} = 1$, the routing action is determined by threshold:
+\begin{equation}
+\alpha =
+\begin{cases}
+\textsc{pass} & \text{if } \hat{s} \geq 0.95, \\
+\textsc{auto\_correct} & \text{if } 0.85 \leq \hat{s} < 0.95, \\
+\textsc{regenerate} & \text{if } 0.70 \leq \hat{s} < 0.85, \\
+\textsc{escalate} & \text{if } \hat{s} < 0.70.
+\end{cases}
+\label{eq:action-routing}
+\end{equation}
+
+\paragraph{Retry Loop and Escalation.}
+
+When the initial action is \textsc{auto\_correct} or \textsc{regenerate}, the system enters a bounded retry loop with escalating strictness.
+For \textsc{auto\_correct}, violation descriptions are appended to the prompt as explicit correction hints (e.g., ``\texttt{FIX:} $v$''), and the response is regenerated up to $k_1 = 1$ time.
+If the corrected response achieves $\hat{s} \geq 0.95$, it is accepted.
+For \textsc{regenerate}, the scaffold is tightened by injecting explicit \texttt{DO NOT} directives derived from the identified violations, and the response is regenerated up to $k_2 = 2$ times.
+If all retries are exhausted without reaching $\hat{s} \geq 0.95$ (for auto-correction) or $\alpha = \textsc{pass}$ (for regeneration), the system escalates to human review.
+This design enforces a monotonically increasing strictness trajectory: the system first attempts lightweight correction, then tightened regeneration, and finally defers to a human, bounding the total number of LLM calls per query to $1 + k_1 + k_2 = 4$.
+
+\paragraph{Audit Trail.}
+
+Every enforcement decision is recorded in an append-only JSONL log secured by a SHA-256 hash chain.
+Each entry $e_i$ stores the session identifier, query, classified domain and intent, retrieved policy identifiers, a SHA-256 hash of the scaffold variable sequence, a hash of the LLM response text, the full post-generation report, the composite compliance score, the final action, notified owners (if escalated), and the wall-clock duration.
+The entry hash is computed as $h_i = \text{SHA-256}(h_{i-1} \| \text{json}(e_i))$, where $h_0 = \epsilon$.
+Integrity verification replays the chain, recomputing each hash and comparing it to the stored value; any mismatch indicates tampering.
+This provides a verifiable audit trail suitable for regulatory compliance without requiring an external database.
+
+\paragraph{Illustrative Example.}
+
+Consider a customer query $q =$ ``I want to return my laptop; I have the receipt.''
+In the pre-generation phase, the classifier maps $q$ to domain $\delta = \texttt{refund}$, intent $\iota = \texttt{refund\_request}$.
+Three rules are retrieved, and dominance resolution retains only the electronics-specific policy (which overrides a general returns policy via an explicit dominance entry).
+The applicable constraints include $\texttt{NOT(disclose\_pii)}$ and $\texttt{NOT(promise\_before\_verified)}$.
+During generation, the scaffold injects steps: verify \texttt{has\_receipt} (boolean), determine \texttt{product\_category} (enum: \texttt{electronics}, \texttt{clothing}, \ldots), check \texttt{days\_since\_purchase} (integer), with conditional branches citing policy identifiers.
+The LLM generates a response $r$ stating that the customer has a receipt, the product is electronics, the purchase was 10 days ago, and a full refund is approved per the applicable policy.
+Post-generation verification proceeds as follows: the regex gate passes (no PII, no unconditional commitments); SMT extracts facts $\mathcal{F} = \{\texttt{has\_receipt}: \texttt{true},\; \texttt{product\_category}: \texttt{electronics},\; \texttt{days\_since\_purchase}: 10\}$, verifies all rule conditions as satisfiable, and confirms path coverage; the coverage analysis finds 3 of 4 required variables mentioned ($s_C = 0.8 \times 0.75 = 0.60$); and the judge assigns $s_L = 0.95$.
+The composite score is $\hat{s} = 0.60 \times 1.0 + 0.30 \times 0.95 + 0.10 \times 0.60 = 0.945$, yielding $\alpha = \textsc{auto\_correct}$.
+The system appends a correction hint for the missing variable, regenerates, and the corrected response achieves $\hat{s} \geq 0.95$, resulting in a final action of \textsc{pass}.
+
